@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Hash;
 
 class KhachHangSeeder extends Seeder
 {
-    public function run(): void 
+    public function run(): void
     {
         $khachHang = [
             [

@@ -14,7 +14,7 @@ class NhanVienSeeder extends Seeder
             [
                 'email' => 'admin123@gmail.com',
                 'ho_va_ten' => 'Giám Đốc Admin',
-                'password' => bcrypt('123456'), // Nên mã hóa password để login được
+                'password' => '123456', // Nên mã hóa password để login được
                 'so_dien_thoai' => '0901234567',
                 'dia_chi' => '123 Nguyễn Văn Linh, Hải Châu, TP. Đà Nẵng',
                 'ngay_sinh' => '1985-01-15',
@@ -25,7 +25,7 @@ class NhanVienSeeder extends Seeder
             [
                 'email' => 'dieuhanhtour@vietnamtravel.com',
                 'ho_va_ten' => 'Trần Xuân Điều Hành',
-                'password' => bcrypt('123456'),
+                'password' => '123456',
                 'so_dien_thoai' => '0901234587',
                 'dia_chi' => '456 Lê Duẩn, Thanh Khê, TP. Đà Nẵng',
                 'ngay_sinh' => '1990-05-20',
@@ -36,7 +36,7 @@ class NhanVienSeeder extends Seeder
             [
                 'email' => 'ketoan.vnpay@vietnamtravel.com',
                 'ho_va_ten' => 'Lê Huỳnh Kế Toán',
-                'password' => bcrypt('123456'),
+                'password' => '123456',
                 'so_dien_thoai' => '0909000003',
                 'dia_chi' => '789 Trần Hưng Đạo, Sơn Trà, TP. Đà Nẵng',
                 'ngay_sinh' => '1993-06-15',
@@ -47,7 +47,7 @@ class NhanVienSeeder extends Seeder
             [
                 'email' => 'cskh@vietnamtravel.com',
                 'ho_va_ten' => 'Phan Trung Tư Vấn',
-                'password' => bcrypt('123456'),
+                'password' => '123456',
                 'so_dien_thoai' => '0909000004',
                 'dia_chi' => '321 Hai Bà Trưng, Q.1, TP.HCM',
                 'ngay_sinh' => '1995-09-10',
@@ -58,7 +58,7 @@ class NhanVienSeeder extends Seeder
             [
                 'email' => 'huongdanvien@vietnamtravel.com',
                 'ho_va_ten' => 'Hoàng Kim Hướng Dẫn',
-                'password' => bcrypt('123456'),
+                'password' => '123456',
                 'so_dien_thoai' => '0909000005',
                 'dia_chi' => '654 Nguyễn Trãi, Q.5, TP.HCM',
                 'ngay_sinh' => '1998-11-25',
@@ -69,7 +69,7 @@ class NhanVienSeeder extends Seeder
             [
                 'email' => 'kythuat.ai@vietnamtravel.com',
                 'ho_va_ten' => 'Kỹ Thuật Hệ Thống',
-                'password' => bcrypt('123456'),
+                'password' => '123456',
                 'so_dien_thoai' => '0909000006',
                 'dia_chi' => '999 Tôn Đức Thắng, Liên Chiểu, TP. Đà Nẵng',
                 'ngay_sinh' => '1999-12-01',
