@@ -15,4 +15,15 @@ class ChucVuController extends Controller
             'data'    => $data,
         ]);
     }
+    public function addData(Request $request)
+    {
+        ChucVu::create([
+            'ten_chuc_vu' => $request->ten_chuc_vu,
+            'tinh_trang'  => $request->tinh_trang
+        ]);
+        return response()->json([
+            'status' => true,
+            'message' => 'Thêm chức vụ thành công'
+        ]);
+    }
 }
