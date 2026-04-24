@@ -19,10 +19,14 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
             ChucVuSeeder::class,
+            chucNangSeeder::class,
             KhachHangSeeder::class,
             NhanVienSeeder::class,
-            chucVuSeeder::class,
             HuongDanVienSeeder::class,
+            PhanQuyenSeeder::class,
+            TourSeeder::class,
+
+
 
         ]);
     }

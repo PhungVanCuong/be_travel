@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->integer('id_tour');
             $table->integer('id_khach_hang');
-            $table->integer('sao_danh_gia'); // 1 -> 5
-            $table->longText('noi_dung');
+            $table->integer('sao_danh_gia')->nullable(); // 1 -> 5
+            $table->longText('noi_dung')->nullable();
             $table->integer('tinh_trang')->default(1); // 1: hiển thị, 0: ẩn
             $table->timestamps();
         });

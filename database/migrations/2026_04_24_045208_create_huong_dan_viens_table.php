@@ -13,19 +13,6 @@ return new class extends Migration
 
     public function up(): void
     {
-        // use HasApiTokens, HasFactory, Notifiable;
-    // protected $table = 'huong_dan_viens';
-    // protected $fillable = [
-    //     'email',
-    //     'ho_va_ten',
-    //     'password',
-    //     'ngon_ngu',
-    //     'so_dien_thoai',
-    //     'is_active',
-    //     'is_block',
-    //     'hash_reset',
-    //     'hash_active',
-    // ];
         Schema::create('huong_dan_viens', function (Blueprint $table) {
             $table->id();
             $table->string('email')->unique();

@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('phuong_tiens', function (Blueprint $table) {
             $table->id();
-            $table->string('loai_phuong_tien'); // xe, máy bay,...
-            $table->string('so_hieu'); // biển số / mã chuyến bay
+            $table->string('loai_phuong_tien')->nullable(); // xe, máy bay,...
+            $table->string('so_hieu')->nullable(); // biển số / mã chuyến bay
             $table->text('mo_ta')->nullable();
-            $table->string('tinh_trang'); // available, maintenance,...
+            $table->string('tinh_trang')->nullable(); // available, maintenance,...
             $table->timestamps();
         });
     }
