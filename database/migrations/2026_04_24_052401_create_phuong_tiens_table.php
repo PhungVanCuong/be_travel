@@ -1,0 +1,31 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('phuong_tiens', function (Blueprint $table) {
+            $table->id();
+            $table->string('loai_phuong_tien'); // xe, máy bay,...
+            $table->string('so_hieu'); // biển số / mã chuyến bay
+            $table->text('mo_ta')->nullable();
+            $table->string('tinh_trang'); // available, maintenance,...
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('phuong_tiens');
+    }
+};
