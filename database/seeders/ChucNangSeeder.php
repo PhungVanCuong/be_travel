@@ -24,11 +24,10 @@ class ChucNangSeeder extends Seeder
                 'id' => 3,
                 'ten_chuc_nang' => 'Quản lý nhân viên',
                 'mo_ta' => 'Xem, tìm kiếm và cập nhật thông tin nhân viên',
-                
             ],
             [
                 'id' => 4,
-                'ten_chuc_nang' => 'Thống kê báo cáo',
+                'ten_chuc_nang' => 'Báo cáo thống kê',
                 'mo_ta' => 'Xem thống kê doanh thu, số lượng tour và lượng khách hàng',
             ],
             [
@@ -68,9 +67,29 @@ class ChucNangSeeder extends Seeder
             ],
             [
                 'id' => 12,
-                'ten_chuc_nang' => 'Xem thông tin tour',
+                'ten_chuc_nang' => 'Quản lý lịch trình tour',
                 'mo_ta' => 'Dành cho HDV: Xem chi tiết lịch trình và số lượng khách của tour',
-            ]
+            ],
+            [
+                'id' => 13,
+                'ten_chuc_nang' => 'Quản lý Phương tiện',
+                'mo_ta' => 'Quản lý các phương tiện vận chuyển như xe bus, tàu, máy bay trong hệ thống',
+            ],
+            [
+                'id' => 14,
+                'ten_chuc_nang' => 'Quản lý Hướng dẫn viên',
+                'mo_ta' => 'Quản lý thông tin và hoạt động của các Hướng dẫn viên trong hệ thống',
+            ],
+            [
+                'id' => 15,
+                'ten_chuc_nang' => 'Quản lý Slide',
+                'mo_ta' => 'Quản lý các hình ảnh, nội dung hiển thị trên trang chủ và các trang con của website',
+            ],
+            [
+                'id' => 16,
+                'ten_chuc_nang' => 'Quản lý hệ thống',
+                'mo_ta' => 'Quản lý các chức năng và cài đặt của hệ thống',
+            ],
         ];
 
         DB::table('chuc_nangs')->truncate();

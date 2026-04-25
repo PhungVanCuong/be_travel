@@ -27,7 +27,7 @@ Route::prefix('')->group(function () {
     Route::post('/admin/dang-nhap', [NhanVienController::class, 'dangNhap']);
     Route::get('/admin/check-token', [NhanVienController::class, 'checkToken']);
     Route::group(['prefix' => '/admin'], function () {
-        
+
         // api admin nhân viên
         Route::get('/nhan-vien/get-data', [NhanVienController::class, 'getData']);
         Route::post('/nhan-vien/add-data', [NhanVienController::class, 'addData']);
@@ -40,17 +40,37 @@ Route::prefix('')->group(function () {
         Route::post('/khach-hang/add-data', [KhachHangController::class, 'addData']);
         Route::post('/khach-hang/update', [KhachHangController::class, 'update']);
         Route::post('/khach-hang/destroy', [KhachHangController::class, 'destroy']);
+        Route::post('/khach-hang/change-status', [KhachHangController::class, 'changeStatus']);
 
         // api admin chức vụ
         Route::get('/chuc-vu/get-data', [ChucVuController::class, 'getData']);
         Route::post('/chuc-vu/add-data', [ChucVuController::class, 'addData']);
         Route::post('/chuc-vu/update', [ChucVuController::class, 'update']);
         Route::post('/chuc-vu/destroy', [ChucVuController::class, 'destroy']);
+        Route::post('/chuc-vu/change-status', [ChucVuController::class, 'changeStatus']);
+        Route::post('/chuc-vu/search', [ChucVuController::class, 'search']);
 
-        // api admin tour & vé
+        // api admin tour
         Route::get('/tour/get-data', [TourController::class, 'getData']);
-        Route::get('/ve/get-data', [VeController::class, 'getData']);
+        Route::post('/tour/add-data', [TourController::class, 'addData']);
+        Route::post('/tour/update', [TourController::class, 'update']);
+        Route::post('/tour/destroy', [TourController::class, 'destroy']);
+        Route::post('/tour/change-status', [TourController::class, 'changeStatus']);
 
+        // api admin vé
+        Route::get('/ve/get-data', [VeController::class, 'getData']);
+        // Route::post('ve/add-data', [VeController::class, 'addData']);
+        // Route::post('ve/update/{id}', [VeController::class, 'update']);
+        // Route::post('ve/delete', [VeController::class, 'destroy']);
+        // Route::post('ve/change-status', [VeController::class, 'changeStatus']);
+
+        // đổi mật khẩu nhân viên
+        Route::post('/doi-mat-khau', [NhanVienController::class, 'doiMatKhau']);
+        // profile nhân viên
+        Route::get('/profile/get-data', [NhanVienController::class, 'getProfile']);
+        Route::post('/profile/update', [NhanVienController::class, 'updateProfile']);
+        Route::post('/dang-xuat', [NhanVienController::class, 'dangXuat']);
+        Route::post('/dang-xuat-all', [NhanVienController::class, 'dangXuatAll']);
     });
 });
 
@@ -58,22 +78,30 @@ Route::prefix('')->group(function () {
 Route::prefix('')->group(function () {
     // api trang chủ & chi tiết tour
     Route::get('/client/trang-chu/get-data', [TrangChuController::class, 'getData']);
-    Route::post('/client/chi-tiet-tour/get-data', [ChiTietTourController::class, 'getData']);
 
     // api client dang ky và đăng nhập
-    Route::post('/client/dang-nhap', [KhachHangController::class, 'dangNhap']); // chưa làm
-    Route::post('/client/dang-ky', [KhachHangController::class, 'dangKy']); // chưa làm
-    Route::get('/client/check-token', [KhachHangController::class, 'checkToken']); // chưa làm
+    Route::post('/client/dang-nhap', [KhachHangController::class, 'dangNhap']);
+    Route::post('/client/dang-ky', [KhachHangController::class, 'dangKy']);
+    Route::get('/client/check-token', [KhachHangController::class, 'checkToken']);
 
     // api quên mật khẩu
-    Route::post('/client/quen-mat-khau', [KhachHangController::class, 'quenMK']); // chưa làm
-    Route::post('/client/lay-lai-mat-khau', [KhachHangController::class, 'layLaiMK']); // chưa làm
+    Route::post('/client/quen-mat-khau', [KhachHangController::class, 'quenMK']);
+    Route::post('/client/lay-lai-mat-khau', [KhachHangController::class, 'layLaiMK']);
 });
 
 // CLIENT ROUTES (Protected - Cần đăng nhập)
 Route::prefix('')->group(function () {
     Route::group(['prefix' => '/client'], function () {
-        // Route::get('profile/get-data', [KhachHangController::class, 'getProfile']);
-        // Route::post('profile/update', [KhachHangController::class, 'updateProfile']);
+        // profile khach hang
+        Route::get('/profile/get-data', [KhachHangController::class, 'getProfile']);
+        Route::post('/profile/update', [KhachHangController::class, 'updateProfile']);
+        // đổi mật khẩu khách hàng
+        Route::post('/doi-mat-khau', [KhachHangController::class, 'doiMatKhau']);
+        Route::post('/dang-xuat', [KhachHangController::class, 'dangXuat']);
+        Route::post('/dang-xuat-all', [KhachHangController::class, 'dangXuatAll']);
+
+        // api chi tiết tour
+        Route::get('/tour/get-data', [TourController::class, 'getData']);
+        Route::post('/chi-tiet-tour/get-data', [ChiTietTourController::class, 'getData']);
     });
 });

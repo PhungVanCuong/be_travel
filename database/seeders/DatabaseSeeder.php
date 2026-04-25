@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             SlideSeeder::class,
+            BaiVietSeeder::class, // Cần có bảng bài viết
             ChucVuSeeder::class,
             ChucNangSeeder::class,
             PhanQuyenSeeder::class, // Cần có Chức vụ và Chức năng trước
