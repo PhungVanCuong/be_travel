@@ -11,7 +11,6 @@ class TrangChuController extends Controller
     {
         $dataTour = Tour::where('tinh_trang', 1)->get();
         $dataSlide = Slide::where('tinh_trang', 1)->get();
-        
         return response()->json([
             'status' => true,
             'message' => 'Lấy dữ liệu trang chủ thành công',

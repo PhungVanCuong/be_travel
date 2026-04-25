@@ -59,4 +59,21 @@ class KhachHangController extends Controller
             'message' => 'Xóa khách hàng thành công'
         ]);
     }
+    public function dangNhap(Request $request)
+    {
+        $check = KhachHang::where('email', $request->email)
+            ->where('password', $request->password)->first();
+        if ($check) {
+            return response()->json([
+                'status' => true,
+                'message' => 'Đăng nhập thành công',
+                'token' => $check->createToken('key_client')->plainTextToken,
+            ]);
+        } else {
+            return response()->json([
+                'status' => false,
+                'message' => 'Tài khoản sai email hoặc password',
+            ]);
+        }
+    }
 }

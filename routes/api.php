@@ -24,8 +24,10 @@ Route::prefix('')->group(function () {
 // ADMIN ROUTES (Cần xác thực Admin)
 Route::prefix('')->group(function () {
     // CHECK TOKEN ADMIN
+    Route::post('/admin/dang-nhap', [NhanVienController::class, 'dangNhap']);
+    Route::get('/admin/check-token', [NhanVienController::class, 'checkToken']);
     Route::group(['prefix' => '/admin'], function () {
-
+        
         // api admin nhân viên
         Route::get('/nhan-vien/get-data', [NhanVienController::class, 'getData']);
         Route::post('/nhan-vien/add-data', [NhanVienController::class, 'addData']);

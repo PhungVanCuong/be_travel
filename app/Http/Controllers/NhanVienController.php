@@ -74,6 +74,40 @@ class NhanVienController extends Controller
             'message' => 'Xóa nhân viên thành công'
         ]);
     }
+    public function dangNhap(Request $request)
+    {
+        $check = NhanVien::where('email', $request->email)
+            ->where('password', $request->password)->first();
+        if ($check) {
+            return response()->json([
+                'status' => true,
+                'message' => 'Đăng nhập thành công',
+                'token' => $check->createToken('key_client')->plainTextToken,
+            ]);
+        } else {
+            return response()->json([
+                'status' => false,
+                'message' => 'Tài khoản sai email hoặc password',
+            ]);
+        }
+    }
+    public function checkToken(Request $request)
+    {
+        $user = Auth::guard('sanctum')->user();
+        if ($user) {
+            return response()->json([
+                'status' => true,
+                'ho_ten' => $user->ho_va_ten,
+                'email'  => $user->email,
+                'avatar'  => $user->avatar,
+            ]);
+        } else {
+            return response()->json([
+                'status' => false,
+                'message' => 'Bạn không có quyền truy cập.',
+            ]);
+        }
+    }
 
 
 }
