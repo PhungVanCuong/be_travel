@@ -17,8 +17,8 @@ Route::get('/user', function (Request $request) {
 // ĐĂNG NHẬP ADMIN
 Route::prefix('')->group(function () {
     // api admin đăng nhập
-    Route::post('/admin/dang-nhap', [NhanVienController::class, 'dangNhap']); // chưa làm
-    Route::get('/admin/check-token', [NhanVienController::class, 'checkToken']); // chưa làm
+    Route::post('/admin/dang-nhap', [NhanVienController::class, 'dangNhap']);
+    Route::get('/admin/check-token', [NhanVienController::class, 'checkToken']);
 });
 
 // ADMIN ROUTES (Cần xác thực Admin)
@@ -33,6 +33,7 @@ Route::prefix('')->group(function () {
         Route::post('/nhan-vien/add-data', [NhanVienController::class, 'addData']);
         Route::post('/nhan-vien/update', [NhanVienController::class, 'update']);
         Route::post('/nhan-vien/destroy', [NhanVienController::class, 'destroy']);
+        Route::post('/nhan-vien/change-status', [NhanVienController::class, 'changeStatus']);
 
         // api admin khách hàng
         Route::get('/khach-hang/get-data', [KhachHangController::class, 'getData']);

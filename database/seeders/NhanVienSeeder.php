@@ -14,7 +14,7 @@ class NhanVienSeeder extends Seeder
             [
                 'email' => 'admin123@gmail.com',
                 'ho_va_ten' => 'Giám Đốc Admin',
-                'password' => '123456', // Nên mã hóa password để login được
+                'password' => '123456',
                 'so_dien_thoai' => '0901234567',
                 'dia_chi' => '123 Nguyễn Văn Linh, Hải Châu, TP. Đà Nẵng',
                 'ngay_sinh' => '1985-01-15',

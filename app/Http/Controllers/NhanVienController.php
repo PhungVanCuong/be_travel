@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 use App\Models\NhanVien;
+use App\Models\PhanQuyen;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class NhanVienController extends Controller
 {
@@ -74,6 +77,7 @@ class NhanVienController extends Controller
             'message' => 'Xóa nhân viên thành công'
         ]);
     }
+
     public function dangNhap(Request $request)
     {
         $check = NhanVien::where('email', $request->email)
@@ -91,6 +95,7 @@ class NhanVienController extends Controller
             ]);
         }
     }
+
     public function checkToken(Request $request)
     {
         $user = Auth::guard('sanctum')->user();
@@ -109,5 +114,24 @@ class NhanVienController extends Controller
         }
     }
 
+    public function changeStatus(Request $request)
+    {
+        $user = Auth::guard('sanctum')->user();
+        // Nếu là master admin thì bỏ qua kiểm tra quyền
+        if ($user->is_master != 1) {
+            $id_chuc_nang = 3;
+            $id_chuc_vu   = $user->id_chuc_vu;
+            $check        = PhanQuyen::where('id_chuc_vu', $id_chuc_vu)->where('id_chuc_nang', $id_chuc_nang)->first();
+            if (!$check) {
+                return response()->json([
+                    'status'    =>  0,
+                    'message'   =>  'Bạn không có quyền thực hiện chức năng này!'
+                ]);
+            }
+        }
+
+        NhanVien::where('id', $request->id)->update(['tinh_trang' => $request->tinh_trang]);
+        return response()->json(['status' => true, 'message' => 'Thay đổi trạng thái nhân viên thành công']);
+    }
 
 }
