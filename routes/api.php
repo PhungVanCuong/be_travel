@@ -9,7 +9,8 @@ use App\Http\Controllers\TourController;
 use App\Http\Controllers\TrangChuController;
 use App\Http\Controllers\ChiTietTourController;
 use App\Http\Controllers\VeController;
-
+use App\Http\Controllers\PhanQuyenController;
+use App\Http\Controllers\DanhGiaController;
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
@@ -71,6 +72,14 @@ Route::prefix('')->group(function () {
         Route::post('/profile/update', [NhanVienController::class, 'updateProfile']);
         Route::post('/dang-xuat', [NhanVienController::class, 'dangXuat']);
         Route::post('/dang-xuat-all', [NhanVienController::class, 'dangXuatAll']);
+        //Phân quyền
+        Route::post('phan-quyen/chi-tiet-phan-quyen/add-data', [PhanQuyenController::class, 'addData']);
+        Route::post('phan-quyen/chi-tiet-phan-quyen/delete', [PhanQuyenController::class, 'destroy']);
+        Route::post('phan-quyen/chi-tiet-phan-quyen/data', [PhanQuyenController::class, 'getChiTietPhanQuyen']);
+        // Đánh giá
+        Route::get('/danh-gia/get-data', [DanhGiaController::class, 'getDataAdmin']);
+        Route::post('/danh-gia/doi-tinh-trang', [DanhGiaController::class, 'doiTrangThai']);
+        Route::post('/danh-gia/delete', [DanhGiaController::class, 'xoaDanhGia']);
     });
 });
 
@@ -103,5 +112,8 @@ Route::prefix('')->group(function () {
         // api chi tiết tour
         Route::get('/tour/get-data', [TourController::class, 'getData']);
         Route::post('/chi-tiet-tour/get-data', [ChiTietTourController::class, 'getData']);
+        //api đánh giá
+        Route::post('/danh-gia/gui-danh-gia', [DanhGiaController::class, 'guiDanhGia']);
+        Route::get('/danh-gia/get-danh-gia/{id}', [DanhGiaController::class, 'getDataClientBinhLuan']);
     });
 });
