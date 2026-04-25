@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('slides', function (Blueprint $table) {
             $table->id();
-            $table->string('tieu_de');
-            $table->string('hinh_anh');
-            $table->integer('tinh_trang');
+            $table->string('tieu_de')->nullable();
+            $table->string('hinh_anh')->nullable();
+            $table->integer('tinh_trang')->default(1)->nullable(); // 1: Hiển thị, 0: Ẩn
             $table->timestamps();
         });
     }

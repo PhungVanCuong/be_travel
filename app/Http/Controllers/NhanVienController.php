@@ -27,6 +27,7 @@ class NhanVienController extends Controller
             'data'    => $data,
         ]);
     }
+
     public function addData(Request $request)
     {
         NhanVien::create([
@@ -44,7 +45,8 @@ class NhanVienController extends Controller
             'message' => 'Thêm nhân viên thành công'
         ]);
     }
-     public function update(Request $request)
+
+    public function update(Request $request)
     {
 
         NhanVien::where('id', $request->id)->update([
@@ -63,6 +65,7 @@ class NhanVienController extends Controller
             'message'   => 'Cập nhật nhân viên ' . $request->ho_va_ten . ' thành công',
         ]);
     }
+
     public function destroy(Request $request)
     {
         NhanVien::where('id', $request->id)->delete();
@@ -71,5 +74,6 @@ class NhanVienController extends Controller
             'message' => 'Xóa nhân viên thành công'
         ]);
     }
-    
+
+
 }
