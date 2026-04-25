@@ -17,8 +17,9 @@ class ChiTietTourController extends Controller
             $tong_danh_gia = DanhGia::where('id_tour', $request->id)->where('tinh_trang', 1)->count();
             $data->tong_danh_gia = $tong_danh_gia;
             $lich_trinh = LichTrinh::join('phuong_tiens', 'lich_trinhs.id_phuong_tien', '=', 'phuong_tiens.id')
+            ->join('diem_dens', 'lich_trinhs.id_diem_den', '=', 'diem_dens.id')
             ->where('lich_trinhs.id_tour', $request->id)
-            ->select('lich_trinhs.tieu_de_hoat_dong', 'phuong_tiens.loai_phuong_tien')
+            ->select('lich_trinhs.tieu_de_hoat_dong', 'phuong_tiens.loai_phuong_tien', 'diem_dens.ten_diem_den', 'diem_dens.mo_ta','diem_dens.thanh_pho', 'diem_dens.hinh_anh')
             ->get();
             $data->lich_trinh = $lich_trinh;
 

@@ -46,4 +46,104 @@ class VeController extends Controller
             'data'    => $data
         ]);
     }
+    public function addData(Request $request)
+    {
+        $user = Auth::guard('sanctum')->user();
+        // Nếu là master admin thì bỏ qua kiểm tra quyền
+        if ($user->is_master != 1) {
+            $id_chuc_nang = 8;
+            $id_chuc_vu   = $user->id_chuc_vu;
+            $check        = PhanQuyen::where('id_chuc_vu', $id_chuc_vu)->where('id_chuc_nang', $id_chuc_nang)->first();
+            if (!$check) {
+                return response()->json([
+                    'status'    =>  0,
+                    'message'   =>  'Bạn không có quyền thực hiện chức năng này!'
+                ]);
+            }
+        }
+
+        Ve::create([
+            'ma_ve'             => $request->ma_ve,
+            'gia_ve'            => $request->gia_ve,
+            'id_khach_hang'     => $request->id_khach_hang,
+            'id_hoa_don'        => $request->id_hoa_don,
+            'tinh_trang'        => $request->tinh_trang,
+            'created_at'       => Carbon::now(),
+        ]);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Thêm vé thành công',
+        ]);
+    }
+    public function update(Request $request, $id)
+    {
+        $user = Auth::guard('sanctum')->user();
+        // Nếu là master admin thì bỏ qua kiểm tra quyền
+        if ($user->is_master != 1) {
+            $id_chuc_nang = 8;
+            $id_chuc_vu   = $user->id_chuc_vu;
+            $check        = PhanQuyen::where('id_chuc_vu', $id_chuc_vu)->where('id_chuc_nang', $id_chuc_nang)->first();
+            if (!$check) {
+                return response()->json([
+                    'status'    =>  0,
+                    'message'   =>  'Bạn không có quyền thực hiện chức năng này!'
+                ]);
+            }
+        }
+
+        Ve::where('id', $id)->update([
+            'ma_ve'             => $request->ma_ve,
+            'gia_ve'            => $request->gia_ve,
+            'id_khach_hang'     => $request->id_khach_hang,
+            'tinh_trang'        => $request->tinh_trang
+        ]);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Cập nhật vé thành công',
+        ]);
+    }
+    public function destroy(Request $request)
+    {
+        $user = Auth::guard('sanctum')->user();
+        // Nếu là master admin thì bỏ qua kiểm tra quyền
+        if ($user->is_master != 1) {
+            $id_chuc_nang = 8;
+            $id_chuc_vu   = $user->id_chuc_vu;
+            $check        = PhanQuyen::where('id_chuc_vu', $id_chuc_vu)->where('id_chuc_nang', $id_chuc_nang)->first();
+            if (!$check) {
+                return response()->json([
+                    'status'    =>  0,
+                    'message'   =>  'Bạn không có quyền thực hiện chức năng này!'
+                ]);
+            }
+        }
+
+        Ve::where('id', $request->id)->delete();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Xóa vé thành công',
+        ]);
+    }
+    public function changeStatus(Request $request)
+    {
+        $user = Auth::guard('sanctum')->user();
+        // Nếu là master admin thì bỏ qua kiểm tra quyền
+        if ($user->is_master != 1) {
+            $id_chuc_nang = 8;
+            $id_chuc_vu   = $user->id_chuc_vu;
+            $check        = PhanQuyen::where('id_chuc_vu', $id_chuc_vu)->where('id_chuc_nang', $id_chuc_nang)->first();
+            if (!$check) {
+                return response()->json([
+                    'status'    =>  0,
+                    'message'   =>  'Bạn không có quyền thực hiện chức năng này!'
+                ]);
+            }
+        }
+
+        Ve::where('id', $request->id)->update(['tinh_trang' => $request->tinh_trang]);
+        return response()->json(['status' => true, 'message' => 'Thay đổi trạng thái vé thành công']);
+    }
 }
