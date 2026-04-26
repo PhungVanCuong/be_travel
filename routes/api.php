@@ -11,8 +11,12 @@ use App\Http\Controllers\ChiTietTourController;
 use App\Http\Controllers\VeController;
 use App\Http\Controllers\PhanQuyenController;
 use App\Http\Controllers\DanhGiaController;
+Use App\Http\Controllers\SlideController;
 use App\Http\Controllers\VNPayController;
-
+use App\Http\Controllers\ThongKeController;
+Use App\Http\Controllers\HoaDonController;
+Use App\Http\Controllers\ChucNangController;
+use App\Http\Controllers\BaiVietController;
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
@@ -82,6 +86,29 @@ Route::prefix('')->group(function () {
         Route::get('/danh-gia/get-data', [DanhGiaController::class, 'getDataAdmin']);
         Route::post('/danh-gia/doi-tinh-trang', [DanhGiaController::class, 'doiTrangThai']);
         Route::post('/danh-gia/delete', [DanhGiaController::class, 'xoaDanhGia']);
+        //slide
+        Route::get('/slide/get-data', [SlideController::class, 'getData']);
+        Route::post('/slide/add-data', [SlideController::class, 'addData']);
+        Route::post('/slide/update', [SlideController::class, 'update']);
+        Route::post('/slide/delete', [SlideController::class, 'destroy']);
+        //Hóa đơn
+        Route::get('/hoa-don/get-data', [HoaDonController::class, 'getData']);
+        Route::post('/hoa-don/add-data', [HoaDonController::class, 'addData']);
+        Route::post('/hoa-don/update', [HoaDonController::class, 'update']);
+        Route::post('/hoa-don/delete', [HoaDonController::class, 'destroy']);
+        //Bài viết
+        Route::get('bai-viet/get-data', [BaiVietController::class, 'getData']);
+        Route::post('bai-viet/add-data', [BaiVietController::class, 'addData']);
+        Route::post('bai-viet/update', [BaiVietController::class, 'update']);
+        Route::post('bai-viet/delete', [BaiVietController::class, 'destroy']);
+        // chức năng
+        Route::get('chuc-nang/get-data', [ChucNangController::class, 'getData']);
+        // Thống kê
+        Route::post('/thong-ke/khach-hang-moi', [ThongKeController::class, 'thongKeKHMoi']);
+        Route::post('/thong-ke/doanh-thu', [ThongKeController::class, 'thongKeDoanhThu']);
+        Route::post('/thong-ke/ve-ban-ra', [ThongKeController::class, 'ThongKeVeBanRa']);
+        Route::post('/thong-ke/chi-tieu-khach-hang', [ThongKeController::class, 'thongKeChiTieuKhachHang']);
+        Route::post('/thong-ke/tour', [ThongKeController::class, 'thongKeTour']);
     });
 });
 
