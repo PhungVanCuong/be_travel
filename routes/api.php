@@ -11,6 +11,8 @@ use App\Http\Controllers\ChiTietTourController;
 use App\Http\Controllers\VeController;
 use App\Http\Controllers\PhanQuyenController;
 use App\Http\Controllers\DanhGiaController;
+use App\Http\Controllers\VNPayController;
+
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
@@ -96,6 +98,15 @@ Route::prefix('')->group(function () {
     // api quên mật khẩu
     Route::post('/client/quen-mat-khau', [KhachHangController::class, 'quenMK']);
     Route::post('/client/lay-lai-mat-khau', [KhachHangController::class, 'layLaiMK']);
+
+    // API Check chữ ký khi VNPay trả khách về Frontend (Return)
+    Route::get('/vnpay/check-return', [VNPayController::class, 'vnpayReturn']);
+
+
+    // API Check chữ ký khi VNPay trả khách về Frontend (Return)
+    Route::get('/vnpay/check-return', [VNPayController::class, 'vnpayReturn']);
+    // API Webhook (IPN) để VNPay gọi ngầm
+    Route::get('/vnpay/ipn', [VNPayController::class, 'vnpayIpn']);
 });
 
 // CLIENT ROUTES (Protected - Cần đăng nhập)
@@ -112,10 +123,17 @@ Route::prefix('')->group(function () {
         // api chi tiết tour
         Route::get('/tour/get-data', [TourController::class, 'getData']);
         Route::post('/chi-tiet-tour/get-data', [ChiTietTourController::class, 'getData']);
+
         //api đánh giá
         Route::post('/danh-gia/gui-danh-gia', [DanhGiaController::class, 'guiDanhGia']);
         Route::get('/danh-gia/get-danh-gia/{id}', [DanhGiaController::class, 'getDataClientBinhLuan']);
+
         // api đặt tour
         Route::post('/dat-tour/thanh-toan', [VeController::class, 'datTour']);
+
+        // API Vue.js gọi lên để lấy link chuyển hướng (Nên yêu cầu đăng nhập)
+        Route::post('/vnpay/tao-thanh-toan', [VNPayController::class, 'createPayment']);
     });
 });
+
+
