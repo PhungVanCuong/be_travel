@@ -26,9 +26,9 @@ return new class extends Migration
             $table->integer('so_luong_nguoi');
             $table->integer('tong_tien');
             $table->string('phuong_thuc_thanh_toan'); // vnpay, cash
-            $table->string('trang_thai'); // đang chờ xử lý, đã thanh toán, hủy
+            $table->string('trang_thai')->default(1); // 1  chưa thanh toán, 2 đã thanh toán 0 đã hủy
             $table->text('ghi_chu_danh_sach_nguoi_di')->nullable();
-            $table->dateTime('ngay_tao');   
+            $table->dateTime('ngay_tao');
             $table->timestamps();
         });
     }

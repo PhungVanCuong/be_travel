@@ -136,7 +136,7 @@ class TourSeeder extends Seeder
         ];
 
         DB::table('tours')->truncate();
-        DB::table('tours')->delete(); 
+        DB::table('tours')->delete();
         DB::table('tours')->insert($tours);
     }
 }
