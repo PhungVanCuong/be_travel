@@ -23,4 +23,8 @@ class Tour extends Model
         'hinh_anh',
         'id_quoc_gia',
     ];
+    public function danhgias()
+    {
+        return $this->hasMany(DanhGia::class, 'id_tour', 'id')->where('tinh_trang', 1);
+    }
 }

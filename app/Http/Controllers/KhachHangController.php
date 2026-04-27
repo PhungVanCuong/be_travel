@@ -144,23 +144,33 @@ class KhachHangController extends Controller
     }
 
     public function dangNhap(Request $request)
-    {
-        $check = KhachHang::where('email', $request->email)
-            ->where('password', $request->password)->first();
-        if ($check) {
+{
+    $check = KhachHang::where('email', $request->email)
+        ->where('password', $request->password)
+        ->first();
+
+    if ($check) {
+        // Kiểm tra tài khoản đã kích hoạt chưa
+        if ($check->is_active == 0) {
             return response()->json([
-                'status' => true,
-                'message' => 'Đăng nhập thành công',
-                'token' => $check->createToken('key_client')->plainTextToken,
-            ]);
-        } else {
-            return response()->json([
-                'status' => false,
-                'message' => 'Tài khoản sai email hoặc password',
+                'status'  => false,
+                'message' => 'Tài khoản của bạn chưa được kích hoạt!',
             ]);
         }
-    }
 
+        // Nếu đã active thì mới tạo token và cho đăng nhập
+        return response()->json([
+            'status'  => true,
+            'message' => 'Đăng nhập thành công',
+            'token'   => $check->createToken('key_client')->plainTextToken,
+        ]);
+    } else {
+        return response()->json([
+            'status'  => false,
+            'message' => 'Tài khoản sai email hoặc password',
+        ]);
+    }
+}
     public function doiMatKhau(Request $request)
     {
         $user = Auth::guard('sanctum')->user();
@@ -200,13 +210,12 @@ class KhachHangController extends Controller
             'cccd'          => $request->cccd,
             'ngay_sinh'     => $request->ngay_sinh,
             'is_block'      => 0,
+            'is_active'     => 0,
         ]);
         $x['ho_va_ten']     = $request->ho_va_ten;
         $x['email']         = $request->email;
         $x['ma_kich_hoat'] = rand(100000, 999999);
-
-        //jobGuiMail::dispatch($request->email, 'Mail đăng ký tài khoản khách hàng', $x, 'mail');
-
+        jobGuiMail::dispatch($request->email, 'Mail đăng ký tài khoản khách hàng', $x, 'mail');
         return response()->json([
             'status' => true,
             'message' => 'Đăng ký thành công',
