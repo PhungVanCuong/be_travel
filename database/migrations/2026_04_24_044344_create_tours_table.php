@@ -22,7 +22,8 @@ return new class extends Migration
             $table->string('diem_don')->nullable();
             $table->string('diem_tra')->nullable();
             $table->integer('tinh_trang')->default(1)->comment('0: chưa kích hoạt, 1: đã kích hoạt');
-
+            $table->string('hinh_anh')->nullable(); // Thêm cột hinh_anh
+            $table->integer('id_quoc_gia')->nullable(); // Thêm cột id_quoc_gia
             $table->timestamps();
         });
     }

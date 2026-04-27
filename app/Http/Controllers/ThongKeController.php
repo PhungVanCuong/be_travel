@@ -14,7 +14,7 @@ class ThongKeController extends Controller
 {
     public function thongKeKHMoi(Request $request)
     {
-        $id_chuc_nang = 1;
+        $id_chuc_nang = 4;
         $id_chuc_vu   = Auth::guard('sanctum')->user()->id_chuc_vu;
         $check        = PhanQuyen::where('id_chuc_vu', $id_chuc_vu)->where('id_chuc_nang', $id_chuc_nang)->first();
         if (!$check) {
@@ -46,7 +46,7 @@ class ThongKeController extends Controller
     }
     Public function thongKeDoanhThu(Request $request)
     {
-        $id_chuc_nang = 1;
+        $id_chuc_nang = 4;
         $id_chuc_vu   = Auth::guard('sanctum')->user()->id_chuc_vu;
         $check        = PhanQuyen::where('id_chuc_vu', $id_chuc_vu)->where('id_chuc_nang', $id_chuc_nang)->first();
         if (!$check) {
@@ -86,7 +86,7 @@ class ThongKeController extends Controller
     }
     public function ThongKeVeBanRa(Request $request)
     {
-        $id_chuc_nang = 1;
+        $id_chuc_nang = 4;
         $id_chuc_vu   = Auth::guard('sanctum')->user()->id_chuc_vu;
         $check        = PhanQuyen::where('id_chuc_vu', $id_chuc_vu)->where('id_chuc_nang', $id_chuc_nang)->first();
         if (!$check) {
@@ -132,7 +132,7 @@ class ThongKeController extends Controller
     }
     public function thongKeChiTieuKhachHang(Request $request)
     {
-        $id_chuc_nang = 1;
+        $id_chuc_nang = 4;
         $id_chuc_vu   = Auth::guard('sanctum')->user()->id_chuc_vu;
         $check        = PhanQuyen::where('id_chuc_vu', $id_chuc_vu)->where('id_chuc_nang', $id_chuc_nang)->first();
         if (!$check) {
@@ -174,7 +174,7 @@ class ThongKeController extends Controller
     }
     public function thongKeTour(Request $request)
 {
-    $id_chuc_nang = 1;
+    $id_chuc_nang = 4;
     $id_chuc_vu   = Auth::guard('sanctum')->user()->id_chuc_vu;
     $check        = PhanQuyen::where('id_chuc_vu', $id_chuc_vu)->where('id_chuc_nang', $id_chuc_nang)->first();
 

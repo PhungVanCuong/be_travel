@@ -147,108 +147,109 @@ class VeController extends Controller
         Ve::where('id', $request->id)->update(['tinh_trang' => $request->tinh_trang]);
         return response()->json(['status' => true, 'message' => 'Thay đổi trạng thái vé thành công']);
     }
+
     public function datTour(Request $request)
-{
-    // 1. Kiểm tra xác thực khách hàng
-    $user = Auth::guard('sanctum')->user();
-    if (!$user || !($user instanceof KhachHang)) {
-        return response()->json([
-            'status'    => false,
-            'message'   => 'Bạn chưa đăng nhập'
-        ], 401);
-    }
-
-    // 2. Lấy thông tin và Validate
-    $id_tour = $request->id_tour;
-    $so_luong_nguoi = (int)$request->so_luong_nguoi;
-
-    if ($so_luong_nguoi <= 0) {
-        return response()->json(['status' => false, 'message' => 'Số lượng người không hợp lệ']);
-    }
-
-    $ghi_chu_danh_sach = $request->ghi_chu_danh_sach_nguoi_di ?? '';
-    $phuong_thuc_thanh_toan = $request->phuong_thuc_thanh_toan ?? 'Chuyển khoản';
-
-    // 3. BẮT ĐẦU TRANSACTION
-    // Đưa việc tìm Tour vào trong Transaction và dùng lockForUpdate() để chống lỗi khi có 2 người cùng đặt 1 lúc (chống vượt quá số lượng)
-    DB::beginTransaction();
-    try {
-        $tour = Tour::where('id', $id_tour)
-                    ->where('tinh_trang', 1)
-                    ->lockForUpdate() // Khóa dòng dữ liệu này lại cho đến khi Transaction kết thúc
-                    ->first();
-
-        if (!$tour) {
-            DB::rollBack();
-            return response()->json(['status' => false, 'message' => "Tour không tồn tại hoặc đã đóng!"]);
+    {
+        // 1. Kiểm tra xác thực khách hàng
+        $user = Auth::guard('sanctum')->user();
+        if (!$user || !($user instanceof KhachHang)) {
+            return response()->json([
+                'status'    => false,
+                'message'   => 'Bạn chưa đăng nhập'
+            ], 401);
         }
 
-        // Kiểm tra số chỗ còn trống (Bây giờ so_nguoi_toi_da chính là số chỗ còn trống)
-        if ($so_luong_nguoi > $tour->so_nguoi_toi_da) {
+        // 2. Lấy thông tin và Validate
+        $id_tour = $request->id_tour;
+        $so_luong_nguoi = (int)$request->so_luong_nguoi;
+
+        if ($so_luong_nguoi <= 0) {
+            return response()->json(['status' => false, 'message' => 'Số lượng người không hợp lệ']);
+        }
+
+        $ghi_chu_danh_sach = $request->ghi_chu_danh_sach_nguoi_di ?? '';
+        $phuong_thuc_thanh_toan = $request->phuong_thuc_thanh_toan ?? 'Chuyển khoản';
+
+        // 3. BẮT ĐẦU TRANSACTION
+        // Đưa việc tìm Tour vào trong Transaction và dùng lockForUpdate() để chống lỗi khi có 2 người cùng đặt 1 lúc (chống vượt quá số lượng)
+        DB::beginTransaction();
+        try {
+            $tour = Tour::where('id', $id_tour)
+                        ->where('tinh_trang', 1)
+                        ->lockForUpdate() // Khóa dòng dữ liệu này lại cho đến khi Transaction kết thúc
+                        ->first();
+
+            if (!$tour) {
+                DB::rollBack();
+                return response()->json(['status' => false, 'message' => "Tour không tồn tại hoặc đã đóng!"]);
+            }
+
+            // Kiểm tra số chỗ còn trống (Bây giờ so_nguoi_toi_da chính là số chỗ còn trống)
+            if ($so_luong_nguoi > $tour->so_nguoi_toi_da) {
+                DB::rollBack();
+                return response()->json([
+                    'status'  => false,
+                    'message' => "Tour chỉ còn trống " . $tour->so_nguoi_toi_da . " chỗ!"
+                ]);
+            }
+
+            // 4. Tính tiền
+            $tong_tien = $tour->gia * $so_luong_nguoi;
+
+            // 5. Tạo Hóa Đơn
+            $hoa_don = HoaDon::create([
+                'id_khach_hang'              => $user->id,
+                'id_tour'                    => $tour->id,
+                'so_luong_nguoi'             => $so_luong_nguoi,
+                'tong_tien'                  => $tong_tien,
+                'phuong_thuc_thanh_toan'     => $phuong_thuc_thanh_toan,
+                'trang_thai'                 => '0', // 0: Chờ thanh toán
+                'ghi_chu_danh_sach_nguoi_di' => $ghi_chu_danh_sach,
+                'ngay_tao'                   => Carbon::now(),
+            ]);
+
+            // 6. Tạo Vé cho từng người
+            $ds_ve_tao_moi = [];
+            for ($i = 0; $i < $so_luong_nguoi; $i++) {
+                $ve = Ve::create([
+                    'ma_ve'         => 'VE-' . strtoupper(Str::random(8)),
+                    'gia_ve'        => $tour->gia,
+                    'id_khach_hang' => $user->id,
+                    'id_hoa_don'    => $hoa_don->id,
+                    'tinh_trang'    => '2',
+                    'is_check_in'   => 0,
+                ]);
+                $ds_ve_tao_moi[] = $ve;
+            }
+
+            // 7. TRỪ TRỰC TIẾP SỐ CHỖ
+            $tour->decrement('so_nguoi_toi_da', $so_luong_nguoi);
+
+            // Lưu mọi thay đổi vào database
+            DB::commit();
+
+            // 8. Tạo QR Code
+            $ma_giao_dich = 'HDTOUR' . $hoa_don->id;
+            $link_qr_code = "https://img.vietqr.io/image/MBBank-1910061030119-compact.png?amount={$tong_tien}&addInfo={$ma_giao_dich}";
+
+            return response()->json([
+                'status'  => true,
+                'message' => "Đã đặt tour thành công!",
+                'data'    => [
+                    'hoa_don'      => $hoa_don,
+                    'danh_sach_ve' => $ds_ve_tao_moi,
+                    'link_qr_code' => $link_qr_code
+                ]
+            ]);
+
+        } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
                 'status'  => false,
-                'message' => "Tour chỉ còn trống " . $tour->so_nguoi_toi_da . " chỗ!"
+                'message' => "Có lỗi xảy ra: " . $e->getMessage()
             ]);
         }
-
-        // 4. Tính tiền
-        $tong_tien = $tour->gia * $so_luong_nguoi;
-
-        // 5. Tạo Hóa Đơn
-        $hoa_don = HoaDon::create([
-            'id_khach_hang'              => $user->id,
-            'id_tour'                    => $tour->id,
-            'so_luong_nguoi'             => $so_luong_nguoi,
-            'tong_tien'                  => $tong_tien,
-            'phuong_thuc_thanh_toan'     => $phuong_thuc_thanh_toan,
-            'trang_thai'                 => '0', // 0: Chờ thanh toán
-            'ghi_chu_danh_sach_nguoi_di' => $ghi_chu_danh_sach,
-            'ngay_tao'                   => Carbon::now(),
-        ]);
-
-        // 6. Tạo Vé cho từng người
-        $ds_ve_tao_moi = [];
-        for ($i = 0; $i < $so_luong_nguoi; $i++) {
-            $ve = Ve::create([
-                'ma_ve'         => 'VE-' . strtoupper(Str::random(8)),
-                'gia_ve'        => $tour->gia,
-                'id_khach_hang' => $user->id,
-                'id_hoa_don'    => $hoa_don->id,
-                'tinh_trang'    => '2',
-                'is_check_in'   => 0,
-            ]);
-            $ds_ve_tao_moi[] = $ve;
-        }
-
-        // 7. TRỪ TRỰC TIẾP SỐ CHỖ
-        $tour->decrement('so_nguoi_toi_da', $so_luong_nguoi);
-
-        // Lưu mọi thay đổi vào database
-        DB::commit();
-
-        // 8. Tạo QR Code
-        $ma_giao_dich = 'HDTOUR' . $hoa_don->id;
-        $link_qr_code = "https://img.vietqr.io/image/MBBank-1910061030119-compact.png?amount={$tong_tien}&addInfo={$ma_giao_dich}";
-
-        return response()->json([
-            'status'  => true,
-            'message' => "Đã đặt tour thành công!",
-            'data'    => [
-                'hoa_don'      => $hoa_don,
-                'danh_sach_ve' => $ds_ve_tao_moi,
-                'link_qr_code' => $link_qr_code
-            ]
-        ]);
-
-    } catch (\Exception $e) {
-        DB::rollBack();
-        return response()->json([
-            'status'  => false,
-            'message' => "Có lỗi xảy ra: " . $e->getMessage()
-        ]);
     }
-}
 
     public function getAllTours()
     {

@@ -23,6 +23,8 @@ class TourSeeder extends Seeder
                 'diem_don' => 'Trung tâm TP. Đà Nẵng',
                 'diem_tra' => 'Trung tâm TP. Đà Nẵng',
                 'tinh_trang' => 1,
+                'hinh_anh' => 'https://danang24.vn/Images/TV/18.jpg',
+                'id_quoc_gia' => 1, // ID tương ứng với Việt Nam
                 'created_at' => $now, 'updated_at' => $now,
             ],
             [
@@ -35,6 +37,8 @@ class TourSeeder extends Seeder
                 'diem_don' => 'Cảng tàu khách quốc tế Hạ Long',
                 'diem_tra' => 'Cảng tàu khách quốc tế Hạ Long',
                 'tinh_trang' => 1,
+                'hinh_anh' => 'https://ik.imagekit.io/tvlk/xpe-asset/AyJ40ZAo1DOyPyKLZ9c3RGQHTP2oT4ZXW+QmPVVkFQiXFSv42UaHGzSmaSzQ8DO5QIbWPZuF+VkYVRk6gh-Vg4ECbfuQRQ4pHjWJ5Rmbtkk=/5596295958911/Ha-Long-Bay-Day-Cruise-6-Star-All-In-with-Buffet-Kayak-Sunset-Party-Titop-2676835a-ad56-43b3-8f67-1f6898f5010b.png?tr=q-60,c-at_max,w-1280,h-720&_src=imagekit',
+                'id_quoc_gia' => 1,
                 'created_at' => $now, 'updated_at' => $now,
             ],
             [
@@ -47,6 +51,8 @@ class TourSeeder extends Seeder
                 'diem_don' => 'Sân bay Phú Quốc',
                 'diem_tra' => 'Sân bay Phú Quốc',
                 'tinh_trang' => 1,
+                'hinh_anh' => '',
+                'id_quoc_gia' => 1,
                 'created_at' => $now, 'updated_at' => $now,
             ],
             [
@@ -59,6 +65,8 @@ class TourSeeder extends Seeder
                 'diem_don' => 'Bến xe Mỹ Đình, Hà Nội',
                 'diem_tra' => 'Bến xe Mỹ Đình, Hà Nội',
                 'tinh_trang' => 1,
+                'hinh_anh' => '',
+                'id_quoc_gia' => 1,
                 'created_at' => $now, 'updated_at' => $now,
             ],
             [
@@ -71,6 +79,8 @@ class TourSeeder extends Seeder
                 'diem_don' => 'Ga Huế',
                 'diem_tra' => 'Phố cổ Hội An',
                 'tinh_trang' => 1,
+                'hinh_anh' => '',
+                'id_quoc_gia' => 1,
                 'created_at' => $now, 'updated_at' => $now,
             ],
             [
@@ -83,6 +93,8 @@ class TourSeeder extends Seeder
                 'diem_don' => 'Sân bay Liên Khương',
                 'diem_tra' => 'Trung tâm Đà Lạt',
                 'tinh_trang' => 1,
+                'hinh_anh' => '',
+                'id_quoc_gia' => 1,
                 'created_at' => $now, 'updated_at' => $now,
             ],
             [
@@ -95,6 +107,8 @@ class TourSeeder extends Seeder
                 'diem_don' => 'Bến Ninh Kiều, Cần Thơ',
                 'diem_tra' => 'Bến Ninh Kiều, Cần Thơ',
                 'tinh_trang' => 1,
+                'hinh_anh' => '',
+                'id_quoc_gia' => 1,
                 'created_at' => $now, 'updated_at' => $now,
             ],
             [
@@ -107,6 +121,8 @@ class TourSeeder extends Seeder
                 'diem_don' => 'Ga Lào Cai',
                 'diem_tra' => 'Thị xã Sapa',
                 'tinh_trang' => 1,
+                'hinh_anh' => '',
+                'id_quoc_gia' => 1,
                 'created_at' => $now, 'updated_at' => $now,
             ],
             [
@@ -119,6 +135,8 @@ class TourSeeder extends Seeder
                 'diem_don' => 'Cảng Cầu Đá, Nha Trang',
                 'diem_tra' => 'Cảng Cầu Đá, Nha Trang',
                 'tinh_trang' => 1,
+                'hinh_anh' => '',
+                'id_quoc_gia' => 1,
                 'created_at' => $now, 'updated_at' => $now,
             ],
             [
@@ -131,6 +149,8 @@ class TourSeeder extends Seeder
                 'diem_don' => 'Thành phố Ninh Bình',
                 'diem_tra' => 'Thành phố Ninh Bình',
                 'tinh_trang' => 1,
+                'hinh_anh' => '',
+                'id_quoc_gia' => 1,
                 'created_at' => $now, 'updated_at' => $now,
             ],
         ];

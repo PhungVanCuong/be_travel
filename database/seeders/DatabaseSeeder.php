@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
             KhachHangSeeder::class,
             NhanVienSeeder::class, // Cần có Chức vụ trước
             HuongDanVienSeeder::class,
+            QuocGiaSeeder::class,
             TourSeeder::class,
             DiemDenSeeder::class,
             PhuongTienSeeder::class,

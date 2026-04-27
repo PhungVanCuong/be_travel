@@ -12,7 +12,7 @@ class SlideController extends Controller
         $user = Auth::guard('sanctum')->user();
         // Nếu là master admin thì bỏ qua kiểm tra quyền
         if ($user->is_master != 1) {
-            $id_chuc_nang = 1;
+            $id_chuc_nang = 15;
             $id_chuc_vu   = $user->id_chuc_vu;
             $check        = PhanQuyen::where('id_chuc_vu', $id_chuc_vu)->where('id_chuc_nang', $id_chuc_nang)->first();
             if (!$check) {
@@ -34,7 +34,7 @@ class SlideController extends Controller
         $user = Auth::guard('sanctum')->user();
         // Nếu là master admin thì bỏ qua kiểm tra quyền
         if ($user->is_master != 1) {
-            $id_chuc_nang = 1;
+            $id_chuc_nang = 15;
             $id_chuc_vu   = $user->id_chuc_vu;
             $check        = PhanQuyen::where('id_chuc_vu', $id_chuc_vu)->where('id_chuc_nang', $id_chuc_nang)->first();
             if (!$check) {
@@ -59,7 +59,7 @@ class SlideController extends Controller
         $user = Auth::guard('sanctum')->user();
         // Nếu là master admin thì bỏ qua kiểm tra quyền
         if ($user->is_master != 1) {
-            $id_chuc_nang = 2;
+            $id_chuc_nang = 15;
             $id_chuc_vu   = $user->id_chuc_vu;
             $check        = PhanQuyen::where('id_chuc_vu', $id_chuc_vu)->where('id_chuc_nang', $id_chuc_nang)->first();
             if (!$check) {
@@ -85,7 +85,7 @@ class SlideController extends Controller
         $user = Auth::guard('sanctum')->user();
         // Nếu là master admin thì bỏ qua kiểm tra quyền
         if ($user->is_master != 1) {
-            $id_chuc_nang = 3;
+            $id_chuc_nang = 15;
             $id_chuc_vu   = $user->id_chuc_vu;
             $check        = PhanQuyen::where('id_chuc_vu', $id_chuc_vu)->where('id_chuc_nang', $id_chuc_nang)->first();
             if (!$check) {

@@ -3,14 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Notifications\Notifiable;
 
 class Tour extends Model
 {
-    use HasFactory, Notifiable, HasApiTokens;
+    use HasFactory;
+
     protected $table = 'tours';
     protected $fillable = [
         'ten_tour',
@@ -22,5 +20,7 @@ class Tour extends Model
         'diem_don',
         'diem_tra',
         'tinh_trang',
+        'hinh_anh',
+        'id_quoc_gia',
     ];
 }

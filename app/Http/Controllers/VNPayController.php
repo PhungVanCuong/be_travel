@@ -19,10 +19,10 @@ class VNPayController extends Controller
             return response()->json(['status' => false, 'message' => 'Không tìm thấy hóa đơn']);
         }
 
-        $vnp_TmnCode = 'ORAWIP6X';
-        $vnp_HashSecret = 'KCPUCG0YL3BRPCFNH9QSDFKS06ET99H8';
-        $vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
-        $vnp_Returnurl = "http://localhost:5173/thanh-toan/ket-qua";
+        $vnp_TmnCode = 'ORAWIP6X'; // Thay đổi mã website của bạn tại đây
+        $vnp_HashSecret = 'KCPUCG0YL3BRPCFNH9QSDFKS06ET99H8'; // Thay đổi secret key của bạn tại đây
+        $vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html"; // URL thanh toán của VNPay
+        $vnp_Returnurl = "http://localhost:5173/Ket-qua-thanh-toan"; // Thay đổi URL trả về sau khi thanh toán thành công
 
         $vnp_TxnRef = $hoaDon->id . '_' . time();
         $vnp_OrderInfo = 'Thanh_toan_tour_ID_' . $hoaDon->id;

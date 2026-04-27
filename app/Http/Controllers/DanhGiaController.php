@@ -70,7 +70,7 @@ class DanhGiaController extends Controller
 
         // Nếu không phải Master Admin (is_master != 1) thì mới check quyền chi tiết
         if ($user->is_master != 1) {
-            $id_chuc_nang = 2;
+            $id_chuc_nang = 5;
             $id_chuc_vu   = $user->id_chuc_vu;
 
 
