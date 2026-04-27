@@ -17,6 +17,8 @@ use App\Http\Controllers\ThongKeController;
 Use App\Http\Controllers\HoaDonController;
 Use App\Http\Controllers\ChucNangController;
 use App\Http\Controllers\BaiVietController;
+use App\Http\Controllers\VNPayDBController;
+
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
@@ -101,14 +103,23 @@ Route::prefix('')->group(function () {
         Route::post('bai-viet/add-data', [BaiVietController::class, 'addData']);
         Route::post('bai-viet/update', [BaiVietController::class, 'update']);
         Route::post('bai-viet/delete', [BaiVietController::class, 'destroy']);
+
         // chức năng
         Route::get('chuc-nang/get-data', [ChucNangController::class, 'getData']);
+
         // Thống kê
         Route::post('/thong-ke/khach-hang-moi', [ThongKeController::class, 'thongKeKHMoi']);
         Route::post('/thong-ke/doanh-thu', [ThongKeController::class, 'thongKeDoanhThu']);
         Route::post('/thong-ke/ve-ban-ra', [ThongKeController::class, 'ThongKeVeBanRa']);
         Route::post('/thong-ke/chi-tieu-khach-hang', [ThongKeController::class, 'thongKeChiTieuKhachHang']);
         Route::post('/thong-ke/tour', [ThongKeController::class, 'thongKeTour']);
+
+        // VNPay
+        Route::get('/vnpay-db/get-data', [VNPayController::class, 'getData']);
+        Route::post('/vnpay-db/add-data', [VNPayController::class, 'addData']);
+        Route::post('/vnpay-db/update', [VNPayController::class, 'update']);
+        Route::post('/vnpay-db/destroy', [VNPayController::class, 'destroy']);
+        Route::post('/vnpay-db/change-status', [VNPayController::class, 'changeStatus']);
     });
 });
 
@@ -127,13 +138,12 @@ Route::prefix('')->group(function () {
     Route::post('/client/lay-lai-mat-khau', [KhachHangController::class, 'layLaiMK']);
 
     // API Check chữ ký khi VNPay trả khách về Frontend (Return)
-    Route::get('/vnpay/check-return', [VNPayController::class, 'vnpayReturn']);
+    Route::get('/client/vnpay/check-return', [VNPayController::class, 'vnpayReturn']);
 
 
-    // API Check chữ ký khi VNPay trả khách về Frontend (Return)
-    Route::get('/vnpay/check-return', [VNPayController::class, 'vnpayReturn']);
-    // API Webhook (IPN) để VNPay gọi ngầm
-    Route::get('/vnpay/ipn', [VNPayController::class, 'vnpayIpn']);
+    // VNPay Webhooks & Return (Bắt buộc để ngoài vùng Auth để VNPay có thể gửi dữ liệu tới)
+    Route::get('/client/vnpay/check-return', [VNPayController::class, 'vnpayReturn']);
+    Route::get('/client/vnpay/ipn', [VNPayController::class, 'vnpayIpn']);
 });
 
 // CLIENT ROUTES (Protected - Cần đăng nhập)
