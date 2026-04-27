@@ -58,7 +58,9 @@ class TourController extends Controller
             'so_nguoi_toi_da' => $request->so_nguoi_toi_da,
             'diem_don' => $request->diem_don,
             'diem_tra' => $request->diem_tra,
-            'tinh_trang' => $request->tinh_trang
+            'tinh_trang' => $request->tinh_trang,
+            'hinh_anh' => $request->hinh_anh,
+            'id_quoc_gia' => $request->id_quoc_gia
         ]);
         return response()->json([
             'status' => true,
@@ -91,7 +93,9 @@ class TourController extends Controller
             'so_nguoi_toi_da' => $request->so_nguoi_toi_da,
             'diem_don' => $request->diem_don,
             'diem_tra' => $request->diem_tra,
-            'tinh_trang' => $request->tinh_trang
+            'tinh_trang' => $request->tinh_trang,
+            'hinh_anh' => $request->hinh_anh,
+            'id_quoc_gia' => $request->id_quoc_gia
         ]);
         return response()->json([
             'status' => true,
