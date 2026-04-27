@@ -106,41 +106,50 @@ class VNPayController extends Controller
         // Tách lấy ID Hóa Đơn từ vnp_TxnRef (VD: 1_1777299139 -> Lấy số 1)
         $hoaDonId = isset($request->vnp_TxnRef) ? explode('_', $request->vnp_TxnRef)[0] : null;
         $idKhachHang = 0; // Mặc định nếu không tìm thấy
+        $hoaDonData = null; // Biến lưu toàn bộ thông tin hóa đơn để trả về Frontend
 
         if ($hoaDonId) {
             $hoaDon = HoaDon::find($hoaDonId);
             if ($hoaDon) {
                 $idKhachHang = $hoaDon->id_khach_hang;
+                $hoaDonData = $hoaDon;
             }
         }
 
         if ($secureHash === $vnp_SecureHash) {
             if ($request->vnp_ResponseCode == '00') {
-                // LƯU LOG: Thành công (tinh_trang = 1 theo thiết kế của bạn)
+                // LƯU LOG: Thành công (tinh_trang = 2 theo DB mới của bạn)
                 VNPay::create([
                     'id_khach_hang' => $idKhachHang,
-                    'link_data' => $fullUrl,
-                    'tinh_trang' => 1
+                    'id_hoa_don'    => $hoaDonId, // Thêm id_hoa_don
+                    'link_data'     => $fullUrl,
+                    'tinh_trang'    => 2
                 ]);
 
-                return response()->json(['status' => true, 'message' => 'Giao dịch thành công']);
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Giao dịch thành công',
+                    'data' => $hoaDonData // Trả data hóa đơn về cho Frontend
+                ]);
             } else {
-                // LƯU LOG: Thất bại (tinh_trang = 2 theo thiết kế của bạn)
+                // LƯU LOG: Thất bại (tinh_trang = 1 theo DB mới của bạn)
                 VNPay::create([
                     'id_khach_hang' => $idKhachHang,
-                    'link_data' => $fullUrl,
-                    'tinh_trang' => 2
+                    'id_hoa_don'    => $hoaDonId, // Thêm id_hoa_don
+                    'link_data'     => $fullUrl,
+                    'tinh_trang'    => 1
                 ]);
 
                 return response()->json(['status' => false, 'message' => 'Giao dịch thất bại']);
             }
         }
 
-        // LƯU LOG: Sai chữ ký (Vẫn ráng lưu lại để biết có người cố tình sửa link)
+        // LƯU LOG: Sai chữ ký
         VNPay::create([
             'id_khach_hang' => $idKhachHang,
-            'link_data' => $fullUrl,
-            'tinh_trang' => 0 // Đánh dấu là chưa xử lý hoặc lỗi
+            'id_hoa_don'    => $hoaDonId, // Thêm id_hoa_don
+            'link_data'     => $fullUrl,
+            'tinh_trang'    => 0
         ]);
 
         return response()->json(['status' => false, 'message' => 'Sai chữ ký']);
@@ -200,21 +209,23 @@ class VNPayController extends Controller
                 $hoaDon->trang_thai = HoaDon::DA_THANH_TOAN;
                 Ve::where('id_hoa_don', $hoaDon->id)->update(['tinh_trang' => Ve::DA_THANH_TOAN]);
 
-                // Ghi log thành công
+                // Ghi log thành công (2: Thành công)
                 VNPay::create([
                     'id_khach_hang' => $hoaDon->id_khach_hang,
-                    'link_data' => "IPN_CALL: " . $fullIpnUrl, // Thêm chữ IPN_CALL để dễ phân biệt với Return
-                    'tinh_trang' => 1
+                    'id_hoa_don'    => $hoaDon->id, // Thêm id_hoa_don
+                    'link_data'     => "IPN_CALL: " . $fullIpnUrl,
+                    'tinh_trang'    => 2
                 ]);
             } else {
                 $hoaDon->trang_thai = HoaDon::DA_HUY;
                 Ve::where('id_hoa_don', $hoaDon->id)->update(['tinh_trang' => Ve::DA_HUY]);
 
-                // Ghi log thất bại
+                // Ghi log thất bại (1: Thất bại)
                 VNPay::create([
                     'id_khach_hang' => $hoaDon->id_khach_hang,
-                    'link_data' => "IPN_CALL: " . $fullIpnUrl,
-                    'tinh_trang' => 2
+                    'id_hoa_don'    => $hoaDon->id, // Thêm id_hoa_don
+                    'link_data'     => "IPN_CALL: " . $fullIpnUrl,
+                    'tinh_trang'    => 1
                 ]);
             }
 
@@ -234,7 +245,6 @@ class VNPayController extends Controller
     public function getData()
     {
         $user = Auth::guard('sanctum')->user();
-        // Nếu là master admin thì bỏ qua kiểm tra quyền. Giả sử chức năng VNPay có id là 7 (chung với Quản lý Hóa Đơn) hoặc bạn có thể tạo chức năng mới.
         if ($user->is_master != 1) {
             $id_chuc_nang = 7;
             $id_chuc_vu   = $user->id_chuc_vu;
@@ -247,7 +257,6 @@ class VNPayController extends Controller
             }
         }
 
-        // Join với bảng khach_hangs để lấy tên khách hàng thay vì chỉ hiện ID
         $data = VNPay::join('khach_hangs', 'v_n_pays.id_khach_hang', '=', 'khach_hangs.id')
             ->select('v_n_pays.*', 'khach_hangs.ho_va_ten as ten_khach_hang')
             ->get();
@@ -279,6 +288,7 @@ class VNPayController extends Controller
 
         VNPay::create([
             'id_khach_hang' => $request->id_khach_hang,
+            'id_hoa_don'    => $request->id_hoa_don, // Thêm id_hoa_don
             'link_data'     => $request->link_data,
             'tinh_trang'    => $request->tinh_trang ?? 0,
         ]);
@@ -318,6 +328,7 @@ class VNPayController extends Controller
 
         $vnpay->update([
             'id_khach_hang' => $request->id_khach_hang,
+            'id_hoa_don'    => $request->id_hoa_don, // Thêm id_hoa_don
             'link_data'     => $request->link_data,
             'tinh_trang'    => $request->tinh_trang,
         ]);
@@ -395,6 +406,4 @@ class VNPayController extends Controller
             'message' => 'Dữ liệu không tồn tại.'
         ]);
     }
-
-
 }

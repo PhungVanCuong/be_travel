@@ -17,7 +17,6 @@ use App\Http\Controllers\ThongKeController;
 Use App\Http\Controllers\HoaDonController;
 Use App\Http\Controllers\ChucNangController;
 use App\Http\Controllers\BaiVietController;
-use App\Http\Controllers\VNPayDBController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();

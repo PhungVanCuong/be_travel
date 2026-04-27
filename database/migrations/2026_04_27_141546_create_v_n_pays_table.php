@@ -14,8 +14,9 @@ return new class extends Migration
         Schema::create('v_n_pays', function (Blueprint $table) {
             $table->id();
             $table->integer('id_khach_hang')->nullable();
+            $table->integer('id_hoa_don')->nullable();
             $table->text('link_data')->nullable();
-            $table->integer('tinh_trang')->default(0)->nullable()->comment('0: Chưa xử lý, 1: Thất bại, 2: Thành công');
+            $table->integer('tinh_trang')->default(0)->nullable()->comment('0: Chưa xử lý, 1: Thành công, 2: Thất bại');
             $table->timestamps();
         });
     }
