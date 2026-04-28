@@ -28,7 +28,7 @@ class VNPayController extends Controller
         $vnp_Returnurl = "http://localhost:5173/Ket-qua-thanh-toan"; // Thay đổi URL trả về sau khi thanh toán thành công
 
         $vnp_TxnRef = $hoaDon->id . '_' . time();
-        $vnp_OrderInfo = 'Thanh_toan_tour_ID_' . $hoaDon->id;
+        $vnp_OrderInfo = $hoaDon->id;
         $vnp_OrderType = 'billpayment';
         $vnp_Amount = round($hoaDon->tong_tien * 100);
         $vnp_Locale = 'vn';
@@ -319,7 +319,7 @@ class VNPayController extends Controller
 
         $vnpay = VNPay::find($request->id);
 
-        if(!$vnpay) {
+        if (!$vnpay) {
             return response()->json([
                 'status' => false,
                 'message' => 'Không tìm thấy dữ liệu VNPay'
@@ -405,5 +405,30 @@ class VNPayController extends Controller
             'status' => false,
             'message' => 'Dữ liệu không tồn tại.'
         ]);
+    }
+    public function checkThanhToan(Request $request)
+    {
+        $vnp_ResponseCode = $request->vnp_ResponseCode; // Mã phản hồi
+        $id_hoa_don = $request->vnp_OrderInfo; // ID hóa đơn bạn gửi đi lúc tạo thanh toán
+        $vnp_SecureHash = $request->vnp_SecureHash; // Chữ ký từ VNPAY
+
+        // 1. Kiểm tra chữ ký (Quan trọng để tránh hack)
+        // (Phần này bạn dùng thư viện VNPAY hoặc logic hash của bạn)
+
+        if ($vnp_ResponseCode == '00') {
+            // 2. Tìm hóa đơn trong database
+            $hoa_don = HoaDon::find($id_hoa_don);
+
+            if ($hoa_don && $hoa_don->trang_thai == 1) { // 1: Chưa thanh toán
+                // 3. Cập nhật trạng thái thành Đã thanh toán (2)
+                $hoa_don->trang_thai = 2;
+                $hoa_don->save();
+
+                // 4. (Tùy chọn) Gửi mail xác nhận hoặc trừ số lượng chỗ của tour
+                return response()->json(['status' => true, 'message' => 'Thanh toán thành công']);
+            }
+        }
+
+        return response()->json(['status' => false, 'message' => 'Thanh toán thất bại hoặc đã xử lý']);
     }
 }
