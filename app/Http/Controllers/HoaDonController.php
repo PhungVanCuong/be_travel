@@ -288,6 +288,7 @@ class HoaDonController extends Controller
             'message' => 'Lấy chi tiết hóa đơn thành công',
             'data'    => [
                 'hoa_don' => [
+                    'id_hoa_don' => $hoaDon->id,
                     'ma_hoa_don' => $hoaDon->ma_hoa_don,
                     'ngay_dat'   => $hoaDon->ngay_tao,
                     'tong_tien'  => $hoaDon->tong_tien,
@@ -299,6 +300,8 @@ class HoaDonController extends Controller
                     'ho_va_ten'   => $user->ho_va_ten,
                     'email'       => $user->email,
                     'so_dien_thoai' => $user->so_dien_thoai,
+                    'cccd'         => $user->cccd,
+                    'ngay_sinh'     => $user->ngay_sinh,
                 ],
                 'tour' => $tour ? [
                     'ten_tour' => $tour->ten_tour,

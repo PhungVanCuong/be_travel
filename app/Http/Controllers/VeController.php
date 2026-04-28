@@ -200,10 +200,11 @@ class VeController extends Controller
             $hoa_don = HoaDon::create([
                 'id_khach_hang'              => $user->id,
                 'id_tour'                    => $tour->id,
+                'ma_hoa_don'                 => 'HD' . strtoupper(Str::random(10)),
                 'so_luong_nguoi'             => $so_luong_nguoi,
                 'tong_tien'                  => $tong_tien,
                 'phuong_thuc_thanh_toan'     => $phuong_thuc_thanh_toan,
-                'trang_thai'                 => '0', // 0: Chờ thanh toán
+                'trang_thai'                 => '1', // 1: Đã đặt hàng nhưng chưa thanh toán
                 'ghi_chu_danh_sach_nguoi_di' => $ghi_chu_danh_sach,
                 'ngay_tao'                   => Carbon::now(),
             ]);
@@ -216,7 +217,7 @@ class VeController extends Controller
                     'gia_ve'        => $tour->gia,
                     'id_khach_hang' => $user->id,
                     'id_hoa_don'    => $hoa_don->id,
-                    'tinh_trang'    => '2',
+                    'tinh_trang'    => '1', // 1: Vé đã được tạo nhưng chưa thanh toán
                     'is_check_in'   => 0,
                 ]);
                 $ds_ve_tao_moi[] = $ve;
