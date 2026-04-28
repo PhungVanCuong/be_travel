@@ -192,6 +192,152 @@ class DiemDenSeeder extends Seeder
                 'hinh_anh' => 'https://upload.wikimedia.org/wikipedia/commons/b/b2/Chua_Bai_Dinh_X8.JPG',
                 'created_at' => $now, 'updated_at' => $now,
             ],
+
+            // ---------------- BỔ SUNG TỪ TOUR 11 ĐẾN 18 ---------------- //
+
+            // Tour 11: Chiang Mai - Chiang Rai
+            [
+                'ten_diem_den' => 'Chùa Trắng Wat Rong Khun',
+                'mo_ta' => 'Ngôi chùa có kiến trúc màu trắng tinh khôi, chạm trổ hoa văn tinh xảo tựa như tuyệt tác nghệ thuật.',
+                'thanh_pho' => 'Chiang Rai',
+                'tinh_trang' => 1,
+                'hinh_anh' => 'https://zoomtravel.vn/upload/images/wat-rong-khun-2.jpg',
+                'created_at' => $now, 'updated_at' => $now,
+            ],
+            [
+                'ten_diem_den' => 'Làng Cổ Dài (Karen Village)',
+                'mo_ta' => 'Tìm hiểu đời sống và nét đẹp văn hóa độc đáo của những người phụ nữ đeo vòng đồng quanh cổ.',
+                'thanh_pho' => 'Chiang Mai',
+                'tinh_trang' => 1,
+                'hinh_anh' => 'https://bizweb.dktcdn.net/100/539/761/articles/kham-pha-lang-co-dai-karen-ky-la-tai-thai-lan-1.jpg?v=1741160430137',
+                'created_at' => $now, 'updated_at' => $now,
+            ],
+
+            // Tour 12: Phuket - Đảo Phi Phi
+            [
+                'ten_diem_den' => 'Vịnh Maya',
+                'mo_ta' => 'Một trong những bãi biển đẹp nhất thế giới, nổi tiếng với dải cát trắng ôm lấy làn nước màu ngọc bích.',
+                'thanh_pho' => 'Phuket',
+                'tinh_trang' => 1,
+                'hinh_anh' => 'https://cdn.tcdulichtphcm.vn/upload/2-2022/images/2022-05-05/1651684789-picture-33-1651684666-909-width1600height1066.jpg',
+                'created_at' => $now, 'updated_at' => $now,
+            ],
+            [
+                'ten_diem_den' => 'Phố cổ Phuket',
+                'mo_ta' => 'Khu phố mang đậm dấu ấn kiến trúc Sino-Portuguese rực rỡ sắc màu, góc check-in tuyệt đẹp.',
+                'thanh_pho' => 'Phuket',
+                'tinh_trang' => 1,
+                'hinh_anh' => 'https://ik.imagekit.io/tvlk/blog/2023/10/pho-co-phuket-4-1024x683.jpg?tr=q-70,c-at_max,w-1000,h-600',
+                'created_at' => $now, 'updated_at' => $now,
+            ],
+
+            // Tour 13: Busan - Làng văn hóa Gamcheon
+            [
+                'ten_diem_den' => 'Làng văn hóa Gamcheon',
+                'mo_ta' => 'Được ví như "Santorini của Hàn Quốc" với những ngôi nhà nhỏ rực rỡ xếp lớp trên sườn đồi hướng ra biển.',
+                'thanh_pho' => 'Busan',
+                'tinh_trang' => 1,
+                'hinh_anh' => 'https://dulichviet.com.vn/images/bandidau/lang-van-hoa-gamcheon-han-quoc.jpg',
+                'created_at' => $now, 'updated_at' => $now,
+            ],
+            [
+                'ten_diem_den' => 'Bãi biển Haeundae',
+                'mo_ta' => 'Bãi biển lớn và sầm uất nhất Hàn Quốc, nơi thường xuyên diễn ra các lễ hội nhộn nhịp.',
+                'thanh_pho' => 'Busan',
+                'tinh_trang' => 1,
+                'hinh_anh' => 'https://ik.imagekit.io/tvlk/blog/2023/04/bai-bien-haeundae-3.jpg?tr=q-70,c-at_max,w-1000,h-600',
+                'created_at' => $now, 'updated_at' => $now,
+            ],
+
+            // Tour 14: Đảo Jeju
+            [
+                'ten_diem_den' => 'Đỉnh Seongsan Ilchulbong',
+                'mo_ta' => 'Ngọn núi lửa đã tắt vươn mình ra biển lớn, điểm ngắm bình minh huy hoàng nhất trên đảo Jeju.',
+                'thanh_pho' => 'Jeju',
+                'tinh_trang' => 1,
+                'hinh_anh' => 'https://images2.thanhnien.vn/528068263637045248/2023/11/11/hinh-4-16996721947841223282759.jpg',
+                'created_at' => $now, 'updated_at' => $now,
+            ],
+            [
+                'ten_diem_den' => 'Thác nước Cheonjiyeon',
+                'mo_ta' => 'Thác nước tuyệt đẹp đổ xuống từ vách đá tạo nên bức tranh thiên nhiên hài hòa và thanh bình.',
+                'thanh_pho' => 'Jeju',
+                'tinh_trang' => 1,
+                'hinh_anh' => 'https://tour.dulichvietnam.com.vn/uploads/image/Du-lich-Han-Quoc/Jeju/thac-nuoc-cheonjiyeon-2.jpg',
+                'created_at' => $now, 'updated_at' => $now,
+            ],
+
+            // Tour 15: Hokkaido
+            [
+                'ten_diem_den' => 'Khu trượt tuyết Niseko',
+                'mo_ta' => 'Thánh địa trượt tuyết với chất lượng tuyết bột mịn màng bậc nhất thế giới.',
+                'thanh_pho' => 'Hokkaido',
+                'tinh_trang' => 1,
+                'hinh_anh' => 'https://file.smiletrip.vn/posts/vi-vn/2025/02/24/1210/khu-truot-tuyet-niseko-hokkaido-2.jpg',
+                'created_at' => $now, 'updated_at' => $now,
+            ],
+            [
+                'ten_diem_den' => 'Kênh đào Otaru',
+                'mo_ta' => 'Tản bộ dọc theo kênh đào lãng mạn được thắp sáng bởi những ánh đèn dịu nhẹ giữa màn tuyết trắng.',
+                'thanh_pho' => 'Hokkaido',
+                'tinh_trang' => 1,
+                'hinh_anh' => 'https://nippontravel.vn/wp-content/uploads/2023/08/kenh-dao-otaru-vao-ban-dem-1.jpg',
+                'created_at' => $now, 'updated_at' => $now,
+            ],
+
+            // Tour 16: Okinawa
+            [
+                'ten_diem_den' => 'Thủy cung Churaumi',
+                'mo_ta' => 'Khám phá một trong những thủy cung lớn nhất thế giới, nổi tiếng với bể cá khổng lồ nuôi cá mập voi.',
+                'thanh_pho' => 'Okinawa',
+                'tinh_trang' => 1,
+                'hinh_anh' => 'https://songhantourist.com/upload/articles-images/images/196525899_4194618430599188_3636582163606984655_n.jpeg',
+                'created_at' => $now, 'updated_at' => $now,
+            ],
+            [
+                'ten_diem_den' => 'Làng văn hóa Ryukyu Mura',
+                'mo_ta' => 'Ngôi làng chủ đề tái hiện lại những giá trị lịch sử và phong tục tập quán truyền thống của người Okinawa.',
+                'thanh_pho' => 'Okinawa',
+                'tinh_trang' => 1,
+                'hinh_anh' => 'https://images.trvl-media.com/place/6270754/df070d95-847c-496c-9ba4-c3c890ec1fbf.jpg',
+                'created_at' => $now, 'updated_at' => $now,
+            ],
+
+            // Tour 17: Singapore Night Safari
+            [
+                'ten_diem_den' => 'Night Safari',
+                'mo_ta' => 'Khám phá vườn thú đêm đầu tiên trên thế giới, quan sát sinh hoạt về đêm của hàng ngàn loài động vật hoang dã.',
+                'thanh_pho' => 'Singapore',
+                'tinh_trang' => 1,
+                'hinh_anh' => 'https://chiangmainightsafari.com/wp-content/uploads/2019/08/%E0%B8%8A%E0%B8%99%E0%B8%B4%E0%B8%99%E0%B8%97%E0%B8%A3%E0%B9%8C-%E0%B9%81%E0%B8%8B%E0%B9%88%E0%B8%9F%E0%B8%B8%E0%B9%89%E0%B8%87_ANA_6398-scaled.jpg',
+                'created_at' => $now, 'updated_at' => $now,
+            ],
+            [
+                'ten_diem_den' => 'Thác nước Jewel Changi',
+                'mo_ta' => 'Choáng ngợp trước thác nước trong nhà cao nhất thế giới Rain Vortex bao quanh bởi khu vườn sinh thái.',
+                'thanh_pho' => 'Singapore',
+                'tinh_trang' => 1,
+                'hinh_anh' => 'https://ik.imagekit.io/tvlk/blog/2023/06/jewel-changi-1.jpg?tr=q-70,c-at_max,w-1000,h-600',
+                'created_at' => $now, 'updated_at' => $now,
+            ],
+
+            // Tour 18: Singapore Du thuyền
+            [
+                'ten_diem_den' => 'Siêu du thuyền Royal Caribbean',
+                'mo_ta' => 'Tận hưởng chuyến đi xa hoa với bể bơi, casino, nhà hát và đại tiệc buffet trên con tàu đẳng cấp quốc tế.',
+                'thanh_pho' => 'Singapore',
+                'tinh_trang' => 1,
+                'hinh_anh' => 'https://dulichduthuyen.com.vn/tour-du-thuyen/vnt_upload/news/10_2019/du-thuyen-royal-caribbean_3.jpg',
+                'created_at' => $now, 'updated_at' => $now,
+            ],
+            [
+                'ten_diem_den' => 'Vịnh Marina Bay',
+                'mo_ta' => 'Vịnh biểu tượng của quốc đảo sư tử, nơi quy tụ những công trình kiến trúc hiện đại và lộng lẫy nhất.',
+                'thanh_pho' => 'Singapore',
+                'tinh_trang' => 1,
+                'hinh_anh' => 'https://media.vietravel.com/images/Content/du-lich-marina-bay-sands-1.png',
+                'created_at' => $now, 'updated_at' => $now,
+            ]
         ];
 
         DB::table('diem_dens')->truncate();

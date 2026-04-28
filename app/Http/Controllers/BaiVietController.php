@@ -113,4 +113,36 @@ class BaiVietController extends Controller
             'message' => 'Xóa bài viết thành công',
         ]);
     }
+
+    /**
+     * API CLIENT: Lấy chi tiết bài viết và bài viết liên quan
+     */
+    public function chiTietBaiVietClient(Request $request)
+    {
+        // 1. Tìm bài viết theo ID
+        $baiViet = BaiViet::where('id', $request->id)
+                          ->where('tinh_trang', 1) // Chỉ lấy bài đang hiển thị
+                          ->first();
+
+        if (!$baiViet) {
+            return response()->json([
+                'status'  => false,
+                'message' => 'Bài viết không tồn tại hoặc đã bị gỡ.'
+            ], 404);
+        }
+
+        // 2. Lấy 3 bài viết liên quan (Mới nhất và Khác ID bài hiện tại)
+        $baiVietLienQuan = BaiViet::where('id', '!=', $request->id)
+                                  ->where('tinh_trang', 1)
+                                  ->orderBy('created_at', 'desc')
+                                  ->limit(3)
+                                  ->get();
+
+        return response()->json([
+            'status'             => true,
+            'message'            => 'Lấy chi tiết bài viết thành công.',
+            'data'               => $baiViet,
+            'data_bai_viet_khac' => $baiVietLienQuan
+        ]);
+    }
 }

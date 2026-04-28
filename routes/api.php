@@ -183,7 +183,8 @@ Route::prefix('')->group(function () {
         Route::get('/hoa-don/chi-tiet-thanh-toan/{ma_hoa_don}', [HoaDonController::class, 'getChiTietThanhToanHoaDon']);
         Route::post('/hoa-don/huy', [HoaDonController::class, 'HuyHoaDon']);
 
-
+        // API Lấy chi tiết Cẩm nang / Bài viết
+        Route::post('/chi-tiet-bai-viet/get-data', [BaiVietController::class, 'chiTietBaiVietClient']);
     });
 });
 
