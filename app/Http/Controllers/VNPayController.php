@@ -408,27 +408,29 @@ class VNPayController extends Controller
     }
     public function checkThanhToan(Request $request)
     {
-        $vnp_ResponseCode = $request->vnp_ResponseCode; // Mã phản hồi
-        $id_hoa_don = $request->vnp_OrderInfo; // ID hóa đơn bạn gửi đi lúc tạo thanh toán
-        $vnp_SecureHash = $request->vnp_SecureHash; // Chữ ký từ VNPAY
-
-        // 1. Kiểm tra chữ ký (Quan trọng để tránh hack)
-        // (Phần này bạn dùng thư viện VNPAY hoặc logic hash của bạn)
+        $vnp_ResponseCode = $request->vnp_ResponseCode;
+        $id_hoa_don = $request->vnp_OrderInfo;
 
         if ($vnp_ResponseCode == '00') {
-            // 2. Tìm hóa đơn trong database
-            $hoa_don = HoaDon::find($id_hoa_don);
+            // Sử dụng eager loading 've' để tối ưu query nếu cần
+            $hoa_don = HoaDon::with('ds_ve')->find($id_hoa_don);
 
-            if ($hoa_don && $hoa_don->trang_thai == 1) { // 1: Chưa thanh toán
-                // 3. Cập nhật trạng thái thành Đã thanh toán (2)
-                $hoa_don->trang_thai = 2;
+            if ($hoa_don && $hoa_don->trang_thai == 1) {
+                // 1. Cập nhật trạng thái Hóa đơn
+                $hoa_don->trang_thai = 2; // Đã thanh toán
                 $hoa_don->save();
+                $hoa_don->ds_ve()->update(['tinh_trang' => 2]);
 
-                // 4. (Tùy chọn) Gửi mail xác nhận hoặc trừ số lượng chỗ của tour
-                return response()->json(['status' => true, 'message' => 'Thanh toán thành công']);
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Thanh toán thành công và vé đã được kích hoạt'
+                ]);
             }
         }
 
-        return response()->json(['status' => false, 'message' => 'Thanh toán thất bại hoặc đã xử lý']);
+        return response()->json([
+            'status' => false,
+            'message' => 'Thanh toán thất bại hoặc đã xử lý'
+        ]);
     }
 }

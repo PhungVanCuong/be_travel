@@ -22,4 +22,9 @@ class HoaDon extends Model
     const CHUA_THANH_TOAN = 1;
     const DA_THANH_TOAN = 2;
     const DA_HUY = 0;
+
+    public function ds_ve()
+{
+    return $this->hasMany(Ve::class, 'id_hoa_don', 'id');
+}
 }
