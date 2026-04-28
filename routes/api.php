@@ -157,8 +157,9 @@ Route::prefix('')->group(function () {
         Route::post('/dang-xuat-all', [KhachHangController::class, 'dangXuatAll']);
 
         // api chi tiết tour
-        Route::get('/tour/get-data', [TourController::class, 'getData']);
         Route::post('/chi-tiet-tour/get-data', [ChiTietTourController::class, 'getData']);
+        // ĐỔI DÒNG NÀY ĐỂ DÙNG API MỚI DÀNH CHO KHÁCH HÀNG:
+        Route::get('/tour/get-data', [TourController::class, 'getDataClient']);
 
         //api đánh giá
         Route::post('/danh-gia/gui-danh-gia', [DanhGiaController::class, 'guiDanhGia']);
@@ -169,6 +170,9 @@ Route::prefix('')->group(function () {
 
         // API Vue.js gọi lên để lấy link chuyển hướng (Nên yêu cầu đăng nhập)
         Route::post('/vnpay/tao-thanh-toan', [VNPayController::class, 'createPayment']);
+
+
+
     });
 });
 

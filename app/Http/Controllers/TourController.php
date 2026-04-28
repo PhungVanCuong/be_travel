@@ -136,4 +136,20 @@ class TourController extends Controller
         Tour::where('id', $request->id)->update(['tinh_trang' => $request->tinh_trang]);
         return response()->json(['status' => true, 'message' => 'Thay đổi trạng thái tour thành công']);
     }
+
+    public function getDataClient()
+    {
+        // Sử dụng relation 'danhgias' đã khai báo trong Model Tour
+        $data = Tour::where('tinh_trang', 1)
+            ->withAvg('danhgias as avg_sao', 'sao_danh_gia')
+            ->withCount('danhgias as so_luot_danh_gia')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Lấy dữ liệu tour cho khách hàng thành công',
+            'data' => $data
+        ]);
+    }
 }
