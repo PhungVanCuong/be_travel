@@ -23,6 +23,7 @@ return new class extends Migration
             $table->id();
             $table->integer('id_khach_hang')->nullable();
             $table->integer('id_tour')->nullable();
+            $table->string('ma_hoa_don')->unique()->nullable();
             $table->integer('so_luong_nguoi')->nullable();
             $table->integer('tong_tien')->nullable();
             $table->string('phuong_thuc_thanh_toan')->nullable(); // vnpay, cash

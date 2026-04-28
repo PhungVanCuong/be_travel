@@ -8,6 +8,7 @@ use App\Models\Tour;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class HoaDonSeeder extends Seeder
 {
@@ -27,7 +28,7 @@ class HoaDonSeeder extends Seeder
 
         $phuongThucThanhToan = ['vnpay', 'cash', 'chuyển khoản'];
 
-        // Bao gồm cả 3 trạng thái: 1, 2, 0
+        // Bao gồm cả 3 trạng thái: 1 (Chưa TT), 2 (Đã TT), 0 (Đã hủy)
         $trangThaiChung = [HoaDon::CHUA_THANH_TOAN, HoaDon::DA_THANH_TOAN, HoaDon::DA_HUY];
 
         for ($i = 0; $i < 50; $i++) {
@@ -57,9 +58,13 @@ class HoaDonSeeder extends Seeder
             $ghiChu = "Người đặt: " . $khachHang->ho_va_ten . ". Bao gồm " . $soLuongNguoi . " người lớn.";
             $ngayTao = Carbon::today()->subDays(rand(0, 30))->subHours(rand(0, 23))->subMinutes(rand(0, 59));
 
+            // Tạo mã hóa đơn ngẫu nhiên, ví dụ: HD2405ABCD
+            $maHoaDon = 'HD' . $ngayTao->format('ymd') . strtoupper(Str::random(4));
+
             HoaDon::on($connection)->create([
                 'id_khach_hang' => $khachHang->id,
                 'id_tour' => $tour->id,
+                'ma_hoa_don' => $maHoaDon, // Bổ sung ma_hoa_don
                 'so_luong_nguoi' => $soLuongNguoi,
                 'tong_tien' => $tongTien,
                 'phuong_thuc_thanh_toan' => $phuongThuc,

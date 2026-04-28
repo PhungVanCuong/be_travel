@@ -79,24 +79,29 @@ Route::prefix('')->group(function () {
         Route::post('/profile/update', [NhanVienController::class, 'updateProfile']);
         Route::post('/dang-xuat', [NhanVienController::class, 'dangXuat']);
         Route::post('/dang-xuat-all', [NhanVienController::class, 'dangXuatAll']);
+
         //Phân quyền
         Route::post('phan-quyen/chi-tiet-phan-quyen/add-data', [PhanQuyenController::class, 'addData']);
         Route::post('phan-quyen/chi-tiet-phan-quyen/delete', [PhanQuyenController::class, 'destroy']);
         Route::post('phan-quyen/chi-tiet-phan-quyen/data', [PhanQuyenController::class, 'getChiTietPhanQuyen']);
+
         // Đánh giá
         Route::get('/danh-gia/get-data', [DanhGiaController::class, 'getDataAdmin']);
         Route::post('/danh-gia/doi-tinh-trang', [DanhGiaController::class, 'doiTrangThai']);
         Route::post('/danh-gia/delete', [DanhGiaController::class, 'xoaDanhGia']);
+
         //slide
         Route::get('/slide/get-data', [SlideController::class, 'getData']);
         Route::post('/slide/add-data', [SlideController::class, 'addData']);
         Route::post('/slide/update', [SlideController::class, 'update']);
         Route::post('/slide/delete', [SlideController::class, 'destroy']);
-        //Hóa đơn
+
+        // API Hóa đơn và in vé
         Route::get('/hoa-don/get-data', [HoaDonController::class, 'getData']);
-        Route::post('/hoa-don/add-data', [HoaDonController::class, 'addData']);
         Route::post('/hoa-don/update', [HoaDonController::class, 'update']);
         Route::post('/hoa-don/delete', [HoaDonController::class, 'destroy']);
+        Route::post('/hoa-don/in-ve', [HoaDonController::class, 'inVeHoaDon']);
+
         //Bài viết
         Route::get('bai-viet/get-data', [BaiVietController::class, 'getData']);
         Route::post('bai-viet/add-data', [BaiVietController::class, 'addData']);
@@ -119,6 +124,8 @@ Route::prefix('')->group(function () {
         Route::post('/vnpay-db/update', [VNPayController::class, 'update']);
         Route::post('/vnpay-db/destroy', [VNPayController::class, 'destroy']);
         Route::post('/vnpay-db/change-status', [VNPayController::class, 'changeStatus']);
+
+
     });
 });
 
@@ -171,6 +178,10 @@ Route::prefix('')->group(function () {
         // API Vue.js gọi lên để lấy link chuyển hướng (Nên yêu cầu đăng nhập)
         Route::post('/vnpay/tao-thanh-toan', [VNPayController::class, 'createPayment']);
 
+        // API Lịch sử hóa đơn cá nhân
+        Route::get('/hoa-don/danh-sach', [HoaDonController::class, 'getHoaDonCuaKhachHang']);
+        Route::get('/hoa-don/chi-tiet-thanh-toan/{ma_hoa_don}', [HoaDonController::class, 'getChiTietThanhToanHoaDon']);
+        Route::post('/hoa-don/huy', [HoaDonController::class, 'HuyHoaDon']);
 
 
     });
