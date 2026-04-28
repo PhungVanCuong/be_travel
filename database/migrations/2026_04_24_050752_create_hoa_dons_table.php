@@ -21,14 +21,14 @@ return new class extends Migration
         // 'ghi_chu_danh_sach_nguoi_di',
         // 'ngay_tao',
             $table->id();
-            $table->integer('id_khach_hang');
-            $table->integer('id_tour');
-            $table->integer('so_luong_nguoi');
-            $table->integer('tong_tien');
-            $table->string('phuong_thuc_thanh_toan'); // vnpay, cash
-            $table->string('trang_thai')->default(1); // 1  chưa thanh toán, 2 đã thanh toán 0 đã hủy
+            $table->integer('id_khach_hang')->nullable();
+            $table->integer('id_tour')->nullable();
+            $table->integer('so_luong_nguoi')->nullable();
+            $table->integer('tong_tien')->nullable();
+            $table->string('phuong_thuc_thanh_toan')->nullable(); // vnpay, cash
+            $table->string('trang_thai')->default(1)->nullable(); // 1  chưa thanh toán, 2 đã thanh toán 0 đã hủy
             $table->text('ghi_chu_danh_sach_nguoi_di')->nullable();
-            $table->dateTime('ngay_tao');
+            $table->dateTime('ngay_tao')->nullable();
             $table->timestamps();
         });
     }

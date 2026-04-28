@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('quoc_gias', function (Blueprint $table) {
             $table->id();
             $table->string('ten_quoc_gia')->unique(); // Tên quốc gia không được trùng
-            $table->integer('tinh_trang')->default(1)->comment('1: Kích hoạt, 0: Đã khóa');
+            $table->integer('tinh_trang')->default(1)->nullable()->comment('1: Kích hoạt, 0: Đã khóa');
             $table->timestamps();
         });
     }

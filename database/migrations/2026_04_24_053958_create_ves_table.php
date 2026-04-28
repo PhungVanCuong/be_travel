@@ -14,11 +14,11 @@ return new class extends Migration
         Schema::create('ves', function (Blueprint $table) {
             $table->id();
             $table->string('ma_ve')->unique(); // mã vé duy nhất
-            $table->integer('gia_ve');
-            $table->integer('id_khach_hang');
-            $table->integer('id_hoa_don');
-            $table->string('tinh_trang')->default(1); // 1: Chua thanh toan; 2: Da thanh toan, 0: Da huy
-            $table->boolean('is_check_in')->default(0)->comment('0: Chưa check-in, 1: Đã check-in');
+            $table->integer('gia_ve')->nullable();
+            $table->integer('id_khach_hang')->nullable();
+            $table->integer('id_hoa_don')->nullable();
+            $table->string('tinh_trang')->default(1)->nullable(); // 1: Chua thanh toan; 2: Da thanh toan, 0: Da huy
+            $table->boolean('is_check_in')->default(0)->nullable()->comment('0: Chưa check-in, 1: Đã check-in');
 
             $table->timestamps();
         });

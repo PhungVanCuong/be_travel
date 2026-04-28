@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('chuc_vus', function (Blueprint $table) {
             $table->id();
-            $table->string('ten_chuc_vu'); // Admin, Sale, Booking...
-            $table->integer('tinh_trang')->default(1); // 1: hoạt động, 0: ẩn
+            $table->string('ten_chuc_vu')->nullable(); // Admin, Sale, Booking...
+            $table->integer('tinh_trang')->default(1)->nullable(); // 1: hoạt động, 0: ẩn
             $table->timestamps();
         });
     }

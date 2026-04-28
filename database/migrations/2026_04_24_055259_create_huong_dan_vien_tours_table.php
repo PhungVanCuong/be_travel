@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('huong_dan_vien_tours', function (Blueprint $table) {
             $table->id();
-            $table->integer('id_tour');
-            $table->integer('id_huong_dan_vien');
+            $table->integer('id_tour')->nullable();
+            $table->integer('id_huong_dan_vien')->nullable();
             $table->timestamps();
 
         });

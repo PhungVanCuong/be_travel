@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('lich_trinhs', function (Blueprint $table) {
             $table->id();
-            $table->integer('id_tour');
-            $table->integer('id_diem_den');
+            $table->integer('id_tour')->nullable();
+            $table->integer('id_diem_den')->nullable();
             $table->integer('id_phuong_tien')->nullable();
             $table->string('tieu_de_hoat_dong')->nullable();
             $table->timestamps();

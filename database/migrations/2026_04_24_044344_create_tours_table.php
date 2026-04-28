@@ -14,14 +14,14 @@ return new class extends Migration
         Schema::create('tours', function (Blueprint $table) {
             $table->id();
             $table->string('ten_tour')->nullable();
-            $table->string('mo_ta')->nullable();
+            $table->text('mo_ta')->nullable();
             $table->decimal('gia', 10, 2)->nullable();
             $table->date('ngay_bat_dau')->nullable();
             $table->date('ngay_ket_thuc')->nullable();
             $table->integer('so_nguoi_toi_da')->nullable();
             $table->string('diem_don')->nullable();
             $table->string('diem_tra')->nullable();
-            $table->integer('tinh_trang')->default(1)->comment('0: chưa kích hoạt, 1: đã kích hoạt');
+            $table->integer('tinh_trang')->default(1)->nullable()->comment('0: chưa kích hoạt, 1: đã kích hoạt');
             $table->string('hinh_anh', 1000)->nullable(); // Thêm cột hinh_anh
             $table->integer('id_quoc_gia')->nullable(); // Thêm cột id_quoc_gia
             $table->timestamps();

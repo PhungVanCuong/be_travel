@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('phan_quyens', function (Blueprint $table) {
             $table->id();
-            $table->integer('id_chuc_nang');
-            $table->integer('id_chuc_vu');
+            $table->integer('id_chuc_nang')->nullable();
+            $table->integer('id_chuc_vu')->nullable();
             $table->timestamps();
         });
     }
