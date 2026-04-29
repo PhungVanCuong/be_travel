@@ -69,9 +69,9 @@ Route::prefix('')->group(function () {
 
         // api admin vé
         Route::get('/ve/get-data', [VeController::class, 'getData']);
-        Route::post('/ve/add-data', [VeController::class, 'addData']);
-        Route::post('/ve/update/{id}', [VeController::class, 'update']);
-        Route::post('/ve/delete', [VeController::class, 'destroy']);
+        Route::post('/ve/store', [VeController::class, 'addData']);
+        Route::post('/ve/update', [VeController::class, 'update']);
+        Route::post('/ve/destroy', [VeController::class, 'destroy']);
         Route::post('/ve/change-status', [VeController::class, 'changeStatus']);
 
         // đổi mật khẩu nhân viên

@@ -36,6 +36,7 @@ class VeController extends Controller
                 ->join('khach_hangs', 'ves.id_khach_hang', '=', 'khach_hangs.id')
                 ->select(
                     'ves.*',
+                    'hoa_dons.id_tour',
                     'tours.ten_tour',
                     'khach_hangs.ho_va_ten'
                 )
@@ -76,7 +77,7 @@ class VeController extends Controller
             'message' => 'Thêm vé thành công',
         ]);
     }
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
         $user = Auth::guard('sanctum')->user();
         if ($user->is_master != 1) {
@@ -91,6 +92,7 @@ class VeController extends Controller
             }
         }
 
+        $id = $request->id;
         Ve::where('id', $id)->update([
             'ma_ve'             => $request->ma_ve,
             'gia_ve'            => $request->gia_ve,
