@@ -74,6 +74,7 @@ Route::prefix('')->group(function () {
         Route::post('/ve/update', [VeController::class, 'update']);
         Route::post('/ve/destroy', [VeController::class, 'destroy']);
         Route::post('/ve/change-status', [VeController::class, 'changeStatus']);
+        Route::post('/ve/sync-prices', [VeController::class, 'syncPrices']);
 
         // đổi mật khẩu nhân viên
         Route::post('/doi-mat-khau', [NhanVienController::class, 'doiMatKhau']);

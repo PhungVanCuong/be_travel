@@ -63,9 +63,21 @@ class VeController extends Controller
             }
         }
 
+        // Lấy giá vé từ giá tour (tự động)
+        $gia_ve = $request->gia_ve;
+        if ($request->id_hoa_don) {
+            $hoaDon = HoaDon::find($request->id_hoa_don);
+            if ($hoaDon) {
+                $tour = Tour::find($hoaDon->id_tour);
+                if ($tour) {
+                    $gia_ve = $tour->gia;
+                }
+            }
+        }
+
         Ve::create([
             'ma_ve'             => $request->ma_ve,
-            'gia_ve'            => $request->gia_ve,
+            'gia_ve'            => $gia_ve,
             'id_khach_hang'     => $request->id_khach_hang,
             'id_hoa_don'        => $request->id_hoa_don,
             'tinh_trang'        => $request->tinh_trang,
@@ -92,10 +104,29 @@ class VeController extends Controller
             }
         }
 
-        $id = $request->id;
-        Ve::where('id', $id)->update([
+        $ve = Ve::find($request->id);
+        if (!$ve) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Vé không tồn tại',
+            ]);
+        }
+
+        // Lấy giá vé từ giá tour (tự động)
+        $gia_ve = $request->gia_ve;
+        if ($ve->id_hoa_don) {
+            $hoaDon = HoaDon::find($ve->id_hoa_don);
+            if ($hoaDon) {
+                $tour = Tour::find($hoaDon->id_tour);
+                if ($tour) {
+                    $gia_ve = $tour->gia;
+                }
+            }
+        }
+
+        $ve->update([
             'ma_ve'             => $request->ma_ve,
-            'gia_ve'            => $request->gia_ve,
+            'gia_ve'            => $gia_ve,
             'id_khach_hang'     => $request->id_khach_hang,
             'tinh_trang'        => $request->tinh_trang
         ]);
@@ -144,6 +175,54 @@ class VeController extends Controller
 
         Ve::where('id', $request->id)->update(['tinh_trang' => $request->tinh_trang]);
         return response()->json(['status' => true, 'message' => 'Thay đổi trạng thái vé thành công']);
+    }
+
+    /**
+     * ADMIN: Cập nhật tất cả giá vé theo giá tour
+     */
+    public function syncPrices()
+    {
+        $user = Auth::guard('sanctum')->user();
+        if ($user->is_master != 1) {
+            $id_chuc_nang = 8;
+            $id_chuc_vu   = $user->id_chuc_vu;
+            $check        = PhanQuyen::where('id_chuc_vu', $id_chuc_vu)->where('id_chuc_nang', $id_chuc_nang)->first();
+            if (!$check) {
+                return response()->json([
+                    'status'    =>  0,
+                    'message'   =>  'Bạn không có quyền thực hiện chức năng này!'
+                ]);
+            }
+        }
+
+        DB::beginTransaction();
+        try {
+            // Lấy tất cả vé với thông tin tour
+            $ves = Ve::join('hoa_dons', 'ves.id_hoa_don', '=', 'hoa_dons.id')
+                    ->join('tours', 'hoa_dons.id_tour', '=', 'tours.id')
+                    ->select('ves.id', 'tours.gia')
+                    ->get();
+
+            $updated = 0;
+            foreach ($ves as $ve) {
+                Ve::where('id', $ve->id)->update(['gia_ve' => $ve->gia]);
+                $updated++;
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'status'  => true,
+                'message' => "Cập nhật giá vé thành công! Đã cập nhật $updated vé.",
+                'updated' => $updated
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'status'  => false,
+                'message' => "Lỗi: " . $e->getMessage()
+            ]);
+        }
     }
 
     public function datTour(Request $request)
