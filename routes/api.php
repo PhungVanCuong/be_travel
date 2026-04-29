@@ -19,6 +19,7 @@ Use App\Http\Controllers\ChucNangController;
 use App\Http\Controllers\BaiVietController;
 use App\Http\Controllers\PhuongTienController;
 use App\Http\Controllers\HuongDanVienTourController;
+use App\Http\Controllers\LichTrinhController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -140,6 +141,12 @@ Route::prefix('')->group(function () {
         Route::post('/quan-ly-hdv/tao-phan-cong', [HuongDanVienTourController::class, 'taoPhanCong']);
         Route::post('/quan-ly-hdv/xoa-phan-cong', [HuongDanVienTourController::class, 'xoaPhanCong']);
 
+        // API Admin: Quản lý Lịch Trình Tour
+        Route::get('/lich-trinh/get-data', [LichTrinhController::class, 'getData']);
+        Route::post('/lich-trinh/add-data', [LichTrinhController::class, 'addData']);
+        Route::post('/lich-trinh/update', [LichTrinhController::class, 'update']);
+        Route::post('/lich-trinh/delete', [LichTrinhController::class, 'destroy']);
+
 
     });
 });
@@ -152,6 +159,7 @@ Route::prefix('')->group(function () {
     // api client dang ky và đăng nhập
     Route::post('/client/dang-nhap', [KhachHangController::class, 'dangNhap']);
     Route::post('/client/dang-ky', [KhachHangController::class, 'dangKy']);
+    Route::post('/client/xac-nhan-dang-ky', [KhachHangController::class, 'xacNhanDangKy']);
     Route::get('/client/check-token', [KhachHangController::class, 'checkToken']);
 
     // api quên mật khẩu
@@ -169,6 +177,7 @@ Route::prefix('')->group(function () {
     // API Hướng Dẫn Viên (Đưa ra vùng Public để ai cũng xem được)
     Route::get('/client/huong-dan-vien/danh-sach', [HuongDanVienTourController::class, 'getDanhSachHDVClient']);
     Route::get('/client/huong-dan-vien/chi-tiet/{id}', [HuongDanVienTourController::class, 'getChiTietHDVClient']);
+
 });
 
 // CLIENT ROUTES (Protected - Cần đăng nhập)

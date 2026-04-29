@@ -200,8 +200,11 @@ class KhachHangController extends Controller
         }
     }
 
-    public function dangKy(KhachHangDangKyRequest $request)
+    public function dangKy(\App\Http\Requests\KhachHangDangKyRequest $request)
     {
+        // Tạo ngẫu nhiên một mã xác nhận 6 số
+        $ma_kich_hoat = rand(100000, 999999);
+
         KhachHang::create([
             'ho_va_ten'     => $request->ho_va_ten,
             'email'         => $request->email,
@@ -209,17 +212,47 @@ class KhachHangController extends Controller
             'password'      => $request->password,
             'cccd'          => $request->cccd,
             'ngay_sinh'     => $request->ngay_sinh,
+            'is_active'     => 0, // Mặc định chưa kích hoạt
             'is_block'      => 0,
-            'is_active'     => 0,
+            'hash_reset'    => $ma_kich_hoat // Lưu tạm mã kích hoạt vào đây
         ]);
+
         $x['ho_va_ten']     = $request->ho_va_ten;
         $x['email']         = $request->email;
-        $x['ma_kich_hoat'] = rand(100000, 999999);
-        jobGuiMail::dispatch($request->email, 'Mail đăng ký tài khoản khách hàng', $x, 'mail');
+        $x['ma_kich_hoat']  = $ma_kich_hoat;
+
+        // Gửi mail
+        jobGuiMail::dispatch($request->email, 'Mã kích hoạt tài khoản IXTAL TOUR', $x, 'mail');
+
         return response()->json([
             'status' => true,
-            'message' => 'Đăng ký thành công',
+            'message' => 'Vui lòng kiểm tra email để lấy mã xác nhận!',
         ]);
+    }
+
+    public function xacNhanDangKy(Request $request)
+    {
+        // Khách hàng phải truyền email và mã xác nhận
+        $user = KhachHang::where('email', $request->email)
+                         ->where('hash_reset', $request->ma_kich_hoat)
+                         ->first();
+
+        if ($user) {
+            // Cập nhật trạng thái và xóa mã
+            $user->is_active = 1; // Kích hoạt tài khoản
+            $user->hash_reset = null;
+            $user->save();
+
+            return response()->json([
+                'status'  => true,
+                'message' => 'Kích hoạt tài khoản thành công! Bạn có thể đăng nhập ngay.',
+            ]);
+        } else {
+            return response()->json([
+                'status'  => false,
+                'message' => 'Mã xác nhận không hợp lệ hoặc email không đúng!',
+            ]);
+        }
     }
 
     public function checkToken(Request $request)
