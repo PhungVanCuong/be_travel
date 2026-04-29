@@ -21,6 +21,7 @@ use App\Http\Controllers\HuongDanVienController;
 use App\Http\Controllers\PhuongTienController;
 use App\Http\Controllers\HuongDanVienTourController;
 use App\Http\Controllers\LichTrinhController;
+use App\Http\Controllers\QuocGiaController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -89,7 +90,11 @@ Route::prefix('')->group(function () {
         Route::post('phan-quyen/chi-tiet-phan-quyen/add-data', [PhanQuyenController::class, 'addData']);
         Route::post('phan-quyen/chi-tiet-phan-quyen/delete', [PhanQuyenController::class, 'destroy']);
         Route::post('phan-quyen/chi-tiet-phan-quyen/data', [PhanQuyenController::class, 'getChiTietPhanQuyen']);
-
+        //Quốc gia
+        Route::get('/quoc-gia/get-data', [QuocGiaController::class, 'getData']);
+        Route::post('/quoc-gia/add-data', [QuocGiaController::class, 'addData']);
+        Route::post('/quoc-gia/update', [QuocGiaController::class, 'update']);
+        Route::post('/quoc-gia/destroy', [QuocGiaController::class, 'destroy']);
         // Đánh giá
         Route::get('/danh-gia/get-data', [DanhGiaController::class, 'getDataAdmin']);
         Route::post('/danh-gia/doi-tinh-trang', [DanhGiaController::class, 'doiTrangThai']);

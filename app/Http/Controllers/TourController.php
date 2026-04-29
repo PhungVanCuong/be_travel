@@ -25,7 +25,7 @@ class TourController extends Controller
             }
         }
 
-        $data = Tour::all();
+        $data = Tour::with('quoc_gia')->get();
         return response()->json([
             'status' => true,
             'message' => 'Lấy dữ liệu tour thành công',
