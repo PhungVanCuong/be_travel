@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('avatar')->nullable();
             $table->string('hash_reset')->nullable();
             $table->string('hash_active')->nullable();
-            $table->integer('is_active')->default(0)->comment('0: chưa kích hoạt, 1: đã kích hoạt');
+            $table->integer('is_active')->default(1)->comment('0: chưa kích hoạt, 1: đã kích hoạt');
             $table->integer('is_block')->default(0)->comment('0: chưa bị khóa, 1: đã bị khóa');
             $table->timestamps();
         });

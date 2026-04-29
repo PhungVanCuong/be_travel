@@ -209,8 +209,8 @@ class KhachHangController extends Controller
             'password'      => $request->password,
             'cccd'          => $request->cccd,
             'ngay_sinh'     => $request->ngay_sinh,
+            'is_active'     => 1,
             'is_block'      => 0,
-            'is_active'     => 0,
         ]);
         $x['ho_va_ten']     = $request->ho_va_ten;
         $x['email']         = $request->email;
