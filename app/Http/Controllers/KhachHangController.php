@@ -239,7 +239,7 @@ class KhachHangController extends Controller
 
         if ($user) {
             // Cập nhật trạng thái và xóa mã
-            $user->is_active = 1;
+            $user->is_active = 1; // Kích hoạt tài khoản
             $user->hash_reset = null;
             $user->save();
 
