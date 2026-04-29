@@ -17,6 +17,8 @@ use App\Http\Controllers\ThongKeController;
 Use App\Http\Controllers\HoaDonController;
 Use App\Http\Controllers\ChucNangController;
 use App\Http\Controllers\BaiVietController;
+use App\Http\Controllers\PhuongTienController;
+use App\Http\Controllers\HuongDanVienTourController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -125,6 +127,19 @@ Route::prefix('')->group(function () {
         Route::post('/vnpay-db/destroy', [VNPayController::class, 'destroy']);
         Route::post('/vnpay-db/change-status', [VNPayController::class, 'changeStatus']);
 
+        // api admin phương tiện
+        Route::get('/phuong-tien/get-data', [PhuongTienController::class, 'getData']);
+        Route::post('/phuong-tien/add-data', [PhuongTienController::class, 'addData']);
+        Route::post('/phuong-tien/update', [PhuongTienController::class, 'update']);
+        Route::post('/phuong-tien/delete', [PhuongTienController::class, 'destroy']);
+        Route::post('/phuong-tien/change-status', [PhuongTienController::class, 'changeStatus']);
+
+        // api Quản lý Hướng Dẫn Viên và Phân Công (Admin)
+        Route::get('/quan-ly-hdv/danh-sach-hdv', [HuongDanVienTourController::class, 'getDanhSachHuongDanVien']);
+        Route::get('/quan-ly-hdv/danh-sach-phan-cong', [HuongDanVienTourController::class, 'getDanhSachPhanCong']);
+        Route::post('/quan-ly-hdv/tao-phan-cong', [HuongDanVienTourController::class, 'taoPhanCong']);
+        Route::post('/quan-ly-hdv/xoa-phan-cong', [HuongDanVienTourController::class, 'xoaPhanCong']);
+
 
     });
 });
@@ -150,6 +165,10 @@ Route::prefix('')->group(function () {
     // VNPay Webhooks & Return (Bắt buộc để ngoài vùng Auth để VNPay có thể gửi dữ liệu tới)
     Route::get('/client/vnpay/check-return', [VNPayController::class, 'vnpayReturn']);
     Route::get('/client/vnpay/ipn', [VNPayController::class, 'vnpayIpn']);
+
+    // API Hướng Dẫn Viên (Đưa ra vùng Public để ai cũng xem được)
+    Route::get('/client/huong-dan-vien/danh-sach', [HuongDanVienTourController::class, 'getDanhSachHDVClient']);
+    Route::get('/client/huong-dan-vien/chi-tiet/{id}', [HuongDanVienTourController::class, 'getChiTietHDVClient']);
 });
 
 // CLIENT ROUTES (Protected - Cần đăng nhập)
@@ -183,8 +202,15 @@ Route::prefix('')->group(function () {
         Route::get('/hoa-don/chi-tiet-thanh-toan/{ma_hoa_don}', [HoaDonController::class, 'getChiTietThanhToanHoaDon']);
         Route::post('/hoa-don/huy', [HoaDonController::class, 'HuyHoaDon']);
 
-        // API Lấy chi tiết Cẩm nang / Bài viết
+        // API Lấy chi tiết Bài viết
         Route::post('/chi-tiet-bai-viet/get-data', [BaiVietController::class, 'chiTietBaiVietClient']);
+
+        // api lấy danh sách phương tiện
+        Route::get('/phuong-tien/get-data', [PhuongTienController::class, 'getDataClient']);
+
+        // API này vẫn để trong này vì nó liên quan đến đặt tour
+        Route::get('/tour/huong-dan-vien/{id_tour}', [HuongDanVienTourController::class, 'getHDVByTour']);
+
     });
 });
 

@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
 
 class HuongDanVienSeeder extends Seeder
 {
@@ -56,7 +55,7 @@ class HuongDanVienSeeder extends Seeder
                 'password' => '123456',
                 'ngon_ngu' => 'Tiếng Việt, Tiếng Nhật',
                 'so_dien_thoai' => '0901111005',
-                'is_active' => 0, // Tài khoản mới, chưa kích hoạt
+                'is_active' => 1, // Đã kích hoạt
                 'is_block' => 0,
             ],
             [
@@ -66,13 +65,13 @@ class HuongDanVienSeeder extends Seeder
                 'ngon_ngu' => 'Tiếng Việt, Tiếng Anh',
                 'so_dien_thoai' => '0901111006',
                 'is_active' => 1,
-                'is_block' => 1, // Tài khoản đang bị khóa (ví dụ: đang tạm nghỉ việc)
+                'is_block' => 0, // Đã mở khóa
             ]
         ];
 
         // Xóa dữ liệu cũ và reset ID
         DB::table('huong_dan_viens')->truncate();
-        DB::table('huong_dan_viens')->delete(); 
+        DB::table('huong_dan_viens')->delete();
         // Chèn dữ liệu mới
         DB::table('huong_dan_viens')->insert($huongDanVien);
     }

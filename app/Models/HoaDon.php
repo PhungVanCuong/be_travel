@@ -24,7 +24,7 @@ class HoaDon extends Model
     const DA_HUY = 0;
 
     public function ds_ve()
-{
-    return $this->hasMany(Ve::class, 'id_hoa_don', 'id');
-}
+    {
+        return $this->hasMany(Ve::class, 'id_hoa_don', 'id');
+    }
 }
