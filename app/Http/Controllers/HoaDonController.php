@@ -232,7 +232,9 @@ class HoaDonController extends Controller
                 'so_luong_nguoi' => $hoaDon->so_luong_nguoi,
                 'trang_thai' => $hoaDon->trang_thai,
                 'phuong_thuc_thanh_toan' => $hoaDon->phuong_thuc_thanh_toan,
+                'ghi_chu' => $hoaDon->ghi_chu_danh_sach_nguoi_di,
                 'tour' => $tour ? [
+                    'id_tour' => $tour->id,
                     'ten_tour' => $tour->ten_tour,
                     'hinh_anh' => $tour->hinh_anh,
                     'diem_don' => $tour->diem_don,
