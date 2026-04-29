@@ -26,7 +26,7 @@ class HoaDonSeeder extends Seeder
             return;
         }
 
-        $phuongThucThanhToan = ['vnpay', 'cash', 'chuyển khoản'];
+        $phuongThucThanhToan = ['vnpay', 'chuyển khoản'];
 
         // Bao gồm cả 3 trạng thái: 1 (Chưa TT), 2 (Đã TT), 0 (Đã hủy)
         $trangThaiChung = [HoaDon::CHUA_THANH_TOAN, HoaDon::DA_THANH_TOAN, HoaDon::DA_HUY];

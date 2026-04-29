@@ -264,7 +264,78 @@ class TourSeeder extends Seeder
                 'hinh_anh' => 'https://media.vietravel.com/images/Content/trai-nghiem-du-thuyen-o-singapore-4.png',
                 'id_quoc_gia' => 5,
                 'created_at' => $now, 'updated_at' => $now,
-            ]
+            ],
+            // ================ 5 TOUR BỔ SUNG MỚI ================ //
+            [
+                'ten_tour' => 'Malaysia: Kuala Lumpur - Tháp đôi Petronas - Động Batu',
+                'mo_ta' => 'Khám phá thủ đô Kuala Lumpur sôi động, check-in tháp đôi biểu tượng và tìm hiểu văn hóa đạo Hindu tại Động Batu huyền bí.',
+                'gia' => 6500000.00,
+                'ngay_bat_dau' => '2026-09-10',
+                'ngay_ket_thuc' => '2026-09-13',
+                'so_nguoi_toi_da' => 25,
+                'diem_don' => 'Sân bay quốc tế Kuala Lumpur (KLIA)',
+                'diem_tra' => 'Sân bay quốc tế Kuala Lumpur (KLIA)',
+                'tinh_trang' => 1,
+                'hinh_anh' => 'https://res.klook.com/images/fl_lossy.progressive,q_65/c_fill,w_1000,h_667/w_61,x_11,y_11,g_south_west,l_Klook_water_br_trans_yhcmh3/activities/pxydqdg21objrnxplrmb/TourC%E1%BA%A3Ng%C3%A0yTh%C3%A1p%C4%90%C3%B4iPetronasV%C3%A0%C4%90%E1%BB%99ngBatu.jpg',
+                'id_quoc_gia' => 6, // Malaysia
+                'created_at' => $now, 'updated_at' => $now,
+            ],
+            [
+                'ten_tour' => 'Trung Quốc: Bắc Kinh - Vạn Lý Trường Thành - Tử Cấm Thành',
+                'mo_ta' => 'Hành trình ngược dòng lịch sử khám phá Tử Cấm Thành nguy nga và chinh phục Vạn Lý Trường Thành hùng vĩ của đất nước tỷ dân.',
+                'gia' => 15500000.00,
+                'ngay_bat_dau' => '2026-10-05',
+                'ngay_ket_thuc' => '2026-10-09',
+                'so_nguoi_toi_da' => 30,
+                'diem_don' => 'Sân bay quốc tế Thủ đô Bắc Kinh',
+                'diem_tra' => 'Sân bay quốc tế Thủ đô Bắc Kinh',
+                'tinh_trang' => 1,
+                'hinh_anh' => 'https://bizweb.dktcdn.net/thumb/grande/100/444/252/products/2-394c578c-41dc-4fcc-8b61-9321f9883b11.jpg?v=1719285613527',
+                'id_quoc_gia' => 7, // Trung Quốc
+                'created_at' => $now, 'updated_at' => $now,
+            ],
+            [
+                'ten_tour' => 'Đài Loan: Đài Bắc - Phố cổ Thập Phần - Tháp Taipei 101',
+                'mo_ta' => 'Thả đèn trời cầu bình an tại phố cổ Thập Phần, chiêm ngưỡng tòa tháp Taipei 101 và oanh tạc các khu chợ đêm ẩm thực sầm uất.',
+                'gia' => 11500000.00,
+                'ngay_bat_dau' => '2026-11-20',
+                'ngay_ket_thuc' => '2026-11-24',
+                'so_nguoi_toi_da' => 25,
+                'diem_don' => 'Sân bay quốc tế Đào Viên, Đài Bắc',
+                'diem_tra' => 'Sân bay quốc tế Đào Viên, Đài Bắc',
+                'tinh_trang' => 1,
+                'hinh_anh' => 'https://thaiantravel.com/wp-content/uploads/2024/06/1-taipei-101-thaiantravel-2-jpg.webp',
+                'id_quoc_gia' => 8, // Đài Loan
+                'created_at' => $now, 'updated_at' => $now,
+            ],
+            [
+                'ten_tour' => 'Bali: Thiên đường đảo ngọc - Cổng trời Handara',
+                'mo_ta' => 'Tận hưởng kỳ nghỉ dưỡng tại thiên đường Bali, check-in Cổng trời Handara ma mị và ngắm hoàng hôn lãng mạn tại đền Tanah Lot.',
+                'gia' => 10500000.00,
+                'ngay_bat_dau' => '2026-07-15',
+                'ngay_ket_thuc' => '2026-07-19',
+                'so_nguoi_toi_da' => 20,
+                'diem_don' => 'Sân bay quốc tế Ngurah Rai, Bali',
+                'diem_tra' => 'Sân bay quốc tế Ngurah Rai, Bali',
+                'tinh_trang' => 1,
+                'hinh_anh' => 'https://cdn3.ivivu.com/2024/09/du-lich-indonesia-cong-troi-Handara-ivivu1.jpg',
+                'id_quoc_gia' => 9, // Indonesia
+                'created_at' => $now, 'updated_at' => $now,
+            ],
+            [
+                'ten_tour' => 'Dubai: Chinh phục Tháp Burj Khalifa - Sa mạc Safari',
+                'mo_ta' => 'Khám phá sự xa hoa tột bậc của Tiểu vương quốc Ả Rập, chiêm ngưỡng tháp cao nhất thế giới và đua xe mạo hiểm trên sa mạc Safari.',
+                'gia' => 28900000.00,
+                'ngay_bat_dau' => '2026-12-01',
+                'ngay_ket_thuc' => '2026-12-05',
+                'so_nguoi_toi_da' => 20,
+                'diem_don' => 'Sân bay quốc tế Dubai',
+                'diem_tra' => 'Sân bay quốc tế Dubai',
+                'tinh_trang' => 1,
+                'hinh_anh' => 'https://saigontourist.net/media/private/TpMZ83/BZOi0X/e646d462.jpg.thumb/880x660.jpg',
+                'id_quoc_gia' => 10, // Dubai
+                'created_at' => $now, 'updated_at' => $now,
+            ],
         ];
 
         DB::table('tours')->truncate();

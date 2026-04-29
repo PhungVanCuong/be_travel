@@ -18,6 +18,7 @@ class HuongDanVien extends Authenticatable
         'password',
         'ngon_ngu',
         'so_dien_thoai',
+        'avatar',
         'is_active',
         'is_block',
         'hash_reset',

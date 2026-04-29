@@ -26,7 +26,7 @@ return new class extends Migration
             $table->string('ma_hoa_don')->unique()->nullable();
             $table->integer('so_luong_nguoi')->nullable();
             $table->integer('tong_tien')->nullable();
-            $table->string('phuong_thuc_thanh_toan')->nullable(); // vnpay, cash
+            $table->string('phuong_thuc_thanh_toan')->nullable(); // vnpay, chuyển khoản
             $table->string('trang_thai')->default(1)->nullable(); // 1  chưa thanh toán, 2 đã thanh toán 0 đã hủy
             $table->text('ghi_chu_danh_sach_nguoi_di')->nullable();
             $table->dateTime('ngay_tao')->nullable();

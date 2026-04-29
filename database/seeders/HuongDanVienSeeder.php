@@ -19,6 +19,7 @@ class HuongDanVienSeeder extends Seeder
                 'password' => '123456',
                 'ngon_ngu' => 'Tiếng Việt, Tiếng Anh',
                 'so_dien_thoai' => '0901111001',
+                'avatar' => 'https://i.pinimg.com/736x/56/72/d6/5672d634f75f75edb6e8cd3de03f099e.jpg',
                 'is_active' => 1,
                 'is_block' => 0,
             ],
@@ -28,6 +29,7 @@ class HuongDanVienSeeder extends Seeder
                 'password' => '123456',
                 'ngon_ngu' => 'Tiếng Việt, Tiếng Hàn',
                 'so_dien_thoai' => '0901111002',
+                'avatar' => 'https://i.pinimg.com/736x/56/72/d6/5672d634f75f75edb6e8cd3de03f099e.jpg',
                 'is_active' => 1,
                 'is_block' => 0,
             ],
@@ -37,6 +39,7 @@ class HuongDanVienSeeder extends Seeder
                 'password' => '123456',
                 'ngon_ngu' => 'Tiếng Việt, Tiếng Trung',
                 'so_dien_thoai' => '0901111003',
+                'avatar' => 'https://i.pinimg.com/736x/56/72/d6/5672d634f75f75edb6e8cd3de03f099e.jpg',
                 'is_active' => 1,
                 'is_block' => 0,
             ],
@@ -46,6 +49,7 @@ class HuongDanVienSeeder extends Seeder
                 'password' => '123456',
                 'ngon_ngu' => 'Tiếng Việt, Tiếng Anh, Tiếng Pháp',
                 'so_dien_thoai' => '0901111004',
+                'avatar' => 'https://i.pinimg.com/736x/56/72/d6/5672d634f75f75edb6e8cd3de03f099e.jpg',
                 'is_active' => 1,
                 'is_block' => 0,
             ],
@@ -55,6 +59,7 @@ class HuongDanVienSeeder extends Seeder
                 'password' => '123456',
                 'ngon_ngu' => 'Tiếng Việt, Tiếng Nhật',
                 'so_dien_thoai' => '0901111005',
+                'avatar' => 'https://i.pinimg.com/736x/56/72/d6/5672d634f75f75edb6e8cd3de03f099e.jpg',
                 'is_active' => 1, // Đã kích hoạt
                 'is_block' => 0,
             ],
@@ -64,6 +69,7 @@ class HuongDanVienSeeder extends Seeder
                 'password' => '123456',
                 'ngon_ngu' => 'Tiếng Việt, Tiếng Anh',
                 'so_dien_thoai' => '0901111006',
+                'avatar' => 'https://i.pinimg.com/736x/56/72/d6/5672d634f75f75edb6e8cd3de03f099e.jpg',
                 'is_active' => 1,
                 'is_block' => 0, // Đã mở khóa
             ]

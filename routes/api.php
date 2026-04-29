@@ -17,6 +17,7 @@ use App\Http\Controllers\ThongKeController;
 Use App\Http\Controllers\HoaDonController;
 Use App\Http\Controllers\ChucNangController;
 use App\Http\Controllers\BaiVietController;
+use App\Http\Controllers\HuongDanVienController;
 use App\Http\Controllers\PhuongTienController;
 use App\Http\Controllers\HuongDanVienTourController;
 use App\Http\Controllers\LichTrinhController;
@@ -225,3 +226,41 @@ Route::prefix('')->group(function () {
 });
 
 
+// HuongDanVien ROUTES (Public - Không cần đăng nhập)
+Route::prefix('')->group(function () {
+    // api client dang ky và đăng nhập
+    Route::post('/huong-dan-vien/dang-nhap', [HuongDanVienController::class, 'dangNhap']);
+    Route::post('/huong-dan-vien/dang-ky', [HuongDanVienController::class, 'dangKy']);
+    Route::post('/huong-dan-vien/xac-nhan-dang-ky', [HuongDanVienController::class, 'xacNhanDangKy']);
+    Route::get('/huong-dan-vien/check-token', [HuongDanVienController::class, 'checkToken']);
+
+    // api quên mật khẩu
+    Route::post('/huong-dan-vien/quen-mat-khau', [HuongDanVienController::class, 'quenMK']);
+    Route::post('/huong-dan-vien/lay-lai-mat-khau', [HuongDanVienController::class, 'layLaiMK']);
+
+});
+
+
+// CLIENT ROUTES (Protected - Cần đăng nhập)
+Route::prefix('')->group(function () {
+    Route::group(['prefix' => '/huong-dan-vien'], function () {
+        // profile hướng dẫn viên
+        Route::get('/profile/get-data', [HuongDanVienController::class, 'getProfile']);
+        Route::post('/profile/update', [HuongDanVienController::class, 'updateProfile']);
+        // đổi mật khẩu hướng dẫn viên
+        Route::post('/doi-mat-khau', [HuongDanVienController::class, 'doiMatKhau']);
+        Route::post('/dang-xuat', [HuongDanVienController::class, 'dangXuat']);
+        Route::post('/dang-xuat-all', [HuongDanVienController::class, 'dangXuatAll']);
+
+        // THÊM DÒNG NÀY: Lấy danh sách lịch trình cho Hướng Dẫn Viên
+        Route::get('/lich-trinh/get-data', [LichTrinhController::class, 'getLichTrinhHDV']);
+
+        // Quản lý nhận tour dành cho Hướng Dẫn Viên
+        Route::get('/quan-ly-tour/tour-trong', [HuongDanVienTourController::class, 'getTourTrong']);
+        Route::get('/quan-ly-tour/tour-cua-toi', [HuongDanVienTourController::class, 'getTourCuaToi']);
+        Route::post('/quan-ly-tour/nhan-tour', [HuongDanVienTourController::class, 'nhanTour']);
+
+        // LẤY DANH SÁCH KHÁCH HÀNG THUỘC TOUR CỦA TÔI
+        Route::get('/quan-ly-khach-hang/get-data', [HuongDanVienTourController::class, 'getKhachHangCuaToi']);
+    });
+});

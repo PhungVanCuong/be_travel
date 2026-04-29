@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('password');
             $table->string('ngon_ngu')->nullable();
             $table->string('so_dien_thoai')->nullable();
+            $table->string('avatar')->nullable();
             $table->string('hash_reset')->nullable();
             $table->string('hash_active')->nullable();
             $table->integer('is_active')->default(0)->comment('0: chưa kích hoạt, 1: đã kích hoạt');
