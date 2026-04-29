@@ -83,7 +83,7 @@ class HoaDonController extends Controller
                 if ($statusHoaDon == 2) {
                     $statusVe = 2; // 2: Đã TT
                 } else if ($statusHoaDon == 0) {
-                    $statusVe = 0; // 0: Đã hủy (Lưu ý: Bạn cần check lại hằng số trong Model Ve)
+                    $statusVe = 0; // 0: Đã hủy
                 }
 
                 // Cập nhật tất cả vé thuộc hóa đơn này
@@ -288,7 +288,7 @@ class HoaDonController extends Controller
             'message' => 'Lấy chi tiết hóa đơn thành công',
             'data'    => [
                 'hoa_don' => [
-                    'id_hoa_don' => $hoaDon->id,
+                    'id'         => $hoaDon->id,
                     'ma_hoa_don' => $hoaDon->ma_hoa_don,
                     'ngay_dat'   => $hoaDon->ngay_tao,
                     'tong_tien'  => $hoaDon->tong_tien,
@@ -371,7 +371,7 @@ class HoaDonController extends Controller
                 $tour->increment('so_nguoi_toi_da', $hoaDon->so_luong_nguoi);
             }
 
-            // 3. Xóa hoặc Cập nhật hóa đơn thành Đã Hủy (Nên update thay vì xóa cứng để lưu lịch sử)
+            // 3. Cập nhật hóa đơn thành Đã Hủy
             $hoaDon->update([
                 'trang_thai' => HoaDon::DA_HUY
             ]);

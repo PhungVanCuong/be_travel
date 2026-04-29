@@ -22,6 +22,9 @@ class VNPayController extends Controller
             return response()->json(['status' => false, 'message' => 'Không tìm thấy hóa đơn']);
         }
 
+        $hoaDon->phuong_thuc_thanh_toan = 'VNPAY';
+        $hoaDon->save();
+
         $vnp_TmnCode = 'ORAWIP6X'; // Thay đổi mã website của bạn tại đây
         $vnp_HashSecret = 'KCPUCG0YL3BRPCFNH9QSDFKS06ET99H8'; // Thay đổi secret key của bạn tại đây
         $vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html"; // URL thanh toán của VNPay
@@ -59,7 +62,6 @@ class VNPayController extends Controller
             $hashdata .= urlencode($key) . "=" . urlencode($value) . '&';
         }
 
-        // ✅ FIX QUAN TRỌNG
         $query = rtrim($query, '&');
         $hashdata = rtrim($hashdata, '&');
 
@@ -100,13 +102,10 @@ class VNPayController extends Controller
         $vnp_HashSecret = 'KCPUCG0YL3BRPCFNH9QSDFKS06ET99H8';
         $secureHash = hash_hmac('sha512', $hashData, $vnp_HashSecret);
 
-        // Chuẩn bị link full để lưu vào Database
         $fullUrl = $request->fullUrl();
-
-        // Tách lấy ID Hóa Đơn từ vnp_TxnRef (VD: 1_1777299139 -> Lấy số 1)
         $hoaDonId = isset($request->vnp_TxnRef) ? explode('_', $request->vnp_TxnRef)[0] : null;
-        $idKhachHang = 0; // Mặc định nếu không tìm thấy
-        $hoaDonData = null; // Biến lưu toàn bộ thông tin hóa đơn để trả về Frontend
+        $idKhachHang = 0;
+        $hoaDonData = null;
 
         if ($hoaDonId) {
             $hoaDon = HoaDon::find($hoaDonId);
@@ -118,10 +117,9 @@ class VNPayController extends Controller
 
         if ($secureHash === $vnp_SecureHash) {
             if ($request->vnp_ResponseCode == '00') {
-                // LƯU LOG: Thành công (tinh_trang = 2 theo DB mới của bạn)
                 VNPay::create([
                     'id_khach_hang' => $idKhachHang,
-                    'id_hoa_don'    => $hoaDonId, // Thêm id_hoa_don
+                    'id_hoa_don'    => $hoaDonId,
                     'link_data'     => $fullUrl,
                     'tinh_trang'    => 2
                 ]);
@@ -129,13 +127,12 @@ class VNPayController extends Controller
                 return response()->json([
                     'status' => true,
                     'message' => 'Giao dịch thành công',
-                    'data' => $hoaDonData // Trả data hóa đơn về cho Frontend
+                    'data' => $hoaDonData
                 ]);
             } else {
-                // LƯU LOG: Thất bại (tinh_trang = 1 theo DB mới của bạn)
                 VNPay::create([
                     'id_khach_hang' => $idKhachHang,
-                    'id_hoa_don'    => $hoaDonId, // Thêm id_hoa_don
+                    'id_hoa_don'    => $hoaDonId,
                     'link_data'     => $fullUrl,
                     'tinh_trang'    => 1
                 ]);
@@ -144,10 +141,9 @@ class VNPayController extends Controller
             }
         }
 
-        // LƯU LOG: Sai chữ ký
         VNPay::create([
             'id_khach_hang' => $idKhachHang,
-            'id_hoa_don'    => $hoaDonId, // Thêm id_hoa_don
+            'id_hoa_don'    => $hoaDonId,
             'link_data'     => $fullUrl,
             'tinh_trang'    => 0
         ]);
@@ -200,36 +196,35 @@ class VNPayController extends Controller
             return response()->json(['RspCode' => '02', 'Message' => 'Already confirmed']);
         }
 
-        // --- BẮT ĐẦU LƯU LOG IPN VÀO BẢNG v_n_pays ---
         $fullIpnUrl = $request->fullUrl();
 
         DB::beginTransaction();
         try {
             if ($inputData['vnp_ResponseCode'] == '00') {
                 $hoaDon->trang_thai = HoaDon::DA_THANH_TOAN;
+                $hoaDon->phuong_thuc_thanh_toan = 'VNPAY';
+                $hoaDon->save();
                 Ve::where('id_hoa_don', $hoaDon->id)->update(['tinh_trang' => Ve::DA_THANH_TOAN]);
 
-                // Ghi log thành công (2: Thành công)
                 VNPay::create([
                     'id_khach_hang' => $hoaDon->id_khach_hang,
-                    'id_hoa_don'    => $hoaDon->id, // Thêm id_hoa_don
+                    'id_hoa_don'    => $hoaDon->id,
                     'link_data'     => "IPN_CALL: " . $fullIpnUrl,
                     'tinh_trang'    => 2
                 ]);
             } else {
                 $hoaDon->trang_thai = HoaDon::DA_HUY;
+                $hoaDon->save();
                 Ve::where('id_hoa_don', $hoaDon->id)->update(['tinh_trang' => Ve::DA_HUY]);
 
-                // Ghi log thất bại (1: Thất bại)
                 VNPay::create([
                     'id_khach_hang' => $hoaDon->id_khach_hang,
-                    'id_hoa_don'    => $hoaDon->id, // Thêm id_hoa_don
+                    'id_hoa_don'    => $hoaDon->id,
                     'link_data'     => "IPN_CALL: " . $fullIpnUrl,
                     'tinh_trang'    => 1
                 ]);
             }
 
-            $hoaDon->save();
             DB::commit();
 
             return response()->json(['RspCode' => '00', 'Message' => 'Confirm Success']);
@@ -288,7 +283,7 @@ class VNPayController extends Controller
 
         VNPay::create([
             'id_khach_hang' => $request->id_khach_hang,
-            'id_hoa_don'    => $request->id_hoa_don, // Thêm id_hoa_don
+            'id_hoa_don'    => $request->id_hoa_don,
             'link_data'     => $request->link_data,
             'tinh_trang'    => $request->tinh_trang ?? 0,
         ]);
@@ -328,7 +323,7 @@ class VNPayController extends Controller
 
         $vnpay->update([
             'id_khach_hang' => $request->id_khach_hang,
-            'id_hoa_don'    => $request->id_hoa_don, // Thêm id_hoa_don
+            'id_hoa_don'    => $request->id_hoa_don,
             'link_data'     => $request->link_data,
             'tinh_trang'    => $request->tinh_trang,
         ]);
@@ -406,24 +401,49 @@ class VNPayController extends Controller
             'message' => 'Dữ liệu không tồn tại.'
         ]);
     }
+
+    // --- HÀM XỬ LÝ THANH TOÁN (GỌI TỪ FRONTEND VUEJS) ---
     public function checkThanhToan(Request $request)
     {
         $vnp_ResponseCode = $request->vnp_ResponseCode;
         $id_hoa_don = $request->vnp_OrderInfo;
 
+        // Lấy data link trả về từ frontend để lưu trữ làm bằng chứng giao dịch
+        $link_data = json_encode($request->all());
+
         if ($vnp_ResponseCode == '00') {
-            // Sử dụng eager loading 've' để tối ưu query nếu cần
             $hoa_don = HoaDon::with('ds_ve')->find($id_hoa_don);
 
             if ($hoa_don && $hoa_don->trang_thai == 1) {
-                // 1. Cập nhật trạng thái Hóa đơn
                 $hoa_don->trang_thai = 2; // Đã thanh toán
+                $hoa_don->phuong_thuc_thanh_toan = 'VNPAY'; // Check lần 3 cho chắc chắn
                 $hoa_don->save();
                 $hoa_don->ds_ve()->update(['tinh_trang' => 2]);
+
+                // THÊM MỚI: LƯU VÀO BẢNG v_n_pays LÚC KIỂM TRA THÀNH CÔNG
+                VNPay::create([
+                    'id_khach_hang' => $hoa_don->id_khach_hang,
+                    'id_hoa_don'    => $hoa_don->id,
+                    'link_data'     => $link_data,
+                    'tinh_trang'    => 1 // 1: Thành công (theo comment table của bạn)
+                ]);
 
                 return response()->json([
                     'status' => true,
                     'message' => 'Thanh toán thành công và vé đã được kích hoạt'
+                ]);
+            }
+        }
+
+        // THÊM MỚI: LƯU VÀO BẢNG v_n_pays NẾU THẤT BẠI HOẶC BỊ HỦY (ví dụ khách bấm nút Back)
+        if ($id_hoa_don) {
+            $hoa_don_that_bai = HoaDon::find($id_hoa_don);
+            if ($hoa_don_that_bai) {
+                VNPay::create([
+                    'id_khach_hang' => $hoa_don_that_bai->id_khach_hang,
+                    'id_hoa_don'    => $hoa_don_that_bai->id,
+                    'link_data'     => $link_data ?? 'Failed/Canceled',
+                    'tinh_trang'    => 2 // 2: Thất bại (theo comment table của bạn)
                 ]);
             }
         }
