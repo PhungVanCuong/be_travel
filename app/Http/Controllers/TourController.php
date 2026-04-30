@@ -152,4 +152,41 @@ class TourController extends Controller
             'data' => $data
         ]);
     }
+    public function destroy(Request $request)
+{
+    $user = Auth::guard('sanctum')->user();
+
+    // Check quyền
+    if ($user->is_master != 1) {
+        $id_chuc_nang = 1;
+        $id_chuc_vu   = $user->id_chuc_vu;
+
+        $check = PhanQuyen::where('id_chuc_vu', $id_chuc_vu)
+            ->where('id_chuc_nang', $id_chuc_nang)
+            ->first();
+
+        if (!$check) {
+            return response()->json([
+                'status'  => 0,
+                'message' => 'Bạn không có quyền thực hiện chức năng này!'
+            ]);
+        }
+    }
+
+    $tour = Tour::find($request->id);
+
+    if (!$tour) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Tour không tồn tại'
+        ]);
+    }
+
+    $tour->delete();
+
+    return response()->json([
+        'status' => true,
+        'message' => 'Xóa tour thành công'
+    ]);
+}
 }

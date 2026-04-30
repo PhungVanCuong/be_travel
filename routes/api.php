@@ -39,7 +39,7 @@ Route::prefix('')->group(function () {
     // CHECK TOKEN ADMIN
     Route::post('/admin/dang-nhap', [NhanVienController::class, 'dangNhap']);
     Route::get('/admin/check-token', [NhanVienController::class, 'checkToken']);
-    Route::group(['prefix' => '/admin'], function () {
+    Route::group(['prefix' => '/admin', 'middleware' => 'auth:sanctum'], function () {
 
         // api admin nhân viên
         Route::get('/nhan-vien/get-data', [NhanVienController::class, 'getData']);
@@ -141,6 +141,13 @@ Route::prefix('')->group(function () {
         Route::post('/phuong-tien/update', [PhuongTienController::class, 'update']);
         Route::post('/phuong-tien/delete', [PhuongTienController::class, 'destroy']);
         Route::post('/phuong-tien/change-status', [PhuongTienController::class, 'changeStatus']);
+
+        // api admin hướng dẫn viên
+        Route::get('/huong-dan-vien/get-data', [HuongDanVienController::class, 'getData']);
+        Route::post('/huong-dan-vien/store', [HuongDanVienController::class, 'addData']);
+        Route::post('/huong-dan-vien/update', [HuongDanVienController::class, 'update']);
+        Route::post('/huong-dan-vien/destroy', [HuongDanVienController::class, 'destroy']);
+        Route::post('/huong-dan-vien/change-status', [HuongDanVienController::class, 'changeStatus']);
 
         // api Quản lý Hướng Dẫn Viên và Phân Công (Admin)
         Route::get('/quan-ly-hdv/danh-sach-hdv', [HuongDanVienTourController::class, 'getDanhSachHuongDanVien']);

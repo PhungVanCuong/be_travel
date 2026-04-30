@@ -40,81 +40,81 @@ class HuongDanVienController extends Controller
         ]);
     }
 
-    public function addData(Request $request)
-    {
-        $user = Auth::guard('sanctum')->user();
-        if ($user->is_master != 1) {
-            $id_chuc_nang = 14;
-            $id_chuc_vu   = $user->id_chuc_vu;
-            $check        = PhanQuyen::where('id_chuc_vu', $id_chuc_vu)->where('id_chuc_nang', $id_chuc_nang)->first();
-            if (!$check) {
-                return response()->json([
-                    'status'    =>  0,
-                    'message'   =>  'Bạn không có quyền thực hiện chức năng này!'
-                ]);
-            }
+public function addData(Request $request)
+{
+    $user = Auth::guard('sanctum')->user();
+    if ($user->is_master != 1) {
+        $id_chuc_nang = 14;
+        $id_chuc_vu   = $user->id_chuc_vu;
+        $check        = PhanQuyen::where('id_chuc_vu', $id_chuc_vu)->where('id_chuc_nang', $id_chuc_nang)->first();
+        if (!$check) {
+            return response()->json([
+                'status'    =>  0,
+                'message'   =>  'Bạn không có quyền thực hiện chức năng này!'
+            ]);
         }
+    }
 
-        HuongDanVien::create([
+    HuongDanVien::create([
+        'email'         => $request->email,
+        'ho_va_ten'     => $request->ho_va_ten,
+        'password'      => $request->password,
+        'ngon_ngu'      => $request->ngon_ngu ?? 'Tiếng Việt',
+        'so_dien_thoai' => $request->so_dien_thoai,
+        // Lấy avatar mặc định giống hệt trong Seeder nếu Frontend không gửi lên
+        'avatar'        => $request->avatar ?? 'https://i.pinimg.com/736x/56/72/d6/5672d634f75f75edb6e8cd3de03f099e.jpg',
+        'is_active'     => $request->is_active ?? 1,
+        'is_block'      => 0,
+    ]);
+
+    return response()->json([
+        'status'  => true,
+        'message' => 'Thêm hướng dẫn viên ' . $request->ho_va_ten . ' thành công',
+    ]);
+}
+public function update(Request $request)
+{
+    $user = Auth::guard('sanctum')->user();
+    if ($user->is_master != 1) {
+        $id_chuc_nang = 14;
+        $id_chuc_vu   = $user->id_chuc_vu;
+        $check        = PhanQuyen::where('id_chuc_vu', $id_chuc_vu)->where('id_chuc_nang', $id_chuc_nang)->first();
+        if (!$check) {
+            return response()->json([
+                'status'    =>  0,
+                'message'   =>  'Bạn không có quyền thực hiện chức năng này!'
+            ]);
+        }
+    }
+
+    $hdv = HuongDanVien::find($request->id);
+    if ($hdv) {
+        $dataUpdate = [
             'email'         => $request->email,
             'ho_va_ten'     => $request->ho_va_ten,
-            'password'      => $request->password, // Cùng logic text thường như KhachHang
-            'ngon_ngu'      => $request->ngon_ngu,
             'so_dien_thoai' => $request->so_dien_thoai,
-            'is_active'     => $request->is_active ?? 1,
-            'is_block'      => 0,
-        ]);
+            'ngon_ngu'      => $request->ngon_ngu ?? 'Tiếng Việt',
+            'is_active'     => $request->is_active ?? $hdv->is_active,
+        ];
+
+        // Nếu có nhập mật khẩu mới thì mới update
+        if (!empty($request->password)) {
+            $dataUpdate['password'] = $request->password;
+        }
+
+        $hdv->update($dataUpdate);
 
         return response()->json([
             'status'  => true,
-            'message' => 'Thêm hướng dẫn viên ' . $request->ho_va_ten . ' thành công',
+            'message' => 'Cập nhật hướng dẫn viên ' . $request->ho_va_ten . ' thành công'
         ]);
     }
 
-    public function update(Request $request)
-    {
-        $user = Auth::guard('sanctum')->user();
-        if ($user->is_master != 1) {
-            $id_chuc_nang = 14;
-            $id_chuc_vu   = $user->id_chuc_vu;
-            $check        = PhanQuyen::where('id_chuc_vu', $id_chuc_vu)->where('id_chuc_nang', $id_chuc_nang)->first();
-            if (!$check) {
-                return response()->json([
-                    'status'    =>  0,
-                    'message'   =>  'Bạn không có quyền thực hiện chức năng này!'
-                ]);
-            }
-        }
-
-        $hdv = HuongDanVien::find($request->id);
-        if ($hdv) {
-            $dataUpdate = [
-                'email'         => $request->email,
-                'ho_va_ten'     => $request->ho_va_ten,
-                'ngon_ngu'      => $request->ngon_ngu,
-                'so_dien_thoai' => $request->so_dien_thoai,
-                'is_active'     => $request->is_active,
-                'is_block'      => $request->is_block,
-            ];
-
-            if (!empty($request->password)) {
-                $dataUpdate['password'] = $request->password;
-            }
-
-            $hdv->update($dataUpdate);
-
-            return response()->json([
-                'status'  => true,
-                'message' => 'Cập nhật hướng dẫn viên ' . $request->ho_va_ten . ' thành công'
-            ]);
-        }
-
-        return response()->json([
-            'status'  => false,
-            'message' => 'Hướng dẫn viên không tồn tại'
-        ]);
-    }
-
+    return response()->json([
+        'status'  => false,
+        'message' => 'Hướng dẫn viên không tồn tại'
+    ]);
+}
     public function destroy(Request $request)
     {
         $user = Auth::guard('sanctum')->user();
@@ -162,7 +162,7 @@ class HuongDanVienController extends Controller
 
         $hdv = HuongDanVien::find($request->id);
         if ($hdv) {
-            $hdv->update(['is_block' => $request->is_block]);
+            $hdv->update(['tinh_trang' => $request->tinh_trang]);
             return response()->json([
                 'status'  => true,
                 'message' => 'Thay đổi trạng thái hướng dẫn viên thành công'
