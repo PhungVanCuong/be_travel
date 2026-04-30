@@ -10,6 +10,7 @@ use App\Models\Ve;
 use App\Models\Tour;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+
 class ThongKeController extends Controller
 {
     public function thongKeKHMoi(Request $request)
@@ -44,7 +45,7 @@ class ThongKeController extends Controller
             ]]
         ]);
     }
-    Public function thongKeDoanhThu(Request $request)
+    public function thongKeDoanhThu(Request $request)
     {
         $id_chuc_nang = 4;
         $id_chuc_vu   = Auth::guard('sanctum')->user()->id_chuc_vu;
@@ -173,50 +174,50 @@ class ThongKeController extends Controller
         ]);
     }
     public function thongKeTour(Request $request)
-{
-    $id_chuc_nang = 4;
-    $id_chuc_vu   = Auth::guard('sanctum')->user()->id_chuc_vu;
-    $check        = PhanQuyen::where('id_chuc_vu', $id_chuc_vu)->where('id_chuc_nang', $id_chuc_nang)->first();
+    {
+        $id_chuc_nang = 4;
+        $id_chuc_vu   = Auth::guard('sanctum')->user()->id_chuc_vu;
+        $check        = PhanQuyen::where('id_chuc_vu', $id_chuc_vu)->where('id_chuc_nang', $id_chuc_nang)->first();
 
-    if (!$check) {
+        if (!$check) {
+            return response()->json([
+                'status'    =>  0,
+                'message'   =>  'Bạn không có quyền thực hiện chức năng này!'
+            ]);
+        }
+
+        // Truy vấn theo cấu trúc: tours <- hoa_dons <- ves
+        $data = Tour::join('hoa_dons', 'tours.id', '=', 'hoa_dons.id_tour')
+            ->join('ves', 'hoa_dons.id', '=', 'ves.id_hoa_don')
+            ->whereDate('hoa_dons.ngay_tao', '>=', $request->begin)
+            ->whereDate('hoa_dons.ngay_tao', '<=', $request->end)
+            ->where('hoa_dons.trang_thai', 2) // Chỉ tính các hóa đơn hợp lệ
+            ->select(
+                'tours.ten_tour',
+                DB::raw('COUNT(ves.id) as so_luong_ve_ban_ra'), // Đếm số vé của các hóa đơn thuộc tour đó
+                DB::raw('SUM(hoa_dons.tong_tien) as doanh_thu_du_kien')
+            )
+            ->groupBy('tours.ten_tour')
+            ->orderBy('so_luong_ve_ban_ra', 'DESC') // Tour nào bán được nhiều vé nhất lên đầu
+            ->orderBy('doanh_thu_du_kien', 'DESC')
+            ->get();
+
+        $colors = [];
+        foreach ($data as $v) {
+            $colors[] = sprintf("#%06X", mt_rand(0, 0xFFFFFF));
+        }
+
         return response()->json([
-            'status'    =>  0,
-            'message'   =>  'Bạn không có quyền thực hiện chức năng này!'
+            'status' => true,
+            'data'   => $data,
+            'labels' => $data->pluck('ten_tour'),
+            'datasets' => [
+                [
+                    'label' => 'Số Lượng Vé Bán Ra',
+                    'data' => $data->pluck('so_luong_ve_ban_ra'),
+                    'backgroundColor' => $colors,
+                ]
+            ]
         ]);
     }
-
-    // Truy vấn theo cấu trúc: tours <- hoa_dons <- ves
-    $data = Tour::join('hoa_dons', 'tours.id', '=', 'hoa_dons.id_tour')
-        ->join('ves', 'hoa_dons.id', '=', 'ves.id_hoa_don')
-        ->whereDate('hoa_dons.ngay_tao', '>=', $request->begin)
-        ->whereDate('hoa_dons.ngay_tao', '<=', $request->end)
-        ->where('hoa_dons.trang_thai', 1) // Chỉ tính các hóa đơn hợp lệ
-        ->select(
-            'tours.ten_tour',
-            DB::raw('COUNT(ves.id) as so_luong_ve_ban_ra'), // Đếm số vé của các hóa đơn thuộc tour đó
-            DB::raw('SUM(hoa_dons.tong_tien) as doanh_thu_du_kien')
-        )
-        ->groupBy('tours.ten_tour')
-        ->orderBy('so_luong_ve_ban_ra', 'DESC') // Tour nào bán được nhiều vé nhất lên đầu
-        ->get();
-
-    $colors = [];
-    foreach ($data as $v) {
-        $colors[] = sprintf("#%06X", mt_rand(0, 0xFFFFFF));
-    }
-
-    return response()->json([
-        'status' => true,
-        'data'   => $data,
-        'labels' => $data->pluck('ten_tour'),
-        'datasets' => [
-            [
-                'label' => 'Số Lượng Vé Bán Ra',
-                'data' => $data->pluck('so_luong_ve_ban_ra'),
-                'backgroundColor' => $colors,
-            ]
-        ]
-    ]);
-}
-
 }
