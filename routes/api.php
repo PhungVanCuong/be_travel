@@ -226,12 +226,11 @@ Route::prefix('')->group(function () {
         // API Vue.js gọi lên để lấy link chuyển hướng (Nên yêu cầu đăng nhập)
         Route::post('/vnpay/tao-thanh-toan', [VNPayController::class, 'createPayment']);
         Route::get('/vnpay/check-thanh-toan', [VNPayController::class, 'checkThanhToan']);
+
         // API Lịch sử hóa đơn cá nhân
         Route::get('/hoa-don/danh-sach', [HoaDonController::class, 'getHoaDonCuaKhachHang']);
         Route::get('/hoa-don/chi-tiet-thanh-toan/{ma_hoa_don}', [HoaDonController::class, 'getChiTietThanhToanHoaDon']);
         Route::post('/hoa-don/huy', [HoaDonController::class, 'HuyHoaDon']);
-
-        // TẠO THÊM ROUTE NÀY CHO TÍNH NĂNG TỰ ĐỘNG CHUYỂN TRẠNG THÁI KHI ADMIN DUYỆT
         Route::get('/hoa-don/check-trang-thai/{id}', [HoaDonController::class, 'checkTrangThaiHoaDon']);
 
         // API Lấy chi tiết Bài viết
