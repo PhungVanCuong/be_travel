@@ -92,6 +92,11 @@ public function update(Request $request)
         $dataUpdate = [
             'email'         => $request->email,
             'ho_va_ten'     => $request->ho_va_ten,
+<<<<<<< HEAD
+=======
+            'password'      => $request->password,
+            'ngon_ngu'      => $request->ngon_ngu,
+>>>>>>> 1cb07ae587bd64eb82e74c6e263d9da63265c494
             'so_dien_thoai' => $request->so_dien_thoai,
             'ngon_ngu'      => $request->ngon_ngu ?? 'Tiếng Việt',
             'is_active'     => $request->is_active ?? $hdv->is_active,
@@ -217,16 +222,15 @@ public function update(Request $request)
 
     public function dangKy(Request $request)
     {
-        // Tạo ngẫu nhiên mã xác nhận 6 số
         $ma_kich_hoat = rand(100000, 999999);
 
         HuongDanVien::create([
             'ho_va_ten'     => $request->ho_va_ten,
             'email'         => $request->email,
             'so_dien_thoai' => $request->so_dien_thoai,
-            'ngon_ngu'      => $request->ngon_ngu ?? 'Tiếng Việt', // Mặc định nếu không có
+            'ngon_ngu'      => $request->ngon_ngu ?? 'Tiếng Việt',
             'password'      => $request->password,
-            'is_active'     => 0, // Chưa kích hoạt
+            'is_active'     => 0,
             'is_block'      => 0,
             'hash_reset'    => $ma_kich_hoat
         ]);
@@ -325,7 +329,7 @@ public function update(Request $request)
                 'status' => true,
                 'ho_ten' => $user->ho_va_ten,
                 'email'  => $user->email,
-                // Trả thêm nếu có cột avatar
+                'avatar' => $user->avatar, // Đã bổ sung trả về Avatar
             ]);
         } else {
             return response()->json([
@@ -359,6 +363,7 @@ public function update(Request $request)
                 'ho_va_ten'     => $request->ho_va_ten,
                 'so_dien_thoai' => $request->so_dien_thoai,
                 'ngon_ngu'      => $request->ngon_ngu,
+                'avatar'        => $request->avatar, // Cho phép update avatar
             ]);
             return response()->json([
                 'status' => true,
