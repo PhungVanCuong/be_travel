@@ -28,7 +28,7 @@ class KhachHangSeeder extends Seeder
                 'password' => '123456',
                 'is_active' => 1,
                 'ngay_sinh' => '2001-07-20',
-                'avatar' => 'https://if24h.com/wp-content/uploads/2024/10/avatar-cute-hai.jpg',
+                'avatar' => 'https://thuvienavatar.edu.vn/wp-content/uploads/2025/12/avatar-vo-tri-cute-4.jpg',
                 'created_at' => '2025-06-02',
             ],
             [
@@ -38,7 +38,7 @@ class KhachHangSeeder extends Seeder
                 'password' => '123456',
                 'is_active' => 1,
                 'ngay_sinh' => '2000-02-28',
-                'avatar' => 'https://if24h.com/wp-content/uploads/2024/10/avatar-vo-tri-thu-vi.jpg',
+                'avatar' => 'https://thuvienavatar.edu.vn/wp-content/uploads/2025/12/avatar-vo-tri-cute-4.jpg',
                 'created_at' => '2025-06-02',
             ],
             [
@@ -48,7 +48,7 @@ class KhachHangSeeder extends Seeder
                 'password' => '123456',
                 'is_active' => 0,
                 'ngay_sinh' => '1996-09-15',
-                'avatar' => 'https://if24h.com/wp-content/uploads/2024/10/hinh-vo-tri-tai-nang.jpg',
+                'avatar' => 'https://thuvienavatar.edu.vn/wp-content/uploads/2025/12/avatar-vo-tri-cute-4.jpg',
                 'created_at' => '2025-06-12',
             ],
             [
@@ -88,7 +88,7 @@ class KhachHangSeeder extends Seeder
                 'password' => '123456',
                 'is_active' => 0,
                 'ngay_sinh' => '1994-08-08',
-                'avatar' => 'https://avatarvotri.com/wp-content/uploads/2025/04/hinh-avatar-vo-tri-cute.jpg',
+                'avatar' => 'https://thuvienavatar.edu.vn/wp-content/uploads/2025/12/avatar-vo-tri-cute-4.jpg',
                 'created_at' => '2025-06-23',
             ],
             [
@@ -108,7 +108,7 @@ class KhachHangSeeder extends Seeder
                 'password' => '123456',
                 'is_active' => 0,
                 'ngay_sinh' => '1993-01-17',
-                'avatar' => 'https://avatarvotri.com/wp-content/uploads/2025/04/avatar-vo-tri-dep-ngau.jpg',
+                'avatar' => 'https://thuvienavatar.edu.vn/wp-content/uploads/2025/12/avatar-vo-tri-cute-4.jpg',
                 'created_at' => '2025-06-30',
             ],
             [
@@ -118,7 +118,7 @@ class KhachHangSeeder extends Seeder
                 'password' => '123456',
                 'is_active' => 1,
                 'ngay_sinh' => '1999-10-01',
-                'avatar' => 'https://aic.com.vn/wp-content/uploads/2024/10/avatar-vo-tri-meo-99mOYjIu.jpg',
+                'avatar' => 'https://thuvienavatar.edu.vn/wp-content/uploads/2025/12/avatar-vo-tri-cute-4.jpg',
                 'created_at' => '2025-06-23',
             ],
             [
@@ -138,7 +138,7 @@ class KhachHangSeeder extends Seeder
                 'password' => '123456',
                 'is_active' => 1,
                 'ngay_sinh' => '1997-07-05',
-                'avatar' => 'https://if24h.com/wp-content/uploads/2024/10/hinh-vo-tri-cute-anh.jpg',
+                'avatar' => 'https://thuvienavatar.edu.vn/wp-content/uploads/2025/12/avatar-vo-tri-cute-4.jpg',
                 'created_at' => '2025-06-29',
             ],
             [
@@ -248,7 +248,7 @@ class KhachHangSeeder extends Seeder
                 'password' => '123456',
                 'is_active' => 0,
                 'ngay_sinh' => '2000-08-21',
-                'avatar' => 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTpZY_s2J1wf1jFko6cvIZAqsjuIGfTQdfJjA&s',
+                'avatar' => 'https://mayweddingstudio.vn/wp-content/uploads/anh-dai-dien-facebook-nam-6.webp',
                 'created_at' => '2025-06-12',
             ],
             [
@@ -338,7 +338,7 @@ class KhachHangSeeder extends Seeder
                 'password' => '123456',
                 'is_active' => 1,
                 'ngay_sinh' => '2005-10-18',
-                'avatar' => 'https://i.pinimg.com/736x/56/72/d6/5672d634f75f75edb6e8cd3de03f099e.jpg',
+                'avatar' => 'https://mayweddingstudio.vn/wp-content/uploads/anh-dai-dien-facebook-nam-6.webp',
                 'created_at' => '2025-06-16',
             ],
 
