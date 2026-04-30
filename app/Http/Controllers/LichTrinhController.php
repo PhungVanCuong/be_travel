@@ -38,6 +38,7 @@ class LichTrinhController extends Controller
                 'lich_trinhs.*',
                 'tours.ten_tour',
                 'diem_dens.ten_diem_den',
+                'diem_dens.hinh_anh as anh_diem_den',
                 'phuong_tiens.loai_phuong_tien',
                 'phuong_tiens.so_hieu'
             )
