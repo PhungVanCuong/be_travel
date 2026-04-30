@@ -302,6 +302,54 @@ class LichTrinhSeeder extends Seeder
                 'tieu_de_hoat_dong' => 'Du thuyền cập bến Marina Bay, tự do mua sắm và ngắm cảnh trung tâm Singapore lộng lẫy.',
                 'created_at' => $now, 'updated_at' => $now,
             ],
+            // ================= BỔ SUNG LỊCH TRÌNH CHO TOUR 1 (id_tour = 1) ================= //
+            [
+                'id_tour' => 1,
+                'id_diem_den' => 37, // Trỏ tới Vườn hoa
+                'id_phuong_tien' => null, // Đi bộ tham quan
+                'tieu_de_hoat_dong' => 'Dạo bước tham quan Vườn hoa Le Jardin D\'Amour, thỏa sức check-in cùng 9 khu vườn nghệ thuật.',
+                'created_at' => $now, 'updated_at' => $now,
+            ],
+            [
+                'id_tour' => 1,
+                'id_diem_den' => 38, // Trỏ tới Hầm rượu
+                'id_phuong_tien' => null, // Đi bộ
+                'tieu_de_hoat_dong' => 'Tiếp tục di chuyển đến Hầm rượu Debay gần 100 năm tuổi và thưởng thức ly vang Pháp hảo hạng.',
+                'created_at' => $now, 'updated_at' => $now,
+            ],
+
+            // ================= BỔ SUNG LỊCH TRÌNH CHO TOUR 2 (id_tour = 2) ================= //
+            [
+                'id_tour' => 2,
+                'id_diem_den' => 39, // Trỏ tới Hang Sửng Sốt
+                'id_phuong_tien' => null, // Đi bộ lên hang
+                'tieu_de_hoat_dong' => 'Du thuyền cập bến, quý khách đi bộ men theo vách đá để tham quan Hang Sửng Sốt tuyệt đẹp.',
+                'created_at' => $now, 'updated_at' => $now,
+            ],
+            [
+                'id_tour' => 2,
+                'id_diem_den' => 40, // Trỏ tới Đảo Ti Tốp
+                'id_phuong_tien' => 6, // Lên lại du thuyền di chuyển
+                'tieu_de_hoat_dong' => 'Du thuyền đưa đoàn tới Đảo Ti Tốp, tự do tắm biển hoặc chinh phục đỉnh núi ngắm hoàng hôn.',
+                'created_at' => $now, 'updated_at' => $now,
+            ],
+
+            // ================= BỔ SUNG LỊCH TRÌNH CHO TOUR 3 (id_tour = 3) ================= //
+            [
+                'id_tour' => 3,
+                'id_diem_den' => 41, // Trỏ tới Grand World
+                'id_phuong_tien' => 1, // Đi bằng xe khách của Tour
+                'tieu_de_hoat_dong' => 'Xe đưa đoàn tới Grand World - Thành phố không ngủ, dạo bước bên dòng sông Venice thu nhỏ.',
+                'created_at' => $now, 'updated_at' => $now,
+            ],
+            [
+                'id_tour' => 3,
+                'id_diem_den' => 42, // Trỏ tới Safari
+                'id_phuong_tien' => 7, // Xe điện chuyên dụng của Safari
+                'tieu_de_hoat_dong' => 'Lên xe điện chuyên dụng khám phá Vinpearl Safari, trải nghiệm "nhốt người thả thú" ngắm động vật.',
+                'created_at' => $now, 'updated_at' => $now,
+            ],
+
         ];
 
         DB::table('lich_trinhs')->truncate();

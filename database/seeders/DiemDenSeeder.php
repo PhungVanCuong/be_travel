@@ -337,7 +337,60 @@ class DiemDenSeeder extends Seeder
                 'tinh_trang' => 1,
                 'hinh_anh' => 'https://media.vietravel.com/images/Content/du-lich-marina-bay-sands-1.png',
                 'created_at' => $now, 'updated_at' => $now,
-            ]
+            ],
+            // ================= BỔ SUNG ĐIỂM ĐẾN CHO TOUR 1 (Bà Nà) ================= //
+            [
+                'ten_diem_den' => 'Vườn hoa Le Jardin D\'Amour',
+                'mo_ta' => 'Khám phá 9 khu vườn mang 9 cung bậc cảm xúc khác nhau với muôn ngàn sắc hoa rực rỡ tuyệt đẹp.',
+                'thanh_pho' => 'Đà Nẵng',
+                'tinh_trang' => 1,
+                'hinh_anh' => 'https://sun-ecommerce-cdn.azureedge.net/ecommerce/service-sites/asset/SunWorldBaNaHill/swold/vuon-hoa-le-jardin/DSC05966.jpg',
+                'created_at' => $now, 'updated_at' => $now,
+            ],
+            [
+                'ten_diem_den' => 'Hầm Rượu Debay',
+                'mo_ta' => 'Công trình kiến trúc độc đáo do người Pháp xây dựng xuyên sâu trong lòng núi Bà Nà từ năm 1923.',
+                'thanh_pho' => 'Đà Nẵng',
+                'tinh_trang' => 1,
+                'hinh_anh' => 'https://tourbanahills.vn/wp-content/uploads/2022/03/ham-ruou-debay-4.jpg',
+                'created_at' => $now, 'updated_at' => $now,
+            ],
+
+            // ================= BỔ SUNG ĐIỂM ĐẾN CHO TOUR 2 (Hạ Long) ================= //
+            [
+                'ten_diem_den' => 'Hang Sửng Sốt',
+                'mo_ta' => 'Một trong những hang động rộng và đẹp bậc nhất vịnh Hạ Long với những thạch nhũ muôn hình vạn trạng.',
+                'thanh_pho' => 'Quảng Ninh',
+                'tinh_trang' => 1,
+                'hinh_anh' => 'https://statics.vinpearl.com/hang-sung-sot-2_1627633591.jpg',
+                'created_at' => $now, 'updated_at' => $now,
+            ],
+            [
+                'ten_diem_den' => 'Đảo Ti Tốp',
+                'mo_ta' => 'Hòn đảo có bãi tắm vầng trăng khuyết tĩnh lặng, du khách có thể leo lên đỉnh núi để ngắm toàn cảnh vịnh.',
+                'thanh_pho' => 'Quảng Ninh',
+                'tinh_trang' => 1,
+                'hinh_anh' => 'https://statics.vinpearl.com/dao-titop-quang-ninh-02_1625285135.jpg',
+                'created_at' => $now, 'updated_at' => $now,
+            ],
+
+            // ================= BỔ SUNG ĐIỂM ĐẾN CHO TOUR 3 (Phú Quốc) ================= //
+            [
+                'ten_diem_den' => 'Grand World Phú Quốc',
+                'mo_ta' => 'Thành phố không ngủ với kiến trúc châu Âu tráng lệ, dòng sông Venice thơ mộng và các show diễn thực cảnh hoành tráng.',
+                'thanh_pho' => 'Kiên Giang',
+                'tinh_trang' => 1,
+                'hinh_anh' => 'https://mia.vn/media/uploads/blog-du-lich/grand-world-phu-quoc-kham-pha-thien-duong-giai-tri-day-soi-dong-01-1661257653.jpeg',
+                'created_at' => $now, 'updated_at' => $now,
+            ],
+            [
+                'ten_diem_den' => 'Vinpearl Safari Phú Quốc',
+                'mo_ta' => 'Công viên chăm sóc và bảo tồn động vật bán hoang dã lớn nhất Việt Nam với trải nghiệm "nhốt người thả thú" độc đáo.',
+                'thanh_pho' => 'Kiên Giang',
+                'tinh_trang' => 1,
+                'hinh_anh' => 'https://cdn3.ivivu.com/2024/01/vinpearl-safari-phu-quoc-ivivu-1.jpg',
+                'created_at' => $now, 'updated_at' => $now,
+            ],
         ];
 
         DB::table('diem_dens')->truncate();
