@@ -57,6 +57,7 @@ class ThongKeController extends Controller
             ]);
         }
         $data = HoaDon::whereDate('ngay_tao', '>=', $request->begin)
+            ->Where('trang_thai', 2) 
             ->whereDate('ngay_tao', '<=', $request->end)
             ->select(
                 DB::raw('DATE(ngay_tao) as ngay'),

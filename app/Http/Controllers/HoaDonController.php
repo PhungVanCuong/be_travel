@@ -132,13 +132,23 @@ class HoaDonController extends Controller
 
         $hoaDon = HoaDon::find($request->id);
         if ($hoaDon) {
+            // KIỂM TRA ĐIỀU KIỆN TRẠNG THÁI:
+            // Chỉ cho phép xóa nếu trạng thái là 0 (Đã hủy) hoặc 1 (Chưa thanh toán)
+            // Nếu trạng thái là 2 (Đã thanh toán), không cho phép xóa để bảo toàn dữ liệu tài chính
+            if ($hoaDon->trang_thai == 2) {
+                return response()->json([
+                    'status'  => false,
+                    'message' => 'Hóa đơn đã thanh toán thành công không thể xóa!'
+                ]);
+            }
+
             DB::beginTransaction();
             try {
                 // Xóa các vé thuộc hóa đơn này
                 Ve::where('id_hoa_don', $hoaDon->id)->delete();
 
-                // Hoàn lại chỗ trống cho Tour nếu hóa đơn này chưa bị hủy trước đó
-                if ($hoaDon->trang_thai != 0) {
+                // Hoàn lại chỗ trống cho Tour nếu hóa đơn này chưa bị hủy trước đó (trạng thái là 1)
+                if ($hoaDon->trang_thai == 1) {
                     $tour = Tour::find($hoaDon->id_tour);
                     if ($tour) {
                         $tour->increment('so_nguoi_toi_da', $hoaDon->so_luong_nguoi);
@@ -325,7 +335,7 @@ class HoaDonController extends Controller
                     'link_qr_code' => 'https://img.vietqr.io/image/MBBank-1910061030119-compact.png?amount=' . $hoaDon->tong_tien . '&addInfo=' . $hoaDon->ma_hoa_don,
                     'ngan_hang'    => 'MB Bank',
                     'so_tai_khoan' => '1910061030119',
-                    'chu_tai_khoan'=> 'IXTAL TOUR',
+                    'chu_tai_khoan' => 'IXTAL TOUR',
                     'noi_dung'     => $hoaDon->ma_hoa_don,
                 ]
             ]
@@ -342,8 +352,8 @@ class HoaDonController extends Controller
             $ma_hoa_don = $request->ma_hoa_don;
 
             $hoaDon = HoaDon::where('ma_hoa_don', $ma_hoa_don)
-                            ->where('id_khach_hang', $user->id)
-                            ->first();
+                ->where('id_khach_hang', $user->id)
+                ->first();
 
             if (!$hoaDon) {
                 return response()->json([
@@ -383,7 +393,6 @@ class HoaDonController extends Controller
                 'status' => true,
                 'message' => 'Đã hủy hóa đơn và hoàn lại số chỗ thành công.'
             ]);
-
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error("Lỗi hủy hóa đơn: " . $e->getMessage());
