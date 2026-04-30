@@ -146,7 +146,7 @@ class HuongDanVienTourController extends Controller
             ->join('huong_dan_viens', 'huong_dan_vien_tours.id_huong_dan_vien', '=', 'huong_dan_viens.id')
             ->where('huong_dan_vien_tours.id_tour', $id_tour)
             ->where('huong_dan_viens.is_active', 1)->where('huong_dan_viens.is_block', 0)
-            ->select('huong_dan_viens.id', 'huong_dan_viens.ho_va_ten', 'huong_dan_viens.ngon_ngu', 'huong_dan_viens.so_dien_thoai', 'huong_dan_viens.email')
+            ->select('huong_dan_viens.id', 'huong_dan_viens.ho_va_ten', 'huong_dan_viens.ngon_ngu', 'huong_dan_viens.so_dien_thoai', 'huong_dan_viens.email', 'huong_dan_viens.avatar')
             ->get();
         return response()->json(['status' => true, 'data' => $data]);
     }
@@ -205,10 +205,6 @@ class HuongDanVienTourController extends Controller
         return response()->json(['status' => true, 'message' => 'Nhận tour thành công!']);
     }
 
-    /**
-     * LẤY DANH SÁCH KHÁCH HÀNG (ĐÃ SỬA LỖI VÀ CHUẨN HÓA)
-     * CHỈ THUỘC VỀ TOUR CỦA HƯỚNG DẪN VIÊN NÀY
-     */
     public function getKhachHangCuaToi(Request $request)
     {
         $user = Auth::guard('sanctum')->user();
@@ -216,7 +212,6 @@ class HuongDanVienTourController extends Controller
             return response()->json(['status' => false, 'message' => 'Bạn không có quyền truy cập.']);
         }
 
-        // Bước 1: Tìm các Tour mà Hướng dẫn viên này ĐÃ NHẬN
         $toursDaNhan = DB::table('huong_dan_vien_tours')
             ->join('tours', 'huong_dan_vien_tours.id_tour', '=', 'tours.id')
             ->where('huong_dan_vien_tours.id_huong_dan_vien', $user->id)
@@ -229,32 +224,31 @@ class HuongDanVienTourController extends Controller
             ->orderBy('tours.ngay_bat_dau', 'asc')
             ->get();
 
-        // Bước 2: Tương ứng với mỗi Tour, tìm danh sách Khách Hàng thông qua bảng HOA_DONS
         foreach ($toursDaNhan as $tour) {
             $khachHangs = DB::table('hoa_dons')
                 ->join('khach_hangs', 'hoa_dons.id_khach_hang', '=', 'khach_hangs.id')
                 ->where('hoa_dons.id_tour', $tour->id)
-                ->where('hoa_dons.trang_thai', '!=', 0) // Chỉ lấy hóa đơn chưa thanh toán hoặc đã thanh toán (bỏ qua đã hủy)
+                ->where('hoa_dons.trang_thai', '!=', 0)
                 ->select(
                     'khach_hangs.id as id_khach_hang',
                     'khach_hangs.ho_va_ten',
                     'khach_hangs.email',
                     'khach_hangs.so_dien_thoai',
                     'khach_hangs.cccd',
+                    'khach_hangs.avatar', // ĐÃ BỔ SUNG AVATAR CỦA KHÁCH
                     'hoa_dons.so_luong_nguoi',
                     'hoa_dons.ma_hoa_don',
+                    'hoa_dons.ghi_chu_danh_sach_nguoi_di', // ĐÃ BỔ SUNG GHI CHÚ
                     'hoa_dons.created_at as ngay_dat_ve'
                 )
                 ->orderBy('hoa_dons.created_at', 'DESC')
                 ->get();
 
-            // Tính tổng số lượng khách thực tế đã đặt trong tour này
             $tongKhachThucTe = 0;
             foreach ($khachHangs as $kh) {
                 $tongKhachThucTe += $kh->so_luong_nguoi;
             }
 
-            // Gắn thông tin vào object tour
             $tour->tong_khach_da_dat = $tongKhachThucTe;
             $tour->danh_sach_khach_hang = $khachHangs;
         }
