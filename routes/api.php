@@ -22,6 +22,7 @@ use App\Http\Controllers\PhuongTienController;
 use App\Http\Controllers\HuongDanVienTourController;
 use App\Http\Controllers\LichTrinhController;
 use App\Http\Controllers\QuocGiaController;
+use App\Http\Controllers\DiemDenController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -160,6 +161,11 @@ Route::prefix('')->group(function () {
         Route::post('/lich-trinh/add-data', [LichTrinhController::class, 'addData']);
         Route::post('/lich-trinh/update', [LichTrinhController::class, 'update']);
         Route::post('/lich-trinh/delete', [LichTrinhController::class, 'destroy']);
+        // API Admin: Quản lý Điểm đến
+        Route::get('/diem-den/get-data', [DiemDenController::class, 'getData']);
+        Route::post('/diem-den/add-data', [DiemDenController::class, 'addData']);
+        Route::post('/diem-den/update', [DiemDenController::class, 'update']);
+        Route::post('/diem-den/delete', [DiemDenController::class, 'destroy']);
 
 
     });
