@@ -101,7 +101,7 @@ class ThongKeController extends Controller
             ->select(
                 DB::raw('DATE(hoa_dons.ngay_tao) as ngay'),
                 DB::raw('COUNT(ves.id) as tong_so_ve'),
-                DB::raw('SUM(hoa_dons.trang_thai) as so_ve_da_thanh_toan')
+                DB::raw('SUM(CASE WHEN hoa_dons.trang_thai = 2 THEN 1 ELSE 0 END) as so_ve_da_thanh_toan')
             )
             ->groupBy('ngay')
             ->orderBy('ngay')
