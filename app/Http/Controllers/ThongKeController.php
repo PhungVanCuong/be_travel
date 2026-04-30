@@ -144,7 +144,7 @@ class ThongKeController extends Controller
         $data = HoaDon::join('khach_hangs', 'hoa_dons.id_khach_hang', '=', 'khach_hangs.id')
             ->whereDate('hoa_dons.ngay_tao', '>=', $request->begin)
             ->whereDate('hoa_dons.ngay_tao', '<=', $request->end)
-            ->where('hoa_dons.trang_thai', 1)
+            ->where('hoa_dons.trang_thai', 2)
             ->select(
                 'khach_hangs.ho_va_ten',
                 DB::raw('COUNT(hoa_dons.id) as so_don_hang'),
