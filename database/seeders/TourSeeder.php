@@ -14,6 +14,7 @@ class TourSeeder extends Seeder
 
         $tours = [
             [
+                'id' => 1,
                 'ten_tour' => 'Đà Nẵng: Khám phá Bà Nà Hills - Cầu Vàng',
                 'mo_ta' => 'Trải nghiệm cáp treo đạt nhiều kỷ lục thế giới, check-in Cầu Vàng hùng vĩ và lạc lối trong không gian kiến trúc Làng Pháp cổ điển.',
                 'gia' => 1250000.00,
@@ -24,10 +25,11 @@ class TourSeeder extends Seeder
                 'diem_tra' => 'Trung tâm TP. Đà Nẵng',
                 'tinh_trang' => 1,
                 'hinh_anh' => 'https://danang24.vn/Images/TV/18.jpg',
-                'id_quoc_gia' => 1, // ID tương ứng với Việt Nam
+                'id_quoc_gia' => 1,
                 'created_at' => $now, 'updated_at' => $now,
             ],
             [
+                'id' => 2,
                 'ten_tour' => 'Vịnh Hạ Long: Du thuyền & Chèo Kayak',
                 'mo_ta' => 'Chiêm ngưỡng kỳ quan thiên nhiên thế giới từ du thuyền sang trọng, tham gia chèo thuyền Kayak khám phá các hang động kỳ ảo trên vịnh.',
                 'gia' => 2500000.00,
@@ -42,6 +44,7 @@ class TourSeeder extends Seeder
                 'created_at' => $now, 'updated_at' => $now,
             ],
             [
+                'id' => 3,
                 'ten_tour' => 'Phú Quốc: Bãi Sao & Cáp treo Hòn Thơm',
                 'mo_ta' => 'Tận hưởng làn nước xanh ngắt tại Bãi Sao và trải nghiệm tuyến cáp treo vượt biển dài nhất thế giới sang đảo Hòn Thơm.',
                 'gia' => 3800000.00,
@@ -56,6 +59,7 @@ class TourSeeder extends Seeder
                 'created_at' => $now, 'updated_at' => $now,
             ],
             [
+                'id' => 4,
                 'ten_tour' => 'Tà Xùa: Săn mây & Sống lưng khủng long',
                 'mo_ta' => 'Hành trình chinh phục thiên đường mây Tà Xùa, check-in "Sống lưng khủng long" và tận hưởng không khí hùng vĩ của núi rừng Tây Bắc.',
                 'gia' => 1850000.00,
@@ -70,6 +74,7 @@ class TourSeeder extends Seeder
                 'created_at' => $now, 'updated_at' => $now,
             ],
             [
+                'id' => 5,
                 'ten_tour' => 'Di sản miền Trung: Đại Nội Huế - Hội An',
                 'mo_ta' => 'Tìm về cội nguồn văn hóa tại Cố đô Huế và thả mình trong không gian lung linh của Phố cổ Hội An về đêm.',
                 'gia' => 2900000.00,
@@ -84,6 +89,7 @@ class TourSeeder extends Seeder
                 'created_at' => $now, 'updated_at' => $now,
             ],
             [
+                'id' => 6,
                 'ten_tour' => 'Đà Lạt: Thung lũng Tình Yêu & Quảng trường Lâm Viên',
                 'mo_ta' => 'Thăm thành phố ngàn hoa, check-in nụ hoa Atiso khổng lồ tại Quảng trường và dạo bước trong Thung lũng Tình Yêu thơ mộng.',
                 'gia' => 3200000.00,
@@ -98,6 +104,7 @@ class TourSeeder extends Seeder
                 'created_at' => $now, 'updated_at' => $now,
             ],
             [
+                'id' => 7,
                 'ten_tour' => 'Miền Tây: Chợ nổi Cái Răng & Miệt vườn trái cây',
                 'mo_ta' => 'Trải nghiệm nét văn hóa sông nước độc đáo tại chợ nổi lớn nhất miền Tây và thưởng thức trái cây tươi ngon ngay tại vườn.',
                 'gia' => 1500000.00,
@@ -112,6 +119,7 @@ class TourSeeder extends Seeder
                 'created_at' => $now, 'updated_at' => $now,
             ],
             [
+                'id' => 8,
                 'ten_tour' => 'Sapa: Chinh phục Fansipan & Bản Cát Cát',
                 'mo_ta' => 'Chạm tay vào cột mốc "Nóc nhà Đông Dương" và tìm hiểu đời sống văn hóa đặc sắc của người dân tộc Mông tại bản Cát Cát.',
                 'gia' => 4500000.00,
@@ -126,6 +134,7 @@ class TourSeeder extends Seeder
                 'created_at' => $now, 'updated_at' => $now,
             ],
             [
+                'id' => 9,
                 'ten_tour' => 'Nha Trang: Lặn ngắm san hô & Tắm bùn Hòn Tằm',
                 'mo_ta' => 'Khám phá thế giới đại dương rực rỡ và thư giãn tuyệt đối với dịch vụ tắm bùn khoáng nóng trên đảo Hòn Tằm.',
                 'gia' => 2200000.00,
@@ -140,6 +149,7 @@ class TourSeeder extends Seeder
                 'created_at' => $now, 'updated_at' => $now,
             ],
             [
+                'id' => 10,
                 'ten_tour' => 'Ninh Bình: Danh thắng Tràng An & Chùa Bái Đính',
                 'mo_ta' => 'Ngồi thuyền xuôi dòng Ngô Đồng khám phá di sản thế giới Tràng An và chiêm bái ngôi chùa có nhiều kỷ lục nhất Việt Nam.',
                 'gia' => 1350000.00,
@@ -154,6 +164,7 @@ class TourSeeder extends Seeder
                 'created_at' => $now, 'updated_at' => $now,
             ],
             [
+                'id' => 11,
                 'ten_tour' => 'Chiang Mai - Chiang Rai: Đóa hồng phương Bắc',
                 'mo_ta' => 'Viếng thăm Chùa Trắng Wat Rong Khun tuyệt đẹp, khám phá Làng cổ dài và tận hưởng không khí yên bình của vùng núi phía Bắc Thái Lan.',
                 'gia' => 7500000.00,
@@ -168,6 +179,7 @@ class TourSeeder extends Seeder
                 'created_at' => $now, 'updated_at' => $now,
             ],
             [
+                'id' => 12,
                 'ten_tour' => 'Phuket - Đảo Phi Phi: Thiên đường biển đảo',
                 'mo_ta' => 'Nghỉ dưỡng tại hòn đảo ngọc Phuket, lặn ngắm san hô tại vịnh Maya và thưởng thức hải sản tươi ngon trên bãi biển cát trắng.',
                 'gia' => 8200000.00,
@@ -182,6 +194,7 @@ class TourSeeder extends Seeder
                 'created_at' => $now, 'updated_at' => $now,
             ],
             [
+                'id' => 13,
                 'ten_tour' => 'Busan - Làng văn hóa Gamcheon',
                 'mo_ta' => 'Khám phá thành phố cảng lớn nhất Hàn Quốc, dạo bước qua những ngôi nhà rực rỡ sắc màu tại Gamcheon và ngắm cảnh biển Haeundae.',
                 'gia' => 11000000.00,
@@ -196,6 +209,7 @@ class TourSeeder extends Seeder
                 'created_at' => $now, 'updated_at' => $now,
             ],
             [
+                'id' => 14,
                 'ten_tour' => 'Đảo Jeju: Hòn đảo hòa bình',
                 'mo_ta' => 'Chinh phục đỉnh núi Seongsan Ilchulbong, thăm quan Thác nước Cheonjiyeon và đắm mình trong cánh đồng hoa cải vàng rực rỡ.',
                 'gia' => 13500000.00,
@@ -210,6 +224,7 @@ class TourSeeder extends Seeder
                 'created_at' => $now, 'updated_at' => $now,
             ],
             [
+                'id' => 15,
                 'ten_tour' => 'Hokkaido: Mùa đông lãng mạn & Trượt tuyết Niseko',
                 'mo_ta' => 'Trải nghiệm mùa đông tuyết trắng tại Hokkaido, tham gia trượt tuyết đỉnh cao tại Niseko và thưởng thức cua tuyết hoàng đế trứ danh.',
                 'gia' => 28000000.00,
@@ -224,6 +239,7 @@ class TourSeeder extends Seeder
                 'created_at' => $now, 'updated_at' => $now,
             ],
             [
+                'id' => 16,
                 'ten_tour' => 'Okinawa: Hawaii của Châu Á',
                 'mo_ta' => 'Nghỉ dưỡng tại vùng biển xanh trong vắt, lặn ngắm san hô, thăm Thủy cung Churaumi lớn nhất thế giới và tìm hiểu văn hóa Ryukyu.',
                 'gia' => 21000000.00,
@@ -238,6 +254,7 @@ class TourSeeder extends Seeder
                 'created_at' => $now, 'updated_at' => $now,
             ],
             [
+                'id' => 17,
                 'ten_tour' => 'Singapore: Khám phá hoang dã tại Night Safari',
                 'mo_ta' => 'Khám phá sở thú đêm đầu tiên trên thế giới, ngồi xe điện ngắm nhìn các loài động vật hoang dã và chiêm ngưỡng thác nước trong nhà tại Jewel Changi.',
                 'gia' => 7500000.00,
@@ -252,6 +269,7 @@ class TourSeeder extends Seeder
                 'created_at' => $now, 'updated_at' => $now,
             ],
             [
+                'id' => 18,
                 'ten_tour' => 'Singapore: Trải nghiệm Du thuyền xa hoa',
                 'mo_ta' => 'Nghỉ dưỡng 3 ngày 2 đêm trên siêu du thuyền Royal Caribbean, thưởng thức show diễn đẳng cấp và tận hưởng các tiện ích 5 sao giữa đại dương.',
                 'gia' => 14500000.00,
@@ -265,8 +283,8 @@ class TourSeeder extends Seeder
                 'id_quoc_gia' => 5,
                 'created_at' => $now, 'updated_at' => $now,
             ],
-            // ================ 5 TOUR BỔ SUNG MỚI ================ //
             [
+                'id' => 19,
                 'ten_tour' => 'Malaysia: Kuala Lumpur - Tháp đôi Petronas - Động Batu',
                 'mo_ta' => 'Khám phá thủ đô Kuala Lumpur sôi động, check-in tháp đôi biểu tượng và tìm hiểu văn hóa đạo Hindu tại Động Batu huyền bí.',
                 'gia' => 6500000.00,
@@ -281,6 +299,7 @@ class TourSeeder extends Seeder
                 'created_at' => $now, 'updated_at' => $now,
             ],
             [
+                'id' => 20,
                 'ten_tour' => 'Trung Quốc: Bắc Kinh - Vạn Lý Trường Thành - Tử Cấm Thành',
                 'mo_ta' => 'Hành trình ngược dòng lịch sử khám phá Tử Cấm Thành nguy nga và chinh phục Vạn Lý Trường Thành hùng vĩ của đất nước tỷ dân.',
                 'gia' => 15500000.00,
@@ -295,6 +314,7 @@ class TourSeeder extends Seeder
                 'created_at' => $now, 'updated_at' => $now,
             ],
             [
+                'id' => 21,
                 'ten_tour' => 'Đài Loan: Đài Bắc - Phố cổ Thập Phần - Tháp Taipei 101',
                 'mo_ta' => 'Thả đèn trời cầu bình an tại phố cổ Thập Phần, chiêm ngưỡng tòa tháp Taipei 101 và oanh tạc các khu chợ đêm ẩm thực sầm uất.',
                 'gia' => 11500000.00,
@@ -309,6 +329,7 @@ class TourSeeder extends Seeder
                 'created_at' => $now, 'updated_at' => $now,
             ],
             [
+                'id' => 22,
                 'ten_tour' => 'Bali: Thiên đường đảo ngọc - Cổng trời Handara',
                 'mo_ta' => 'Tận hưởng kỳ nghỉ dưỡng tại thiên đường Bali, check-in Cổng trời Handara ma mị và ngắm hoàng hôn lãng mạn tại đền Tanah Lot.',
                 'gia' => 10500000.00,
@@ -323,6 +344,7 @@ class TourSeeder extends Seeder
                 'created_at' => $now, 'updated_at' => $now,
             ],
             [
+                'id' => 23,
                 'ten_tour' => 'Dubai: Chinh phục Tháp Burj Khalifa - Sa mạc Safari',
                 'mo_ta' => 'Khám phá sự xa hoa tột bậc của Tiểu vương quốc Ả Rập, chiêm ngưỡng tháp cao nhất thế giới và đua xe mạo hiểm trên sa mạc Safari.',
                 'gia' => 28900000.00,

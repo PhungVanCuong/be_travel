@@ -173,8 +173,6 @@ class LichTrinhSeeder extends Seeder
                 'created_at' => $now, 'updated_at' => $now,
             ],
 
-            // ---------------- BỔ SUNG TỪ TOUR 11 ĐẾN 18 ---------------- //
-
             // Tour 11: Chiang Mai - Chiang Rai
             [
                 'id_tour' => 11,
@@ -271,7 +269,7 @@ class LichTrinhSeeder extends Seeder
                 'created_at' => $now, 'updated_at' => $now,
             ],
 
-            // Tour 17: Singapore - Night Safari
+            // Tour 17: Singapore Night Safari
             [
                 'id_tour' => 17,
                 'id_diem_den' => 33, // Night Safari
@@ -287,7 +285,7 @@ class LichTrinhSeeder extends Seeder
                 'created_at' => $now, 'updated_at' => $now,
             ],
 
-            // Tour 18: Singapore - Du thuyền
+            // Tour 18: Singapore Du thuyền
             [
                 'id_tour' => 18,
                 'id_diem_den' => 35, // Du thuyền Royal Caribbean
@@ -302,7 +300,8 @@ class LichTrinhSeeder extends Seeder
                 'tieu_de_hoat_dong' => 'Du thuyền cập bến Marina Bay, tự do mua sắm và ngắm cảnh trung tâm Singapore lộng lẫy.',
                 'created_at' => $now, 'updated_at' => $now,
             ],
-            // ================= BỔ SUNG LỊCH TRÌNH CHO TOUR 1 (id_tour = 1) ================= //
+
+            // BỔ SUNG LỊCH TRÌNH CHO TOUR 1 (id_tour = 1)
             [
                 'id_tour' => 1,
                 'id_diem_den' => 37, // Trỏ tới Vườn hoa
@@ -318,7 +317,7 @@ class LichTrinhSeeder extends Seeder
                 'created_at' => $now, 'updated_at' => $now,
             ],
 
-            // ================= BỔ SUNG LỊCH TRÌNH CHO TOUR 2 (id_tour = 2) ================= //
+            // BỔ SUNG LỊCH TRÌNH CHO TOUR 2 (id_tour = 2)
             [
                 'id_tour' => 2,
                 'id_diem_den' => 39, // Trỏ tới Hang Sửng Sốt
@@ -334,7 +333,7 @@ class LichTrinhSeeder extends Seeder
                 'created_at' => $now, 'updated_at' => $now,
             ],
 
-            // ================= BỔ SUNG LỊCH TRÌNH CHO TOUR 3 (id_tour = 3) ================= //
+            // BỔ SUNG LỊCH TRÌNH CHO TOUR 3 (id_tour = 3)
             [
                 'id_tour' => 3,
                 'id_diem_den' => 41, // Trỏ tới Grand World
@@ -347,6 +346,85 @@ class LichTrinhSeeder extends Seeder
                 'id_diem_den' => 42, // Trỏ tới Safari
                 'id_phuong_tien' => 7, // Xe điện chuyên dụng của Safari
                 'tieu_de_hoat_dong' => 'Lên xe điện chuyên dụng khám phá Vinpearl Safari, trải nghiệm "nhốt người thả thú" ngắm động vật.',
+                'created_at' => $now, 'updated_at' => $now,
+            ],
+            // Lịch trình Tour 19: Malaysia
+            [
+                'id_tour' => 19,
+                'id_diem_den' => 43, // Tháp đôi Petronas
+                'id_phuong_tien' => 1, // Xe 45 chỗ
+                'tieu_de_hoat_dong' => 'Tập trung tại sảnh, khởi hành tham quan biểu tượng vĩ đại của Malaysia - tháp đôi Petronas.',
+                'created_at' => $now, 'updated_at' => $now,
+            ],
+            [
+                'id_tour' => 19,
+                'id_diem_den' => 44, // Động Batu
+                'id_phuong_tien' => 1,
+                'tieu_de_hoat_dong' => 'Chinh phục 272 bậc thang rực rỡ sắc màu để viếng thăm ngôi đền linh thiêng nằm sâu trong động Batu.',
+                'created_at' => $now, 'updated_at' => $now,
+            ],
+
+            // Lịch trình Tour 20: Trung Quốc
+            [
+                'id_tour' => 20,
+                'id_diem_den' => 45, // Tử Cấm Thành
+                'id_phuong_tien' => 1,
+                'tieu_de_hoat_dong' => 'HDV dẫn đoàn tiến vào trung tâm Bắc Kinh, khám phá kiến trúc vĩ đại của Cố Cung (Tử Cấm Thành).',
+                'created_at' => $now, 'updated_at' => $now,
+            ],
+            [
+                'id_tour' => 20,
+                'id_diem_den' => 46, // Vạn Lý Trường Thành
+                'id_phuong_tien' => null, // Thường là đi bộ / cáp treo leo thành
+                'tieu_de_hoat_dong' => 'Di chuyển lên Bát Đạt Lĩnh, tự do trekking chinh phục bức tường thành thế kỷ Vạn Lý Trường Thành.',
+                'created_at' => $now, 'updated_at' => $now,
+            ],
+
+            // Lịch trình Tour 21: Đài Loan
+            [
+                'id_tour' => 21,
+                'id_diem_den' => 47, // Phố cổ Thập Phần
+                'id_phuong_tien' => 1,
+                'tieu_de_hoat_dong' => 'Xe đưa đoàn tới Phố cổ Thập Phần. Du khách trải nghiệm viết điều ước lên đèn trời và thả lên không trung.',
+                'created_at' => $now, 'updated_at' => $now,
+            ],
+            [
+                'id_tour' => 21,
+                'id_diem_den' => 48, // Tháp Taipei 101
+                'id_phuong_tien' => null, // Đi bộ/Thang máy
+                'tieu_de_hoat_dong' => 'Đến trung tâm Đài Bắc, mua sắm thả ga và check-in dưới chân tòa tháp Taipei 101 sừng sững.',
+                'created_at' => $now, 'updated_at' => $now,
+            ],
+
+            // Lịch trình Tour 22: Bali
+            [
+                'id_tour' => 22,
+                'id_diem_den' => 49, // Cổng trời Handara
+                'id_phuong_tien' => 2, // Thường đi Bali dùng xe nhỏ 16 chỗ do đường đồi
+                'tieu_de_hoat_dong' => 'Đoàn di chuyển lên vùng cao nguyên, chụp những bức ảnh sống ảo cực chất tại Cổng trời Handara ma mị.',
+                'created_at' => $now, 'updated_at' => $now,
+            ],
+            [
+                'id_tour' => 22,
+                'id_diem_den' => 50, // Đền Tanah Lot
+                'id_phuong_tien' => 2,
+                'tieu_de_hoat_dong' => 'Buổi chiều, tới đền Tanah Lot thưởng ngoạn cảnh hoàng hôn diệu kỳ đỏ rực trên biển Ấn Độ Dương.',
+                'created_at' => $now, 'updated_at' => $now,
+            ],
+
+            // Lịch trình Tour 23: Dubai
+            [
+                'id_tour' => 23,
+                'id_diem_den' => 51, // Tháp Burj Khalifa
+                'id_phuong_tien' => 1,
+                'tieu_de_hoat_dong' => 'Khởi hành tham quan trung tâm Dubai, chiêm ngưỡng tháp Burj Khalifa và đài phun nước lớn nhất thế giới.',
+                'created_at' => $now, 'updated_at' => $now,
+            ],
+            [
+                'id_tour' => 23,
+                'id_diem_den' => 52, // Sa mạc Safari
+                'id_phuong_tien' => 2, // Đổi sang xe chuyên dụng chạy cát (Jeep 7 chỗ/16 chỗ)
+                'tieu_de_hoat_dong' => 'Lên xe địa hình chuyên dụng, trải nghiệm cảm giác mạnh vượt đồi cát (Dune Bashing) tại Safari.',
                 'created_at' => $now, 'updated_at' => $now,
             ],
 

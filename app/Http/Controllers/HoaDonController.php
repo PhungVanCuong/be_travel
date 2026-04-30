@@ -132,9 +132,6 @@ class HoaDonController extends Controller
 
         $hoaDon = HoaDon::find($request->id);
         if ($hoaDon) {
-            // KIỂM TRA ĐIỀU KIỆN TRẠNG THÁI:
-            // Chỉ cho phép xóa nếu trạng thái là 0 (Đã hủy) hoặc 1 (Chưa thanh toán)
-            // Nếu trạng thái là 2 (Đã thanh toán), không cho phép xóa để bảo toàn dữ liệu tài chính
             if ($hoaDon->trang_thai == 2) {
                 return response()->json([
                     'status'  => false,
@@ -144,10 +141,8 @@ class HoaDonController extends Controller
 
             DB::beginTransaction();
             try {
-                // Xóa các vé thuộc hóa đơn này
                 Ve::where('id_hoa_don', $hoaDon->id)->delete();
 
-                // Hoàn lại chỗ trống cho Tour nếu hóa đơn này chưa bị hủy trước đó (trạng thái là 1)
                 if ($hoaDon->trang_thai == 1) {
                     $tour = Tour::find($hoaDon->id_tour);
                     if ($tour) {
@@ -155,7 +150,6 @@ class HoaDonController extends Controller
                     }
                 }
 
-                // Xóa hóa đơn
                 $hoaDon->delete();
 
                 DB::commit();
@@ -254,6 +248,11 @@ class HoaDonController extends Controller
                 ] : null,
                 've' => $veDaDat,
                 'created_at' => $hoaDon->created_at,
+                // ĐÃ BỔ SUNG LINK QR CHO TRANG LỊCH SỬ ĐẶT TOUR
+                'thanh_toan' => [
+                    'link_qr_code' => "https://img.vietqr.io/image/MBBank-1018100050181-compact2.png?amount=" . $hoaDon->tong_tien . "&addInfo=" . $hoaDon->ma_hoa_don,
+                    'so_tai_khoan' => "1018100050181"
+                ]
             ];
         });
 
@@ -331,12 +330,12 @@ class HoaDonController extends Controller
                     ];
                 }),
                 'thanh_toan' => [
-                    // Tạo mã QR ngân hàng (Sử dụng VietQR làm ví dụ)
-                    'link_qr_code' => 'https://img.vietqr.io/image/MBBank-1910061030119-compact.png?amount=' . $hoaDon->tong_tien . '&addInfo=' . $hoaDon->ma_hoa_don,
+                    'link_qr_code' => 'https://img.vietqr.io/image/MBBank-1018100050181-compact2.png?amount=' . $hoaDon->tong_tien . '&addInfo=' . $hoaDon->ma_hoa_don,
                     'ngan_hang'    => 'MB Bank',
-                    'so_tai_khoan' => '1910061030119',
+                    'so_tai_khoan' => '1018100050181',
+                    'ten_chu_tai_khoan' => 'PHUNG VAN CUONG',
                     'chu_tai_khoan' => 'IXTAL TOUR',
-                    'noi_dung'     => $hoaDon->ma_hoa_don,
+                    'noi_dung'     => 'HDTOUR' . $hoaDon->id,
                 ]
             ]
         ]);
@@ -362,7 +361,6 @@ class HoaDonController extends Controller
                 ]);
             }
 
-            // Chỉ cho phép khách hàng hủy khi Hóa đơn chưa thanh toán
             if ($hoaDon->trang_thai == HoaDon::DA_THANH_TOAN) {
                 return response()->json([
                     'status' => false,
@@ -372,18 +370,15 @@ class HoaDonController extends Controller
 
             DB::beginTransaction();
 
-            // 1. Cập nhật trạng thái Vé thành Đã Hủy
             Ve::where('id_hoa_don', $hoaDon->id)->update([
                 'tinh_trang' => 0 // Đã hủy
             ]);
 
-            // 2. Hoàn lại số người (số ghế) cho Tour
             $tour = Tour::find($hoaDon->id_tour);
             if ($tour) {
                 $tour->increment('so_nguoi_toi_da', $hoaDon->so_luong_nguoi);
             }
 
-            // 3. Cập nhật hóa đơn thành Đã Hủy
             $hoaDon->update([
                 'trang_thai' => HoaDon::DA_HUY
             ]);
@@ -401,5 +396,20 @@ class HoaDonController extends Controller
                 'message' => 'Có lỗi xảy ra, vui lòng thử lại.'
             ]);
         }
+    }
+
+    /**
+     * CLIENT: Gọi ngầm định kỳ để kiểm tra hóa đơn đã được Admin Duyệt chưa
+     */
+    public function checkTrangThaiHoaDon($id)
+    {
+        $hoaDon = HoaDon::find($id);
+        if (!$hoaDon) {
+            return response()->json(['status' => false, 'message' => 'Không tìm thấy hóa đơn']);
+        }
+        return response()->json([
+            'status' => true,
+            'trang_thai' => $hoaDon->trang_thai // Trả về trạng thái hiện tại (0, 1, 2)
+        ]);
     }
 }

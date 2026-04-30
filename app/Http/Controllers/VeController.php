@@ -299,7 +299,7 @@ class VeController extends Controller
             DB::commit();
 
             $ma_giao_dich = 'HDTOUR' . $hoa_don->id;
-            $link_qr_code = "https://img.vietqr.io/image/MBBank-1910061030119-compact.png?amount={$tong_tien}&addInfo={$ma_giao_dich}";
+            $link_qr_code = "https://img.vietqr.io/image/MBBank-1018100050181-compact.png?amount={$tong_tien}&addInfo={$ma_giao_dich}";
 
             return response()->json([
                 'status'  => true,
