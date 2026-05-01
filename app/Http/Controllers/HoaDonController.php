@@ -335,7 +335,7 @@ class HoaDonController extends Controller
                     'so_tai_khoan' => '1018100050181',
                     'ten_chu_tai_khoan' => 'PHUNG VAN CUONG',
                     'chu_tai_khoan' => 'IXTAL TOUR',
-                    'noi_dung'     => 'HDTOUR' . $hoaDon->id,
+                    'noi_dung'     => $hoaDon->ma_hoa_don
                 ]
             ]
         ]);
