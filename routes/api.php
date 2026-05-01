@@ -17,6 +17,7 @@ use App\Http\Controllers\ThongKeController;
 Use App\Http\Controllers\HoaDonController;
 Use App\Http\Controllers\ChucNangController;
 use App\Http\Controllers\BaiVietController;
+use App\Http\Controllers\ChatBotController;
 use App\Http\Controllers\HuongDanVienController;
 use App\Http\Controllers\PhuongTienController;
 use App\Http\Controllers\HuongDanVienTourController;
@@ -197,6 +198,9 @@ Route::prefix('')->group(function () {
     // API Hướng Dẫn Viên (Đưa ra vùng Public để ai cũng xem được)
     Route::get('/client/huong-dan-vien/danh-sach', [HuongDanVienTourController::class, 'getDanhSachHDVClient']);
     Route::get('/client/huong-dan-vien/chi-tiet/{id}', [HuongDanVienTourController::class, 'getChiTietHDVClient']);
+
+    // ROUTE CHATBOT TẠI ĐÂY
+    Route::post('/client/chatbot/chat', [ChatBotController::class, 'xuLyChat']);
 
 });
 

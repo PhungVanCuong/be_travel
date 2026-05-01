@@ -27,4 +27,10 @@ class HoaDon extends Model
     {
         return $this->hasMany(Ve::class, 'id_hoa_don', 'id');
     }
+
+    // THÊM ĐOẠN NÀY ĐỂ ĐỊNH NGHĨA RELATIONSHIP TOUR
+    public function tour()
+    {
+        return $this->belongsTo(Tour::class, 'id_tour', 'id');
+    }
 }
