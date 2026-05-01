@@ -199,9 +199,45 @@ class ChatBotController extends Controller
             $tours = Tour::where('tinh_trang', 1)->withAvg('danhgias as avg_sao', 'sao_danh_gia')
                 ->orderBy('avg_sao', 'desc')->orderBy('gia', 'desc')->limit(4)->get();
         }
-        elseif (preg_match('/(rẻ|dưới 2|tiết kiệm|khuyến mãi)/iu', $msgLower)) {
+        elseif (preg_match('/(rẻ|tiết kiệm|khuyến mãi|dưới 2 triệu|ngon|bình dân)/iu', $msgLower)) {
             $responseText = "Đi chơi thả ga mà không lo xẹp ví! 💸 Dưới đây là các chuyến đi dưới 2 triệu dành cho bạn:";
             $tours = Tour::where('tinh_trang', 1)->where('gia', '<=', 2000000)->orderBy('gia', 'asc')->limit(4)->get();
+        }
+        elseif (preg_match('/(dưới|trên|khoảng)\s*([0-9]+)\s*(triệu|tr|củ)?/iu', $msgLower, $matches)) {
+            $dieuKien = mb_strtolower($matches[1], 'UTF-8'); // Bắt chữ "dưới" hoặc "trên"
+            $soTien = (int)$matches[2] * 1000000; // Bắt con số và nhân với 1 triệu
+
+            if ($dieuKien == 'dưới') {
+                $responseText = "Mình đã lọc ra các tour có giá <b>dưới " . $matches[2] . " triệu</b> cho {$userName} rồi đây! 💸 Rất tiết kiệm luôn nha:";
+                $tours = Tour::where('tinh_trang', 1)
+                    ->where('gia', '<=', $soTien)
+                    ->orderBy('gia', 'desc')
+                    ->limit(4)->get();
+            } else {
+                $responseText = "Chơi lớn luôn! 😎 Đây là các tour cao cấp có giá <b>trên " . $matches[2] . " triệu</b>, đảm bảo mang lại trải nghiệm dịch vụ 5 sao xuất sắc cho {$userName}:";
+                $tours = Tour::where('tinh_trang', 1)
+                    ->where('gia', '>=', $soTien)
+                    ->orderBy('gia', 'asc')
+                    ->limit(4)->get();
+            }
+
+            // Xử lý nếu không tìm thấy tour nào trong tầm giá đó
+            if ($tours->count() == 0) {
+                $responseText = "Tiếc quá 😅, hiện tại mình không có tour nào khớp với mức giá <b>$dieuKien {$matches[2]} triệu</b>. {$userName} thử xem các tour đang HOT nhất của bên mình nhé 👇";
+                $tours = Tour::where('tinh_trang', 1)->withAvg('danhgias as avg_sao', 'sao_danh_gia')->orderBy('avg_sao', 'desc')->limit(4)->get();
+            }
+        }
+
+        // Kịch bản từ khóa chung chung: Rẻ, tiết kiệm
+        elseif (preg_match('/(rẻ|tiết kiệm|khuyến mãi|giá tốt)/iu', $msgLower)) {
+            $responseText = "Đi chơi thả ga mà không lo xẹp ví! 💸 Dưới đây là các chuyến đi siêu tiết kiệm (dưới 3 triệu) dành cho bạn:";
+            $tours = Tour::where('tinh_trang', 1)->where('gia', '<=', 3000000)->orderBy('gia', 'asc')->limit(4)->get();
+        }
+
+        // Kịch bản từ khóa: Sang trọng, VIP, cao cấp
+        elseif (preg_match('/(cao cấp|vip|sang trọng|5 sao)/iu', $msgLower)) {
+            $responseText = "Trải nghiệm kỳ nghỉ dưỡng đẳng cấp 5 sao dành riêng cho {$userName}! ✨ Dưới đây là những tour VIP nghỉ dưỡng cực kỳ sang trọng:";
+            $tours = Tour::where('tinh_trang', 1)->where('gia', '>=', 10000000)->orderBy('gia', 'desc')->limit(4)->get();
         }
         // Kịch bản Vùng miền / Nước ngoài
         elseif (preg_match('/(nước ngoài|quốc tế|ngoài nước|thái lan|trung quốc|đài loan|bali|dubai|singapore|nhật|hàn|malaysia)/iu', $msgLower)) {
