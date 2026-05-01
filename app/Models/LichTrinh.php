@@ -13,4 +13,9 @@ class LichTrinh extends Model
         'id_phuong_tien',
         'tieu_de_hoat_dong',
     ];
+
+    public function diemDen()
+    {
+        return $this->belongsTo(DiemDen::class, 'id_diem_den', 'id');
+    }
 }

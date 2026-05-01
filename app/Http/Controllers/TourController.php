@@ -139,8 +139,9 @@ class TourController extends Controller
 
     public function getDataClient()
     {
-        // Sử dụng relation 'danhgias' đã khai báo trong Model Tour
+        // Kéo thêm data của lịch trình và điểm đến để VueJS check Thành phố
         $data = Tour::where('tinh_trang', 1)
+            ->with(['quoc_gia', 'lichTrinhs.diemDen'])
             ->withAvg('danhgias as avg_sao', 'sao_danh_gia')
             ->withCount('danhgias as so_luot_danh_gia')
             ->orderBy('created_at', 'desc')
@@ -152,41 +153,42 @@ class TourController extends Controller
             'data' => $data
         ]);
     }
+
     public function destroy(Request $request)
-{
-    $user = Auth::guard('sanctum')->user();
+    {
+        $user = Auth::guard('sanctum')->user();
 
-    // Check quyền
-    if ($user->is_master != 1) {
-        $id_chuc_nang = 1;
-        $id_chuc_vu   = $user->id_chuc_vu;
+        // Check quyền
+        if ($user->is_master != 1) {
+            $id_chuc_nang = 1;
+            $id_chuc_vu   = $user->id_chuc_vu;
 
-        $check = PhanQuyen::where('id_chuc_vu', $id_chuc_vu)
-            ->where('id_chuc_nang', $id_chuc_nang)
-            ->first();
+            $check = PhanQuyen::where('id_chuc_vu', $id_chuc_vu)
+                ->where('id_chuc_nang', $id_chuc_nang)
+                ->first();
 
-        if (!$check) {
+            if (!$check) {
+                return response()->json([
+                    'status'  => 0,
+                    'message' => 'Bạn không có quyền thực hiện chức năng này!'
+                ]);
+            }
+        }
+
+        $tour = Tour::find($request->id);
+
+        if (!$tour) {
             return response()->json([
-                'status'  => 0,
-                'message' => 'Bạn không có quyền thực hiện chức năng này!'
+                'status' => false,
+                'message' => 'Tour không tồn tại'
             ]);
         }
-    }
 
-    $tour = Tour::find($request->id);
+        $tour->delete();
 
-    if (!$tour) {
         return response()->json([
-            'status' => false,
-            'message' => 'Tour không tồn tại'
+            'status' => true,
+            'message' => 'Xóa tour thành công'
         ]);
     }
-
-    $tour->delete();
-
-    return response()->json([
-        'status' => true,
-        'message' => 'Xóa tour thành công'
-    ]);
-}
 }

@@ -32,4 +32,9 @@ class Tour extends Model
         // Giả sử bảng tours có cột id_quoc_gia nối với id của bảng QuocGia
         return $this->belongsTo(QuocGia::class, 'id_quoc_gia', 'id');
     }
+    // THÊM MỚI: Liên kết lấy Lịch Trình của Tour
+    public function lichTrinhs()
+    {
+        return $this->hasMany(LichTrinh::class, 'id_tour', 'id');
+    }
 }
