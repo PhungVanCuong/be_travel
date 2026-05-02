@@ -202,6 +202,8 @@ Route::prefix('')->group(function () {
     // ROUTE CHATBOT TẠI ĐÂY
     Route::post('/client/chatbot/chat', [ChatBotController::class, 'xuLyChat']);
 
+    // ROUTE Dùng để tìm kiếm tour cho khách hàng (Tìm kiếm đa chiều: Tên Tour, Quốc Gia, Điểm Đến, Thành Phố)
+    Route::post('/client/tour/search', [TourController::class, 'searchTourClient']);
 });
 
 // CLIENT ROUTES (Protected - Cần đăng nhập)
