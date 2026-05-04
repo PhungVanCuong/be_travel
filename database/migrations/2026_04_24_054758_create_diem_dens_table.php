@@ -17,7 +17,7 @@ return new class extends Migration
             $table->text('mo_ta')->nullable();
             $table->string('thanh_pho')->nullable();
             $table->integer('tinh_trang')->default(1); // 1: hoạt động, 0: ẩn
-            $table->string('hinh_anh')->nullable(); // lưu path ảnh
+            $table->string('hinh_anh', 1000)->nullable(); // lưu path ảnh
             $table->timestamps();
         });
     }
