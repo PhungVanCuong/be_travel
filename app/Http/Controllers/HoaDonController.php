@@ -412,4 +412,63 @@ class HoaDonController extends Controller
             'trang_thai' => $hoaDon->trang_thai // Trả về trạng thái hiện tại (0, 1, 2)
         ]);
     }
+    /**
+     * ADMIN: Quét / Tra cứu nhanh mã hóa đơn
+     */
+    public function quetMaHoaDon(Request $request)
+    {
+        $user = Auth::guard('sanctum')->user();
+        if ($user->is_master != 1) {
+            $id_chuc_nang = 7; // Quản lý hóa đơn
+            $id_chuc_vu   = $user->id_chuc_vu;
+            $check        = PhanQuyen::where('id_chuc_vu', $id_chuc_vu)->where('id_chuc_nang', $id_chuc_nang)->first();
+            if (!$check) {
+                return response()->json([
+                    'status'    =>  0,
+                    'message'   =>  'Bạn không có quyền thực hiện chức năng này!'
+                ]);
+            }
+        }
+
+        $ma_hoa_don = trim($request->ma_hoa_don);
+        if (empty($ma_hoa_don)) {
+            return response()->json(['status' => false, 'message' => 'Vui lòng nhập mã hóa đơn']);
+        }
+
+        // Tìm hóa đơn
+        $hoaDon = HoaDon::where('ma_hoa_don', $ma_hoa_don)->first();
+
+        if (!$hoaDon) {
+            return response()->json(['status' => false, 'message' => 'Không tìm thấy hóa đơn này trên hệ thống!']);
+        }
+
+        // Lấy thông tin liên quan
+        $tour = Tour::find($hoaDon->id_tour);
+        $khachHang = KhachHang::find($hoaDon->id_khach_hang);
+        $soVeDaXuat = Ve::where('id_hoa_don', $hoaDon->id)->count();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Tra cứu thông tin hóa đơn thành công',
+            'data' => [
+                'ma_hoa_don'             => $hoaDon->ma_hoa_don,
+                'tong_tien'              => $hoaDon->tong_tien,
+                'so_luong_nguoi'         => $hoaDon->so_luong_nguoi,
+                'so_ve_da_xuat'          => $soVeDaXuat,
+                'phuong_thuc_thanh_toan' => $hoaDon->phuong_thuc_thanh_toan,
+                'ghi_chu'                => $hoaDon->ghi_chu_danh_sach_nguoi_di,
+                'trang_thai'             => $hoaDon->trang_thai, // 0: Đã Hủy, 1: Chưa TT, 2: Đã TT
+                'ngay_tao'               => $hoaDon->ngay_tao,
+
+                // Thông tin Tour
+                'ten_tour'               => $tour ? $tour->ten_tour : 'Tour đã bị xóa',
+                'hinh_anh_tour'          => $tour ? $tour->hinh_anh : null,
+
+                // Thông tin Khách hàng
+                'ten_khach_hang'         => $khachHang ? $khachHang->ho_va_ten : 'Khách ẩn danh',
+                'so_dien_thoai'          => $khachHang ? $khachHang->so_dien_thoai : 'Không có',
+                'email'                  => $khachHang ? $khachHang->email : 'Không có'
+            ]
+        ]);
+    }
 }

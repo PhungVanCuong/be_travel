@@ -29,20 +29,20 @@ class HuongDanVienTourController extends Controller
 
     public function getDanhSachPhanCong()
     {
+        // Join 3 bảng: huong_dan_vien_tours, tours, huong_dan_viens
         $data = DB::table('huong_dan_vien_tours')
             ->join('tours', 'huong_dan_vien_tours.id_tour', '=', 'tours.id')
             ->join('huong_dan_viens', 'huong_dan_vien_tours.id_huong_dan_vien', '=', 'huong_dan_viens.id')
             ->select(
                 'huong_dan_vien_tours.id as id_phan_cong',
-                'tours.id as id_tour',
+                'huong_dan_vien_tours.id_tour',
+                'huong_dan_vien_tours.id_huong_dan_vien as id_hdv',
                 'tours.ten_tour',
                 'tours.ngay_bat_dau',
                 'tours.ngay_ket_thuc',
-                'huong_dan_viens.id as id_hdv',
                 'huong_dan_viens.ho_va_ten as ten_hdv',
                 'huong_dan_viens.so_dien_thoai',
-                'huong_dan_viens.ngon_ngu',
-                'huong_dan_viens.is_block'
+                'huong_dan_viens.ngon_ngu'
             )
             ->orderBy('huong_dan_vien_tours.id', 'DESC')
             ->get();
@@ -68,6 +68,7 @@ class HuongDanVienTourController extends Controller
             ]);
         }
 
+        // Kiểm tra xem HDV đã được phân công cho Tour này chưa
         $check = HuongDanVienTour::where('id_tour', $request->id_tour)
                                  ->where('id_huong_dan_vien', $request->id_huong_dan_vien)
                                  ->first();
@@ -90,6 +91,47 @@ class HuongDanVienTourController extends Controller
         ]);
     }
 
+    // THÊM MỚI: Hàm Cập nhật phân công (Đổi Tour hoặc Đổi HDV)
+    public function capNhatPhanCong(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'id_phan_cong'      => 'required|exists:huong_dan_vien_tours,id',
+            'id_tour'           => 'required|exists:tours,id',
+            'id_huong_dan_vien' => 'required|exists:huong_dan_viens,id',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status'  => false,
+                'message' => $validator->errors()->first()
+            ]);
+        }
+
+        // Kiểm tra trùng lặp (trừ chính nó)
+        $check = HuongDanVienTour::where('id_tour', $request->id_tour)
+                                 ->where('id_huong_dan_vien', $request->id_huong_dan_vien)
+                                 ->where('id', '!=', $request->id_phan_cong)
+                                 ->first();
+
+        if ($check) {
+            return response()->json([
+                'status'  => false,
+                'message' => 'Hướng dẫn viên này đã được phân công cho Tour này rồi!'
+            ]);
+        }
+
+        $phanCong = HuongDanVienTour::find($request->id_phan_cong);
+        if ($phanCong) {
+            $phanCong->update([
+                'id_tour'           => $request->id_tour,
+                'id_huong_dan_vien' => $request->id_huong_dan_vien
+            ]);
+            return response()->json(['status' => true, 'message' => 'Cập nhật phân công thành công!']);
+        }
+
+        return response()->json(['status' => false, 'message' => 'Không tìm thấy dữ liệu phân công!']);
+    }
+
     public function xoaPhanCong(Request $request)
     {
         $phanCong = HuongDanVienTour::find($request->id);
@@ -99,6 +141,7 @@ class HuongDanVienTourController extends Controller
         }
         return response()->json(['status' => false, 'message' => 'Không tìm thấy dữ liệu phân công!']);
     }
+
 
     /**
      * ==================================================
@@ -235,10 +278,10 @@ class HuongDanVienTourController extends Controller
                     'khach_hangs.email',
                     'khach_hangs.so_dien_thoai',
                     'khach_hangs.cccd',
-                    'khach_hangs.avatar', // ĐÃ BỔ SUNG AVATAR CỦA KHÁCH
+                    'khach_hangs.avatar',
                     'hoa_dons.so_luong_nguoi',
                     'hoa_dons.ma_hoa_don',
-                    'hoa_dons.ghi_chu_danh_sach_nguoi_di', // ĐÃ BỔ SUNG GHI CHÚ
+                    'hoa_dons.ghi_chu_danh_sach_nguoi_di',
                     'hoa_dons.created_at as ngay_dat_ve'
                 )
                 ->orderBy('hoa_dons.created_at', 'DESC')

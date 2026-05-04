@@ -113,6 +113,8 @@ Route::prefix('')->group(function () {
         Route::post('/hoa-don/update', [HoaDonController::class, 'update']);
         Route::post('/hoa-don/delete', [HoaDonController::class, 'destroy']);
         Route::post('/hoa-don/in-ve', [HoaDonController::class, 'inVeHoaDon']);
+        // THÊM DÒNG MỚI NÀY ĐỂ TRA CỨU/QUÉT MÃ HÓA ĐƠN
+        Route::post('/hoa-don/quet-ma', [HoaDonController::class, 'quetMaHoaDon']);
 
         //Bài viết
         Route::get('bai-viet/get-data', [BaiVietController::class, 'getData']);
@@ -155,6 +157,7 @@ Route::prefix('')->group(function () {
         Route::get('/quan-ly-hdv/danh-sach-hdv', [HuongDanVienTourController::class, 'getDanhSachHuongDanVien']);
         Route::get('/quan-ly-hdv/danh-sach-phan-cong', [HuongDanVienTourController::class, 'getDanhSachPhanCong']);
         Route::post('/quan-ly-hdv/tao-phan-cong', [HuongDanVienTourController::class, 'taoPhanCong']);
+        Route::post('/quan-ly-hdv/cap-nhat-phan-cong', [HuongDanVienTourController::class, 'capNhatPhanCong']);
         Route::post('/quan-ly-hdv/xoa-phan-cong', [HuongDanVienTourController::class, 'xoaPhanCong']);
 
         // API Admin: Quản lý Lịch Trình Tour

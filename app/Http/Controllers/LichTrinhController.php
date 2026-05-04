@@ -30,13 +30,14 @@ class LichTrinhController extends Controller
             }
         }
 
-        // Nối bảng Lịch trình với Tour, Điểm Đến và Phương Tiện
+        // ĐÃ SỬA: Lấy thêm hinh_anh của Tour
         $data = LichTrinh::leftJoin('tours', 'lich_trinhs.id_tour', '=', 'tours.id')
             ->leftJoin('diem_dens', 'lich_trinhs.id_diem_den', '=', 'diem_dens.id')
             ->leftJoin('phuong_tiens', 'lich_trinhs.id_phuong_tien', '=', 'phuong_tiens.id')
             ->select(
                 'lich_trinhs.*',
                 'tours.ten_tour',
+                'tours.hinh_anh as anh_tour', // <--- Lấy ảnh Tour tại đây
                 'diem_dens.ten_diem_den',
                 'diem_dens.hinh_anh as anh_diem_den',
                 'phuong_tiens.loai_phuong_tien',
@@ -190,12 +191,10 @@ class LichTrinhController extends Controller
     }
 
     /**
-     * DÀNH CHO HƯỚNG DẪN VIÊN: Lấy Lịch trình của TẤT CẢ CÁC TOUR MÀ HDV NÀY ĐÃ NHẬN
-     * Dữ liệu được nhóm theo Tour
+     * DÀNH CHO HƯỚNG DẪN VIÊN
      */
     public function getLichTrinhHDV(Request $request)
     {
-        // 1. Kiểm tra đăng nhập
         $user = Auth::guard('sanctum')->user();
         if (!$user || !($user instanceof \App\Models\HuongDanVien)) {
             return response()->json([
@@ -204,20 +203,19 @@ class LichTrinhController extends Controller
             ]);
         }
 
-        // 2. Lấy danh sách các Tour mà HDV này ĐÃ NHẬN (từ bảng huong_dan_vien_tours)
         $toursDaNhan = DB::table('huong_dan_vien_tours')
             ->join('tours', 'huong_dan_vien_tours.id_tour', '=', 'tours.id')
             ->where('huong_dan_vien_tours.id_huong_dan_vien', $user->id)
             ->select(
                 'tours.id as id_tour',
                 'tours.ten_tour',
+                'tours.hinh_anh as anh_tour',
                 'tours.ngay_bat_dau',
                 'tours.ngay_ket_thuc'
             )
             ->orderBy('tours.ngay_bat_dau', 'asc')
             ->get();
 
-        // 3. Lặp qua từng Tour để lấy chi tiết Lịch trình (Điểm đến, Phương tiện) nhét vào trong
         foreach ($toursDaNhan as $tour) {
             $lichTrinhChiTiet = \App\Models\LichTrinh::leftJoin('diem_dens', 'lich_trinhs.id_diem_den', '=', 'diem_dens.id')
                 ->leftJoin('phuong_tiens', 'lich_trinhs.id_phuong_tien', '=', 'phuong_tiens.id')
@@ -234,15 +232,13 @@ class LichTrinhController extends Controller
                 )
                 ->orderBy('lich_trinhs.id', 'ASC')
                 ->get();
-
-            // Gắn mảng lịch trình chi tiết vào object tour
             $tour->danh_sach_lich_trinh = $lichTrinhChiTiet;
         }
 
         return response()->json([
             'status'  => true,
             'message' => 'Lấy lịch trình công việc thành công',
-            'data'    => $toursDaNhan, // Trả về mảng Tour, trong Tour có Lịch trình
+            'data'    => $toursDaNhan,
         ]);
     }
 }
