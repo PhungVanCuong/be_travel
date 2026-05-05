@@ -61,7 +61,8 @@ class KhachHangController extends Controller
             'password'     => $request->password,
             'cccd'         => $request->cccd,
             'ngay_sinh'    => $request->ngay_sinh,
-            'is_block'     => 0
+            'is_active'     => $request->is_active,
+            'is_block'      => $request->is_block
         ]);
         return response()->json([
             'status' => true,
@@ -92,7 +93,8 @@ class KhachHangController extends Controller
             'password'     => $request->password,
             'cccd'         => $request->cccd,
             'ngay_sinh'    => $request->ngay_sinh,
-            'is_block'     => 0
+            'is_active'     => $request->is_active,
+            'is_block'      => $request->is_block
         ]);
         return response()->json([
             'status'    => true,
