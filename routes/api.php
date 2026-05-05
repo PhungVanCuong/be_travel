@@ -211,7 +211,7 @@ Route::prefix('')->group(function () {
 
 // CLIENT ROUTES (Protected - Cần đăng nhập)
 Route::prefix('')->group(function () {
-    Route::group(['prefix' => '/client'], function () {
+    Route::group(['prefix' => '/client', 'middleware' => 'auth:sanctum'], function () {
         // profile khach hang
         Route::get('/profile/get-data', [KhachHangController::class, 'getProfile']);
         Route::post('/profile/update', [KhachHangController::class, 'updateProfile']);
@@ -272,7 +272,7 @@ Route::prefix('')->group(function () {
 
 // CLIENT ROUTES (Protected - Cần đăng nhập)
 Route::prefix('')->group(function () {
-    Route::group(['prefix' => '/huong-dan-vien'], function () {
+    Route::group(['prefix' => '/huong-dan-vien', 'middleware' => 'auth:sanctum'], function () {
         // profile hướng dẫn viên
         Route::get('/profile/get-data', [HuongDanVienController::class, 'getProfile']);
         Route::post('/profile/update', [HuongDanVienController::class, 'updateProfile']);
