@@ -24,6 +24,7 @@ use App\Http\Controllers\HuongDanVienTourController;
 use App\Http\Controllers\LichTrinhController;
 use App\Http\Controllers\QuocGiaController;
 use App\Http\Controllers\DiemDenController;
+use App\Http\Controllers\LienHeController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -171,6 +172,9 @@ Route::prefix('')->group(function () {
         Route::post('/diem-den/update', [DiemDenController::class, 'update']);
         Route::post('/diem-den/delete', [DiemDenController::class, 'destroy']);
 
+        Route::get('/lien-he/get-data', [LienHeController::class, 'getData']);
+        Route::post('/lien-he/change-status', [LienHeController::class, 'changeStatus']);
+        Route::post('/lien-he/destroy', [LienHeController::class, 'destroy']);
 
     });
 });
@@ -207,6 +211,9 @@ Route::prefix('')->group(function () {
 
     // ROUTE Dùng để tìm kiếm tour cho khách hàng (Tìm kiếm đa chiều: Tên Tour, Quốc Gia, Điểm Đến, Thành Phố)
     Route::post('/client/tour/search', [TourController::class, 'searchTourClient']);
+
+    // Ở KHU VỰC CLIENT ROUTES (Public)
+    Route::post('/client/lien-he', [LienHeController::class, 'store']);
 });
 
 // CLIENT ROUTES (Protected - Cần đăng nhập)
