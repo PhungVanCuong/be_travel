@@ -32,7 +32,7 @@ class DatabaseSeeder extends Seeder
             HoaDonSeeder::class, // Cần Khách hàng, Tour
             VeSeeder::class, // Cần Hóa đơn, Khách hàng
             DanhGiaSeeder::class, // Cần Khách hàng, Tour
-
+            LienHeSeeder::class,
         ]);
     }
 }
