@@ -30,7 +30,8 @@ class SlideController extends Controller
             return response()->json(['status' => 0, 'message' => 'Bạn không có quyền thực hiện chức năng này!']);
         }
 
-        $data = Slide::orderBy('created_at', 'desc')->get();
+        // Đổi từ sắp xếp created_at sang thu_tu theo thứ tự tăng dần (asc)
+        $data = Slide::orderBy('thu_tu', 'asc')->get();
         return response()->json([
             'status'  => true,
             'message' => 'Lấy dữ liệu slide thành công',
@@ -44,20 +45,20 @@ class SlideController extends Controller
             return response()->json(['status' => 0, 'message' => 'Bạn không có quyền thực hiện chức năng này!']);
         }
 
-        $hinh_anh = $request->hinh_anh_url; // Lấy link URL nếu có
+        $hinh_anh = $request->hinh_anh_url;
 
-        // Nếu có upload file, ưu tiên lấy file lưu vào thư mục public/uploads/slides
         if ($request->hasFile('hinh_anh_file')) {
             $file = $request->file('hinh_anh_file');
             $fileName = time() . '-' . $file->getClientOriginalName();
             $file->move(public_path('uploads/slides'), $fileName);
-            $hinh_anh = '/uploads/slides/' . $fileName; // Đường dẫn lưu vào DB
+            $hinh_anh = '/uploads/slides/' . $fileName;
         }
 
         Slide::create([
             'tieu_de'    => $request->tieu_de,
             'hinh_anh'   => $hinh_anh,
-            'tinh_trang' => $request->tinh_trang ?? 1
+            'tinh_trang' => $request->tinh_trang ?? 1,
+            'thu_tu'     => $request->thu_tu ?? 0
         ]);
 
         return response()->json([
@@ -79,9 +80,7 @@ class SlideController extends Controller
 
         $hinh_anh = $request->hinh_anh_url ?? $slide->hinh_anh;
 
-        // Nếu có upload file mới, cập nhật lại hình ảnh
         if ($request->hasFile('hinh_anh_file')) {
-            // Xóa file cũ nếu có thể (tùy chọn)
             if (File::exists(public_path($slide->hinh_anh))) {
                 File::delete(public_path($slide->hinh_anh));
             }
@@ -95,7 +94,8 @@ class SlideController extends Controller
         $slide->update([
             'tieu_de'    => $request->tieu_de,
             'hinh_anh'   => $hinh_anh,
-            'tinh_trang' => $request->tinh_trang
+            'tinh_trang' => $request->tinh_trang,
+            'thu_tu'     => $request->thu_tu ?? 0
         ]);
 
         return response()->json([
@@ -130,7 +130,6 @@ class SlideController extends Controller
 
         $slide = Slide::find($request->id);
         if ($slide) {
-            // Xóa file vật lý trong folder nếu có
             if (File::exists(public_path($slide->hinh_anh))) {
                 File::delete(public_path($slide->hinh_anh));
             }
