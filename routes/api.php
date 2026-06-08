@@ -82,17 +82,19 @@ Route::prefix('')->group(function () {
         Route::post('/ve/sync-prices', [VeController::class, 'syncPrices']);
 
         // đổi mật khẩu nhân viên
-        Route::post('/doi-mat-khau', [NhanVienController::class, 'doiMatKhau']);
-        // profile nhân viên
+        // 1. API Lấy thông tin Profile
         Route::get('/profile/get-data', [NhanVienController::class, 'getProfile']);
+        // 2. API Cập nhật thông tin cá nhân
         Route::post('/profile/update', [NhanVienController::class, 'updateProfile']);
+        // 3. API Đổi mật khẩu
+        Route::post('/doi-mat-khau', [NhanVienController::class, 'doiMatKhau']);
         Route::post('/dang-xuat', [NhanVienController::class, 'dangXuat']);
         Route::post('/dang-xuat-all', [NhanVienController::class, 'dangXuatAll']);
 
         //Phân quyền
-        Route::post('phan-quyen/chi-tiet-phan-quyen/add-data', [PhanQuyenController::class, 'addData']);
-        Route::post('phan-quyen/chi-tiet-phan-quyen/delete', [PhanQuyenController::class, 'destroy']);
-        Route::post('phan-quyen/chi-tiet-phan-quyen/data', [PhanQuyenController::class, 'getChiTietPhanQuyen']);
+        Route::post('/phan-quyen/chi-tiet-phan-quyen/add-data', [PhanQuyenController::class, 'addData']);
+        Route::post('/phan-quyen/chi-tiet-phan-quyen/delete', [PhanQuyenController::class, 'destroy']);
+        Route::post('/phan-quyen/chi-tiet-phan-quyen/data', [PhanQuyenController::class, 'getChiTietPhanQuyen']);
         //Quốc gia
         Route::get('/quoc-gia/get-data', [QuocGiaController::class, 'getData']);
         Route::post('/quoc-gia/add-data', [QuocGiaController::class, 'addData']);
@@ -103,11 +105,12 @@ Route::prefix('')->group(function () {
         Route::post('/danh-gia/doi-tinh-trang', [DanhGiaController::class, 'doiTrangThai']);
         Route::post('/danh-gia/delete', [DanhGiaController::class, 'xoaDanhGia']);
 
-        //slide
+        // Quản lý Slide
         Route::get('/slide/get-data', [SlideController::class, 'getData']);
         Route::post('/slide/add-data', [SlideController::class, 'addData']);
         Route::post('/slide/update', [SlideController::class, 'update']);
         Route::post('/slide/delete', [SlideController::class, 'destroy']);
+        Route::post('/slide/change-status', [SlideController::class, 'changeStatus']); // API đổi trạng thái mới thêm
 
         // API Hóa đơn và in vé
         Route::get('/hoa-don/get-data', [HoaDonController::class, 'getData']);
@@ -118,13 +121,13 @@ Route::prefix('')->group(function () {
         Route::post('/hoa-don/quet-ma', [HoaDonController::class, 'quetMaHoaDon']);
 
         //Bài viết
-        Route::get('bai-viet/get-data', [BaiVietController::class, 'getData']);
-        Route::post('bai-viet/add-data', [BaiVietController::class, 'addData']);
-        Route::post('bai-viet/update', [BaiVietController::class, 'update']);
-        Route::post('bai-viet/delete', [BaiVietController::class, 'destroy']);
+        Route::get('/bai-viet/get-data', [BaiVietController::class, 'getData']);
+        Route::post('/bai-viet/add-data', [BaiVietController::class, 'addData']);
+        Route::post('/bai-viet/update', [BaiVietController::class, 'update']);
+        Route::post('/bai-viet/delete', [BaiVietController::class, 'destroy']);
 
         // chức năng
-        Route::get('chuc-nang/get-data', [ChucNangController::class, 'getData']);
+        Route::get('/chuc-nang/get-data', [ChucNangController::class, 'getData']);
 
         // Thống kê
         Route::post('/thong-ke/khach-hang-moi', [ThongKeController::class, 'thongKeKHMoi']);
