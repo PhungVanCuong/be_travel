@@ -89,6 +89,115 @@ class VeController extends Controller
             'message' => 'Thêm vé thành công',
         ]);
     }
+    /**
+     * Tra cứu chi tiết thông tin vé phục vụ check-in (Thay cho hàm inVe cũ)
+     */
+    /**
+     * Tra cứu chi tiết thông tin vé phục vụ check-in đoàn đi tour
+     */
+    public function chiTietCheckIn(Request $request)
+    {
+        $user = Auth::guard('sanctum')->user();
+        if ($user->is_master != 1) {
+            $id_chuc_nang = 8;
+            $id_chuc_vu   = $user->id_chuc_vu;
+            $check        = PhanQuyen::where('id_chuc_vu', $id_chuc_vu)->where('id_chuc_nang', $id_chuc_nang)->first();
+            if (!$check) {
+                return response()->json([
+                    'status'    => 0,
+                    'message'   => 'Bạn không có quyền thực hiện chức năng này!'
+                ]);
+            }
+        }
+
+        $ma_ve = $request->noi_dung;
+
+        if (!$ma_ve) {
+            return response()->json([
+                'status'  => 0,
+                'message' => 'Mã vé không được để trống!'
+            ]);
+        }
+
+        $ve = Ve::join('hoa_dons', 'ves.id_hoa_don', '=', 'hoa_dons.id')
+                ->join('tours', 'hoa_dons.id_tour', '=', 'tours.id')
+                ->join('khach_hangs', 'ves.id_khach_hang', '=', 'khach_hangs.id')
+                ->select(
+                    'ves.*',
+                    'tours.ten_tour',
+                    'tours.hinh_anh', // THÊM DÒNG NÀY ĐỂ LẤY HÌNH ẢNH TOUR
+                    'khach_hangs.ho_va_ten as ten_khach_hang',
+                    'hoa_dons.ma_hoa_don'
+                )
+                ->where('ves.ma_ve', $ma_ve)
+                ->first();
+
+        if (!$ve) {
+            return response()->json([
+                'status'  => 0,
+                'message' => 'Mã vé này không tồn tại trên hệ thống!'
+            ]);
+        }
+
+        return response()->json([
+            'status' => 1,
+            'data'   => [
+                'id'             => (int) $ve->id,
+                'ma_ve'          => $ve->ma_ve,
+                'gia_ve'         => (int) $ve->gia_ve,
+                'id_khach_hang'  => (int) $ve->id_khach_hang,
+                'id_hoa_don'     => (int) $ve->id_hoa_don,
+                'tinh_trang'     => (int) $ve->tinh_trang,
+                'is_check_in'    => (int) $ve->is_check_in,
+                'ten_tour'       => $ve->ten_tour,
+                'hinh_anh'       => $ve->hinh_anh, // ĐƯA HÌNH ẢNH VÀO MẢNG DATA TRẢ VỀ
+                'ten_khach_hang' => $ve->ten_khach_hang,
+                'ma_hoa_don'     => $ve->ma_hoa_don,
+                'created_at'     => $ve->created_at ? $ve->created_at->format('H:i d/m/Y') : '',
+            ]   
+        ]);
+    }
+    public function checkInTicket(Request $request)
+    {
+        $user = Auth::guard('sanctum')->user();
+        if ($user->is_master != 1) {
+            $id_chuc_nang = 8;
+            $id_chuc_vu   = $user->id_chuc_vu;
+            $check        = PhanQuyen::where('id_chuc_vu', $id_chuc_vu)->where('id_chuc_nang', $id_chuc_nang)->first();
+            if (!$check) {
+                return response()->json([
+                    'status'    => 0,
+                    'message'   => 'Bạn không có quyền thực hiện chức năng này!'
+                ]);
+            }
+        }
+
+        $ma_ve = $request->ma_ve;
+        $ve = Ve::where('ma_ve', $ma_ve)->first();
+
+        if (!$ve) {
+            return response()->json([
+                'status'  => false,
+                'message' => 'Không tìm thấy vé cần xử lý check-in!'
+            ]);
+        }
+
+        if ($ve->is_check_in == 1) {
+            return response()->json([
+                'status'  => false,
+                'message' => 'Vé này đã được quét xác nhận check-in trước đó!'
+            ]);
+        }
+
+        // Cập nhật trạng thái check-in
+        $ve->is_check_in = 1;
+        $ve->save();
+
+        return response()->json([
+            'status'  => true,
+            'message' => 'Xác nhận hành khách vào đoàn (Check-in) thành công!'
+        ]);
+    }
     public function update(Request $request)
     {
         $user = Auth::guard('sanctum')->user();

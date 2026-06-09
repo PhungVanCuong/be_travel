@@ -80,7 +80,8 @@ Route::prefix('')->group(function () {
         Route::post('/ve/destroy', [VeController::class, 'destroy']);
         Route::post('/ve/change-status', [VeController::class, 'changeStatus']);
         Route::post('/ve/sync-prices', [VeController::class, 'syncPrices']);
-
+        Route::post('/ve/in-ve', [VeController::class, 'chiTietCheckIn']); // Đổi tên hàm cho đúng nghiệp vụ tra cứu
+        Route::post('/ve/check-in', [VeController::class, 'checkInTicket']); // Thêm route xử lý check-in
         // đổi mật khẩu nhân viên
         // 1. API Lấy thông tin Profile
         Route::get('/profile/get-data', [NhanVienController::class, 'getProfile']);
