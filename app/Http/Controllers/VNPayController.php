@@ -25,10 +25,24 @@ class VNPayController extends Controller
         $hoaDon->phuong_thuc_thanh_toan = 'VNPAY';
         $hoaDon->save();
 
-        $vnp_TmnCode = 'ORAWIP6X'; // Thay đổi mã website của bạn tại đây
-        $vnp_HashSecret = 'KCPUCG0YL3BRPCFNH9QSDFKS06ET99H8'; // Thay đổi secret key của bạn tại đây
-        $vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html"; // URL thanh toán của VNPay
-        $vnp_Returnurl = "http://localhost:5173/Ket-qua-thanh-toan"; // Thay đổi URL trả về sau khi thanh toán thành công
+        $vnp_TmnCode = 'ORAWIP6X';
+        $vnp_HashSecret = 'KCPUCG0YL3BRPCFNH9QSDFKS06ET99H8';
+        $vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
+
+        // ------------------------------------------------------------------
+        // TỰ ĐỘNG NHẬN DIỆN DOMAIN: KHÔNG CẦN SỬA CODE - KHÔNG CẦN CẤU HÌNH .ENV
+        // ------------------------------------------------------------------
+        // Lấy domain của Frontend đang gọi API này (Ví dụ: http://localhost:5173 hoặc https://ixtaltravel.deloydz.io.vn)
+        $frontendUrl = $request->header('Origin');
+
+        // Phòng trường hợp test bằng Postman/Insomnia không có Header Origin thì dùng mặc định localhost
+        if (!$frontendUrl) {
+            $frontendUrl = 'http://localhost:5173';
+        }
+
+        // Ghép với path kết quả thanh toán (dùng rtrim để tránh bị thừa dấu gạch chéo '/')
+        $vnp_Returnurl = rtrim($frontendUrl, '/') . "/Ket-qua-thanh-toan";
+        // ------------------------------------------------------------------
 
         $vnp_TxnRef = $hoaDon->id . '_' . time();
         $vnp_OrderInfo = $hoaDon->id;
@@ -48,7 +62,7 @@ class VNPayController extends Controller
             "vnp_Locale" => $vnp_Locale,
             "vnp_OrderInfo" => $vnp_OrderInfo,
             "vnp_OrderType" => $vnp_OrderType,
-            "vnp_ReturnUrl" => $vnp_Returnurl,
+            "vnp_ReturnUrl" => $vnp_Returnurl, // URL lúc này đã hoàn toàn tự động
             "vnp_TxnRef" => $vnp_TxnRef,
         ];
 

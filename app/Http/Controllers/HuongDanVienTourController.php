@@ -233,11 +233,37 @@ class HuongDanVienTourController extends Controller
         $user = Auth::guard('sanctum')->user();
         if (!$user) return response()->json(['status' => false, 'message' => 'Chưa đăng nhập!']);
 
+        // 1. Kiểm tra xem tour này đã có người nhận chưa
         $check = DB::table('huong_dan_vien_tours')->where('id_tour', $request->id_tour)->first();
         if ($check) {
             return response()->json(['status' => false, 'message' => 'Tour này đã có người nhận!']);
         }
 
+        // 2. Lấy thông tin ngày tháng của tour mà HDV đang muốn nhận
+        $tourMuonNhan = DB::table('tours')->where('id', $request->id_tour)->first();
+        if (!$tourMuonNhan) {
+            return response()->json(['status' => false, 'message' => 'Tour không tồn tại!']);
+        }
+
+        // 3. Kiểm tra xem có bị trùng lịch với các tour mà HDV này ĐÃ NHẬN hay không
+        $isOverlap = DB::table('huong_dan_vien_tours')
+            ->join('tours', 'huong_dan_vien_tours.id_tour', '=', 'tours.id')
+            ->where('huong_dan_vien_tours.id_huong_dan_vien', $user->id)
+            ->where(function ($query) use ($tourMuonNhan) {
+                // Điều kiện trùng lịch: Bắt đầu A <= Kết thúc B VÀ Kết thúc A >= Bắt đầu B
+                $query->where('tours.ngay_bat_dau', '<=', $tourMuonNhan->ngay_ket_thuc)
+                      ->where('tours.ngay_ket_thuc', '>=', $tourMuonNhan->ngay_bat_dau);
+            })
+            ->exists();
+
+        if ($isOverlap) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Lịch trình bị trùng với một tour khác mà bạn đã nhận trước đó!'
+            ]);
+        }
+
+        // 4. Nếu thỏa mãn hết điều kiện, tiến hành phân công
         DB::table('huong_dan_vien_tours')->insert([
             'id_tour' => $request->id_tour,
             'id_huong_dan_vien' => $user->id,

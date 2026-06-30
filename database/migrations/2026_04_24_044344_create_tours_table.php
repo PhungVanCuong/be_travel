@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('ten_tour')->nullable();
             $table->text('mo_ta')->nullable();
-            $table->decimal('gia', 10, 2)->nullable();
+            $table->decimal('gia', 20, 2)->nullable();
             $table->date('ngay_bat_dau')->nullable();
             $table->date('ngay_ket_thuc')->nullable();
             $table->integer('so_nguoi_toi_da')->nullable();
