@@ -11,73 +11,90 @@ class DanhGiaSeeder extends Seeder
 {
     public function run(): void
     {
-        // 1. Dọn dẹp dữ liệu cũ và tắt kiểm tra khóa ngoại
         Schema::disableForeignKeyConstraints();
         DB::table('danh_gias')->truncate();
         Schema::enableForeignKeyConstraints();
 
-        $noiDungMau = [
+        $noiDungTot = [
             'Tour tổ chức rất chuyên nghiệp, hướng dẫn viên cực kỳ nhiệt tình và chu đáo.',
             'Cảnh quan tuyệt đẹp, thức ăn rất ngon và hợp khẩu vị. Sẽ ủng hộ công ty tiếp.',
             'Lịch trình hợp lý, không bị mệt, rất phù hợp cho gia đình có người lớn tuổi đi cùng.',
             'Dịch vụ tốt, xe đưa đón đúng giờ, giường nằm thoải mái.',
             'Một chuyến đi đầy ý nghĩa. Cảm ơn đội ngũ điều hành tour.',
-            'Giá cả quá hợp lý so với chất lượng nhận được. Khách sạn view rất đẹp.',
-            'Thanh toán qua VNPay trên web rất mượt mà và tiện lợi, không cần tiền mặt.',
+            'Thanh toán qua VNPay trên web rất mượt mà và tiện lợi, check-in mã vé QR cũng siêu nhanh.',
             'Rất thích cách làm việc của bạn hướng dẫn viên, cực kỳ vui tính và am hiểu văn hóa.',
-            'Lúc đầu mình hỏi Chatbot AI trên web tư vấn rất nhanh và chính xác nên mới quyết định chốt tour này.',
-            'Trải nghiệm tuyệt vời, lịch trình đi được nhiều điểm hot, có nhiều thời gian chụp ảnh.'
+            'Lúc đầu mình hỏi Chatbot AI trên web tư vấn rất nhanh nên mới quyết định chốt tour này. Rất đáng tiền!',
         ];
 
-        // 2. Lấy danh sách ID Tour và ID Khách hàng thực tế từ Database
-        $tourIds = DB::table('tours')->pluck('id')->toArray();
-        $khachHangIds = DB::table('khach_hangs')->pluck('id')->toArray();
+        $noiDungXau = [
+            'Thời tiết hôm đi không được đẹp lắm nên chụp ảnh hơi buồn.',
+            'Đồ ăn có 1 bữa không hợp khẩu vị của gia đình mình, còn lại thì ổn.',
+            'Xe di chuyển hơi xóc, hy vọng công ty cải thiện phương tiện tốt hơn.'
+        ];
 
-        $noiDungIndex = 0;
+        // 1. ĐỒNG BỘ: Chỉ lấy những đơn hàng ĐÃ THANH TOÁN (trang_thai = 2)
+        $hoaDonThanhCong = DB::table('hoa_dons')
+            ->where('trang_thai', '2')
+            ->select('id_tour', 'id_khach_hang', 'ngay_tao')
+            ->get();
 
-        if (empty($tourIds)) {
-            $this->command->error('Lỗi: Không tìm thấy tour nào trong database!');
+        if ($hoaDonThanhCong->isEmpty()) {
+            $this->command->error('Lỗi: Không tìm thấy khách hàng nào đã thanh toán thành công để đánh giá!');
             return;
         }
 
-        if (empty($khachHangIds)) {
-            $this->command->error('Lỗi: Không tìm thấy khách hàng nào để tạo đánh giá!');
-            return;
+        // 2. Nhóm khách hàng theo từng tour (Group by id_tour)
+        $khachHangTheoTour = [];
+        foreach ($hoaDonThanhCong as $hd) {
+            // Dùng ID khách làm key để loại bỏ trường hợp 1 khách mua 1 tour 2 lần (chỉ cho đánh giá 1 lần)
+            $khachHangTheoTour[$hd->id_tour][$hd->id_khach_hang] = clone $hd;
         }
 
-        foreach ($tourIds as $tourId) {
-            // Xáo trộn danh sách ID khách hàng cho mỗi tour
-            shuffle($khachHangIds);
+        $danhGiasToInsert = [];
 
-            // Xác định số lượng đánh giá cho tour này (từ 3-5, nhưng không quá tổng số khách hàng)
-            $limit = min(count($khachHangIds), rand(3, 5));
+        foreach ($khachHangTheoTour as $tourId => $danhSachKhachHang) {
+            // Lấy danh sách khách hàng thực sự đã đi tour này
+            $khachHangs = array_values($danhSachKhachHang);
 
-            for ($i = 0; $i < $limit; $i++) {
-                // Đảm bảo không bị lỗi index nếu danh sách nội dung mẫu hết
-                if ($noiDungIndex >= count($noiDungMau)) {
-                    $noiDungIndex = 0;
-                }
+            // Xáo trộn để random người đánh giá
+            shuffle($khachHangs);
 
-                // Lấy ID khách hàng duy nhất từ danh sách đã xáo trộn
-                $idKhachHang = $khachHangIds[$i];
+            // Tối đa 60% số người trong đoàn sẽ để lại đánh giá (để nhìn thực tế)
+            $soLuongDanhGia = max(1, ceil(count($khachHangs) * 0.6));
 
-                // Tính toán số sao ngẫu nhiên (ưu tiên tour chất lượng cao)
-                $soSao = (rand(1, 10) <= 8) ? rand(4, 5) : rand(1, 3);
+            for ($i = 0; $i < $soLuongDanhGia; $i++) {
+                if(!isset($khachHangs[$i])) break;
 
-                DB::table('danh_gias')->insert([
-                    'id_khach_hang' => $idKhachHang, // Duy nhất cho mỗi tour nhờ shuffle
+                $hd = $khachHangs[$i];
+                $idKhachHang = $hd->id_khach_hang;
+
+                // Tỉ lệ: 85% review tốt (4-5 sao), 15% review bình thường (2-3 sao)
+                $isGoodReview = (rand(1, 100) <= 85);
+                $soSao = $isGoodReview ? rand(4, 5) : rand(2, 3);
+
+                $noiDung = $isGoodReview
+                    ? $noiDungTot[array_rand($noiDungTot)]
+                    : $noiDungXau[array_rand($noiDungXau)];
+
+                // Ngày đánh giá: Phải sau ngày tạo hóa đơn từ 2 đến 10 ngày
+                $ngayDanhGia = Carbon::parse($hd->ngay_tao)->addDays(rand(2, 10));
+
+                $danhGiasToInsert[] = [
+                    'id_khach_hang' => $idKhachHang,
                     'id_tour'       => $tourId,
                     'sao_danh_gia'  => $soSao,
-                    'noi_dung'      => $noiDungMau[$noiDungIndex], // Không bao giờ null
+                    'noi_dung'      => $noiDung,
                     'tinh_trang'    => 1,
-                    // Random thời gian đánh giá trong những tháng gần đây (đầu năm 2026)
-                    'created_at'    => Carbon::create(2026, rand(1, 4), rand(1, 28), rand(8, 20)),
-                    'updated_at'    => Carbon::now(),
-                ]);
-
-                $noiDungIndex++;
+                    'created_at'    => $ngayDanhGia,
+                    'updated_at'    => clone $ngayDanhGia,
+                ];
             }
         }
-        $this->command->info('Đã tạo dữ liệu mẫu đánh giá thành công! Mỗi khách hàng đánh giá mỗi tour tối đa 1 lần.');
+
+        foreach (array_chunk($danhGiasToInsert, 50) as $chunk) {
+            DB::table('danh_gias')->insert($chunk);
+        }
+
+        $this->command->info('Đã tạo Đánh Giá thành công! CHỈ áp dụng cho các khách hàng ĐÃ THANH TOÁN.');
     }
 }

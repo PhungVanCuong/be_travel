@@ -7,13 +7,16 @@ use App\Models\Ve;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
 class VeSeeder extends Seeder
 {
     public function run(): void
     {
+        Schema::disableForeignKeyConstraints();
         DB::table('ves')->truncate();
+        Schema::enableForeignKeyConstraints();
 
         $hoaDons = HoaDon::all();
 
@@ -28,13 +31,13 @@ class VeSeeder extends Seeder
             $soNguoi = $hoaDon->so_luong_nguoi;
             $giaVe = $soNguoi > 0 ? round($hoaDon->tong_tien / $soNguoi) : 0;
 
-            // Vì Hóa Đơn và Vé đã đồng nhất mã (1, 2, 0), gán thẳng trạng thái luôn!
+            // ĐỒNG BỘ: Tình trạng vé phải Y HỆT tình trạng Hóa Đơn
             $tinhTrangVe = $hoaDon->trang_thai;
 
             for ($i = 0; $i < $soNguoi; $i++) {
 
-                // Khách chỉ được Check-in khi Vé đã thanh toán (tình trạng = 2)
-                $isCheckIn = ($tinhTrangVe == Ve::DA_THANH_TOAN && rand(1, 100) <= 40) ? 1 : 0;
+                // ĐỒNG BỘ: Chỉ khách có hóa đơn Đã Thanh Toán (2) mới có quyền được Check-in (Xác suất 80% là đã đi)
+                $isCheckIn = ($tinhTrangVe == '2' && rand(1, 100) <= 80) ? 1 : 0;
 
                 $ves[] = [
                     'ma_ve'         => 'VE-' . strtoupper(Str::random(8)),
@@ -53,6 +56,6 @@ class VeSeeder extends Seeder
             DB::table('ves')->insert($chunk);
         }
 
-        $this->command->info('Đã tự động tạo Vé thành công (bao gồm cả trạng thái Hủy)!');
+        $this->command->info('Đã tự động tạo Vé đồng bộ 100% với Hóa Đơn thành công!');
     }
 }
