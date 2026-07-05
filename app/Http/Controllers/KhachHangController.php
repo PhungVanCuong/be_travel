@@ -247,7 +247,7 @@ class KhachHangController extends Controller
                 'email'     => $email,
                 'avatar'    => $avatar,
                 'google_id' => $googleId,
-                'password'  => Str::random(24),
+                'password'  => "", // Mật khẩu trống vì đăng nhập bằng Google",
                 'is_active' => 1,
                 'is_block'  => 0,
             ]);
