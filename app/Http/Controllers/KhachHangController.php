@@ -9,6 +9,7 @@ use App\Jobs\jobGuiMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 
 
@@ -146,33 +147,119 @@ class KhachHangController extends Controller
     }
 
     public function dangNhap(Request $request)
-{
-    $check = KhachHang::where('email', $request->email)
-        ->where('password', $request->password)
-        ->first();
+    {
+        $check = KhachHang::where('email', $request->email)
+            ->where('password', $request->password)
+            ->first();
 
-    if ($check) {
-        // Kiểm tra tài khoản đã kích hoạt chưa
-        if ($check->is_active == 0) {
+        if ($check) {
+            // Kiểm tra tài khoản đã kích hoạt chưa
+            if ($check->is_active == 0) {
+                return response()->json([
+                    'status'  => false,
+                    'message' => 'Tài khoản của bạn chưa được kích hoạt!',
+                ]);
+            }
+
+            // Nếu đã active thì mới tạo token và cho đăng nhập
+            return response()->json([
+                'status'  => true,
+                'message' => 'Đăng nhập thành công',
+                'token'   => $check->createToken('key_client')->plainTextToken,
+            ]);
+        } else {
             return response()->json([
                 'status'  => false,
-                'message' => 'Tài khoản của bạn chưa được kích hoạt!',
+                'message' => 'Tài khoản sai email hoặc password',
+            ]);
+        }
+    }
+
+    public function dangNhapGoogle(Request $request)
+    {
+        $credential = $request->credential;
+        if (!$credential) {
+            return response()->json([
+                'status'  => false,
+                'message' => 'Dữ liệu Google không hợp lệ.',
             ]);
         }
 
-        // Nếu đã active thì mới tạo token và cho đăng nhập
+        $response = Http::get('https://oauth2.googleapis.com/tokeninfo', [
+            'id_token' => $credential,
+        ]);
+
+        if ($response->failed()) {
+            return response()->json([
+                'status'  => false,
+                'message' => 'Xác thực Google thất bại.',
+            ]);
+        }
+
+        $data = $response->json();
+        if (empty($data['email']) || empty($data['sub'])) {
+            return response()->json([
+                'status'  => false,
+                'message' => 'Xác thực Google không đầy đủ thông tin.',
+            ]);
+        }
+
+        if (isset($data['email_verified']) && $data['email_verified'] !== 'true') {
+            return response()->json([
+                'status'  => false,
+                'message' => 'Email Google chưa được xác minh.',
+            ]);
+        }
+
+        $email    = $data['email'];
+        $googleId = $data['sub'];
+        $name     = $data['name'] ?? null;
+        $avatar   = $data['picture'] ?? null;
+
+        $user = KhachHang::where('google_id', $googleId)
+            ->orWhere('email', $email)
+            ->first();
+
+        if ($user) {
+            if ($user->is_block == 1) {
+                return response()->json([
+                    'status'  => false,
+                    'message' => 'Tài khoản của bạn đang bị khóa.',
+                ]);
+            }
+
+            if ($user->is_active == 0) {
+                $user->is_active = 1;
+            }
+            if (!$user->google_id) {
+                $user->google_id = $googleId;
+            }
+            if ($avatar) {
+                $user->avatar = $avatar;
+            }
+            if (!$user->ho_va_ten && $name) {
+                $user->ho_va_ten = $name;
+            }
+            $user->save();
+        } else {
+            $user = KhachHang::create([
+                'ho_va_ten' => $name,
+                'email'     => $email,
+                'avatar'    => $avatar,
+                'google_id' => $googleId,
+                'password'  => Str::random(24),
+                'is_active' => 1,
+                'is_block'  => 0,
+            ]);
+        }
+
         return response()->json([
             'status'  => true,
-            'message' => 'Đăng nhập thành công',
-            'token'   => $check->createToken('key_client')->plainTextToken,
-        ]);
-    } else {
-        return response()->json([
-            'status'  => false,
-            'message' => 'Tài khoản sai email hoặc password',
+            'message' => 'Đăng nhập bằng Google thành công.',
+            'token'   => $user->createToken('key_client')->plainTextToken,
         ]);
     }
-}
+
     public function doiMatKhau(Request $request)
     {
         $user = Auth::guard('sanctum')->user();

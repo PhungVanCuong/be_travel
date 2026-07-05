@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('cccd')->unique()->nullable();
             $table->date('ngay_sinh')->nullable();
             $table->string('avatar' , 1000)->nullable();
+            $table->string('google_id')->nullable()->unique();
             $table->string('hash_reset')->nullable();
             $table->string('hash_active')->nullable();
             $table->integer('is_active')->default(0)->comment('0: chưa kích hoạt, 1: đã kích hoạt');

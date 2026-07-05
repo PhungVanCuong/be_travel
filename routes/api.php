@@ -190,6 +190,7 @@ Route::prefix('')->group(function () {
 
     // api client dang ky và đăng nhập
     Route::post('/client/dang-nhap', [KhachHangController::class, 'dangNhap']);
+    Route::post('/client/dang-nhap-google', [KhachHangController::class, 'dangNhapGoogle']);
     Route::post('/client/dang-ky', [KhachHangController::class, 'dangKy']);
     Route::post('/client/xac-nhan-dang-ky', [KhachHangController::class, 'xacNhanDangKy']);
     Route::get('/client/check-token', [KhachHangController::class, 'checkToken']);
