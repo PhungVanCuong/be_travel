@@ -348,11 +348,17 @@ class KhachHangController extends Controller
     {
         $user = Auth::guard('sanctum')->user();
         if ($user) {
+            // Đếm số lượng hóa đơn chưa thanh toán (trạng thái = 1)
+            $so_luong_chua_tt = \App\Models\HoaDon::where('id_khach_hang', $user->id)
+                                        ->where('trang_thai', '1')
+                                        ->count();
+
             return response()->json([
                 'status' => true,
                 'ho_ten' => $user->ho_va_ten,
                 'email'  => $user->email,
                 'avatar' => $user->avatar,
+                'so_hoa_don_chua_tt' => $so_luong_chua_tt, // Thêm dòng này để trả về FE
             ]);
         } else {
             return response()->json([
