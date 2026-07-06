@@ -260,6 +260,97 @@ class KhachHangController extends Controller
         ]);
     }
 
+    public function dangNhapFacebook(Request $request)
+    {
+        $accessToken = $request->access_token ?? null;
+        if (!$accessToken) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Dữ liệu Facebook không hợp lệ.',
+            ]);
+        }
+
+        // Lấy thông tin user từ Graph API
+        $response = Http::get('https://graph.facebook.com/me', [
+            'fields' => 'id,name,email,picture',
+            'access_token' => $accessToken,
+        ]);
+
+        if ($response->failed()) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Xác thực Facebook thất bại.',
+            ]);
+        }
+
+        $data = $response->json();
+        $facebookId = $data['id'] ?? null;
+        $email = $data['email'] ?? null;
+        $name = $data['name'] ?? null;
+        $avatar = $data['picture']['data']['url'] ?? null;
+
+        if (!$facebookId) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Xác thực Facebook thất bại (không có id).',
+            ]);
+        }
+
+        // If email is not provided by Facebook (possible), try to find user by facebook_id.
+        if (empty($email)) {
+            $user = KhachHang::where('facebook_id', $facebookId)->first();
+            if (!$user) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Tài khoản Facebook không cung cấp email. Vui lòng sử dụng đăng nhập khác hoặc cấp quyền email cho app.',
+                ]);
+            }
+        } else {
+            $user = KhachHang::where('facebook_id', $facebookId)
+                ->orWhere('email', $email)
+                ->first();
+        }
+
+        if ($user) {
+            if ($user->is_block == 1) {
+                return response()->json([
+                    'status'  => false,
+                    'message' => 'Tài khoản của bạn đang bị khóa.',
+                ]);
+            }
+
+            if ($user->is_active == 0) {
+                $user->is_active = 1;
+            }
+            if (!$user->facebook_id) {
+                $user->facebook_id = $facebookId;
+            }
+            if ($avatar) {
+                $user->avatar = $avatar;
+            }
+            if (!$user->ho_va_ten && $name) {
+                $user->ho_va_ten = $name;
+            }
+            $user->save();
+        } else {
+            $user = KhachHang::create([
+                'ho_va_ten' => $name,
+                'email'     => $email,
+                'avatar'    => $avatar,
+                'facebook_id' => $facebookId,
+                'password'  => "123456",
+                'is_active' => 1,
+                'is_block'  => 0,
+            ]);
+        }
+
+        return response()->json([
+            'status'  => true,
+            'message' => 'Đăng nhập bằng Facebook thành công.',
+            'token'   => $user->createToken('key_client')->plainTextToken,
+        ]);
+    }
+
     public function doiMatKhau(Request $request)
     {
         $user = Auth::guard('sanctum')->user();

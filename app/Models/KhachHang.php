@@ -21,6 +21,7 @@ class KhachHang extends Authenticatable
         'ngay_sinh',
         'avatar',
         'google_id',
+        'facebook_id',
         'hash_reset',
         'hash_active',
         'is_active',
