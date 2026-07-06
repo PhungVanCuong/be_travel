@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class HuongDanVienSeeder extends Seeder
 {
@@ -12,6 +13,11 @@ class HuongDanVienSeeder extends Seeder
      */
     public function run(): void
     {
+        // Tắt kiểm tra khóa ngoại trước khi truncate để tránh lỗi
+        Schema::disableForeignKeyConstraints();
+        DB::table('huong_dan_viens')->truncate();
+        Schema::enableForeignKeyConstraints();
+
         $huongDanVien = [
             [
                 'email' => 'hdv.quanghai@vietnamtravel.com',
@@ -19,7 +25,6 @@ class HuongDanVienSeeder extends Seeder
                 'password' => '123456',
                 'ngon_ngu' => 'Tiếng Việt, Tiếng Anh',
                 'so_dien_thoai' => '0901111001',
-                'avatar' => 'https://mayweddingstudio.vn/wp-content/uploads/anh-dai-dien-facebook-nam-6.webp',
                 'is_active' => 1,
                 'is_block' => 0,
             ],
@@ -29,7 +34,6 @@ class HuongDanVienSeeder extends Seeder
                 'password' => '123456',
                 'ngon_ngu' => 'Tiếng Việt, Tiếng Hàn',
                 'so_dien_thoai' => '0901111002',
-                'avatar' => 'https://mayweddingstudio.vn/wp-content/uploads/anh-dai-dien-facebook-nam-6.webp',
                 'is_active' => 1,
                 'is_block' => 0,
             ],
@@ -39,7 +43,6 @@ class HuongDanVienSeeder extends Seeder
                 'password' => '123456',
                 'ngon_ngu' => 'Tiếng Việt, Tiếng Trung',
                 'so_dien_thoai' => '0901111003',
-                'avatar' => 'https://vnclass.edu.vn/wp-content/uploads/2025/02/avatar-vo-tri-2.jpg',
                 'is_active' => 1,
                 'is_block' => 0,
             ],
@@ -49,7 +52,6 @@ class HuongDanVienSeeder extends Seeder
                 'password' => '123456',
                 'ngon_ngu' => 'Tiếng Việt, Tiếng Anh, Tiếng Pháp',
                 'so_dien_thoai' => '0901111004',
-                'avatar' => 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQE84ZkAzHiXWkFTmCj7wCW2wmoSVweoOG95A&s',
                 'is_active' => 1,
                 'is_block' => 0,
             ],
@@ -59,7 +61,6 @@ class HuongDanVienSeeder extends Seeder
                 'password' => '123456',
                 'ngon_ngu' => 'Tiếng Việt, Tiếng Nhật',
                 'so_dien_thoai' => '0901111005',
-                'avatar' => 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSA5W8mmdqgticBgvZuCKQ30R7Tez2grRh9fA&s',
                 'is_active' => 1, // Đã kích hoạt
                 'is_block' => 0,
             ],
@@ -69,16 +70,35 @@ class HuongDanVienSeeder extends Seeder
                 'password' => '123456',
                 'ngon_ngu' => 'Tiếng Việt, Tiếng Anh',
                 'so_dien_thoai' => '0901111006',
-                'avatar' => 'https://mayweddingstudio.vn/wp-content/uploads/anh-dai-dien-facebook-nam-6.webp',
                 'is_active' => 1,
                 'is_block' => 0, // Đã mở khóa
             ]
         ];
 
-        // Xóa dữ liệu cũ và reset ID
-        DB::table('huong_dan_viens')->truncate();
-        DB::table('huong_dan_viens')->delete();
-        // Chèn dữ liệu mới
-        DB::table('huong_dan_viens')->insert($huongDanVien);
+        // Chuẩn hóa mảng dữ liệu avatar chung
+        $avatars = [
+            'https://png.pngtree.com/png-vector/20201223/ourlarge/pngtree-cute-cartoon-hand-drawn-cow-animal-avatar-vector-png-image_2591528.jpg',
+            'https://thuvienavatar.edu.vn/wp-content/uploads/2025/12/avatar-vo-tri-cute-4.jpg',
+            'https://jbagy.me/wp-content/uploads/2025/03/hinh-anh-cute-avatar-vo-tri-3.jpg',
+            'https://mayweddingstudio.vn/wp-content/uploads/anh-dai-dien-facebook-nam-6.webp',
+            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSA5W8mmdqgticBgvZuCKQ30R7Tez2grRh9fA&s',
+            'https://lh3.googleusercontent.com/a/ACg8ocJSirL9mGUSxGZg5N3sLQw-SM9T0RvQpPBiDehCkdMJ9uiRyBqg=s96-c'
+        ];
+
+        $dataToInsert = [];
+
+        foreach ($huongDanVien as $index => $hdv) {
+            // Gán avatar tự động theo thứ tự xoay vòng từ mảng $avatars
+            $hdv['avatar'] = $avatars[$index % count($avatars)];
+
+            // Bạn có thể thêm created_at, updated_at ở đây nếu database yêu cầu
+            // $hdv['created_at'] = now();
+            // $hdv['updated_at'] = now();
+
+            $dataToInsert[] = $hdv;
+        }
+
+        // Chèn dữ liệu mới vào database
+        DB::table('huong_dan_viens')->insert($dataToInsert);
     }
 }

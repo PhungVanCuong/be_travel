@@ -32,69 +32,53 @@ class DanhGiaSeeder extends Seeder
             'Xe di chuyển hơi xóc, hy vọng công ty cải thiện phương tiện tốt hơn.'
         ];
 
-        // 1. ĐỒNG BỘ: Chỉ lấy những đơn hàng ĐÃ THANH TOÁN (trang_thai = 2)
+        // Lấy hóa đơn ĐÃ THANH TOÁN (Trạng thái = 2)
         $hoaDonThanhCong = DB::table('hoa_dons')
             ->where('trang_thai', '2')
-            ->select('id_tour', 'id_khach_hang', 'ngay_tao')
+            ->orderBy('id')
             ->get();
 
-        if ($hoaDonThanhCong->isEmpty()) {
-            $this->command->error('Lỗi: Không tìm thấy khách hàng nào đã thanh toán thành công để đánh giá!');
-            return;
-        }
-
-        // 2. Nhóm khách hàng theo từng tour (Group by id_tour)
-        $khachHangTheoTour = [];
-        foreach ($hoaDonThanhCong as $hd) {
-            // Dùng ID khách làm key để loại bỏ trường hợp 1 khách mua 1 tour 2 lần (chỉ cho đánh giá 1 lần)
-            $khachHangTheoTour[$hd->id_tour][$hd->id_khach_hang] = clone $hd;
-        }
-
         $danhGiasToInsert = [];
+        $danhGiaCounter = 0;
+        $processed = []; // Để đảm bảo 1 KH chỉ đánh giá 1 Tour đúng 1 lần
 
-        foreach ($khachHangTheoTour as $tourId => $danhSachKhachHang) {
-            // Lấy danh sách khách hàng thực sự đã đi tour này
-            $khachHangs = array_values($danhSachKhachHang);
-
-            // Xáo trộn để random người đánh giá
-            shuffle($khachHangs);
-
-            // Tối đa 60% số người trong đoàn sẽ để lại đánh giá (để nhìn thực tế)
-            $soLuongDanhGia = max(1, ceil(count($khachHangs) * 0.6));
-
-            for ($i = 0; $i < $soLuongDanhGia; $i++) {
-                if(!isset($khachHangs[$i])) break;
-
-                $hd = $khachHangs[$i];
-                $idKhachHang = $hd->id_khach_hang;
-
-                // Tỉ lệ: 85% review tốt (4-5 sao), 15% review bình thường (2-3 sao)
-                $isGoodReview = (rand(1, 100) <= 85);
-                $soSao = $isGoodReview ? rand(4, 5) : rand(2, 3);
-
-                $noiDung = $isGoodReview
-                    ? $noiDungTot[array_rand($noiDungTot)]
-                    : $noiDungXau[array_rand($noiDungXau)];
-
-                // Ngày đánh giá: Phải sau ngày tạo hóa đơn từ 2 đến 10 ngày
-                $ngayDanhGia = Carbon::parse($hd->ngay_tao)->addDays(rand(2, 10));
-
-                $danhGiasToInsert[] = [
-                    'id_khach_hang' => $idKhachHang,
-                    'id_tour'       => $tourId,
-                    'sao_danh_gia'  => $soSao,
-                    'noi_dung'      => $noiDung,
-                    'tinh_trang'    => 1,
-                    'created_at'    => $ngayDanhGia,
-                    'updated_at'    => clone $ngayDanhGia,
-                ];
+        foreach ($hoaDonThanhCong as $hd) {
+            $key = $hd->id_tour . '_' . $hd->id_khach_hang;
+            if (isset($processed[$key])) {
+                continue;
             }
+            $processed[$key] = true;
+            $danhGiaCounter++;
+
+            // Quyết định ai để lại đánh giá (Bỏ qua 30% khách hàng không thèm đánh giá theo thuật toán cố định)
+            if ($danhGiaCounter % 3 == 0) continue;
+
+            // Quyết định đánh giá tốt (4-5 sao) hay xấu (2-3 sao)
+            $isGoodReview = ($danhGiaCounter % 6) != 0; // 5 tốt, 1 xấu
+            $soSao = $isGoodReview ? (4 + ($danhGiaCounter % 2)) : (2 + ($danhGiaCounter % 2));
+
+            $noiDung = $isGoodReview
+                ? $noiDungTot[$danhGiaCounter % count($noiDungTot)]
+                : $noiDungXau[$danhGiaCounter % count($noiDungXau)];
+
+            // Ngày đánh giá: Cố định sau ngày tạo hóa đơn từ 2-5 ngày
+            $ngayDanhGia = Carbon::parse($hd->ngay_tao)->addDays(($danhGiaCounter % 4) + 2);
+
+            $danhGiasToInsert[] = [
+                'id_khach_hang' => $hd->id_khach_hang,
+                'id_tour'       => $hd->id_tour,
+                'sao_danh_gia'  => $soSao,
+                'noi_dung'      => $noiDung,
+                'tinh_trang'    => 1,
+                'created_at'    => $ngayDanhGia,
+                'updated_at'    => clone $ngayDanhGia,
+            ];
         }
 
         foreach (array_chunk($danhGiasToInsert, 50) as $chunk) {
             DB::table('danh_gias')->insert($chunk);
         }
 
-        $this->command->info('Đã tạo Đánh Giá thành công! CHỈ áp dụng cho các khách hàng ĐÃ THANH TOÁN.');
+        $this->command->info('Đã tạo Đánh Giá cố định thành công!');
     }
 }

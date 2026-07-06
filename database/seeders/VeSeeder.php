@@ -3,12 +3,10 @@
 namespace Database\Seeders;
 
 use App\Models\HoaDon;
-use App\Models\Ve;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Str;
 
 class VeSeeder extends Seeder
 {
@@ -18,36 +16,38 @@ class VeSeeder extends Seeder
         DB::table('ves')->truncate();
         Schema::enableForeignKeyConstraints();
 
-        $hoaDons = HoaDon::all();
+        $hoaDons = HoaDon::orderBy('id')->get();
 
         if ($hoaDons->isEmpty()) {
-            $this->command->info('Không có hóa đơn nào trong database. Vui lòng chạy HoaDonSeeder trước!');
             return;
         }
 
         $ves = [];
+        $veCounter = 0;
 
         foreach ($hoaDons as $hoaDon) {
             $soNguoi = $hoaDon->so_luong_nguoi;
             $giaVe = $soNguoi > 0 ? round($hoaDon->tong_tien / $soNguoi) : 0;
-
-            // ĐỒNG BỘ: Tình trạng vé phải Y HỆT tình trạng Hóa Đơn
             $tinhTrangVe = $hoaDon->trang_thai;
 
             for ($i = 0; $i < $soNguoi; $i++) {
+                $veCounter++;
 
-                // ĐỒNG BỘ: Chỉ khách có hóa đơn Đã Thanh Toán (2) mới có quyền được Check-in (Xác suất 80% là đã đi)
-                $isCheckIn = ($tinhTrangVe == '2' && rand(1, 100) <= 80) ? 1 : 0;
+                // Cố định logic Check-in: Chỉ vé đã thanh toán (2) và theo modulo mới được check-in
+                $isCheckIn = ($tinhTrangVe == '2' && ($veCounter % 5) != 0) ? 1 : 0;
+
+                // Mã vé cố định
+                $maVe = 'VE-' . strtoupper(substr(md5('ve_' . $veCounter), 0, 8));
 
                 $ves[] = [
-                    'ma_ve'         => 'VE-' . strtoupper(Str::random(8)),
+                    'ma_ve'         => $maVe,
                     'gia_ve'        => $giaVe,
                     'id_khach_hang' => $hoaDon->id_khach_hang,
                     'id_hoa_don'    => $hoaDon->id,
                     'tinh_trang'    => (string) $tinhTrangVe,
                     'is_check_in'   => $isCheckIn,
                     'created_at'    => $hoaDon->ngay_tao,
-                    'updated_at'    => Carbon::now(),
+                    'updated_at'    => Carbon::parse($hoaDon->ngay_tao)->addHours(2),
                 ];
             }
         }
@@ -56,6 +56,6 @@ class VeSeeder extends Seeder
             DB::table('ves')->insert($chunk);
         }
 
-        $this->command->info('Đã tự động tạo Vé đồng bộ 100% với Hóa Đơn thành công!');
+        $this->command->info('Đã tự động tạo Vé đồng bộ cố định với Hóa Đơn thành công!');
     }
 }
