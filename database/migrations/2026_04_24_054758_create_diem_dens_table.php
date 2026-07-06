@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('diem_dens', function (Blueprint $table) {
             $table->id();
             $table->string('ten_diem_den')->nullable();
+            $table->string('thoi_gian')->nullable();
             $table->text('mo_ta')->nullable();
             $table->string('thanh_pho')->nullable();
             $table->integer('tinh_trang')->default(1); // 1: hoạt động, 0: ẩn

@@ -222,7 +222,6 @@ class LichTrinhController extends Controller
                 ->where('lich_trinhs.id_tour', $tour->id_tour)
                 ->select(
                     'lich_trinhs.id as id_lich_trinh',
-                    'lich_trinhs.tieu_de_hoat_dong',
                     'diem_dens.id as id_diem_den',
                     'diem_dens.ten_diem_den',
                     'diem_dens.hinh_anh as anh_diem_den',

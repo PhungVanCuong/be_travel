@@ -21,7 +21,7 @@ class ChiTietTourController extends Controller
             $lich_trinh = LichTrinh::leftJoin('phuong_tiens', 'lich_trinhs.id_phuong_tien', '=', 'phuong_tiens.id')
             ->leftJoin('diem_dens', 'lich_trinhs.id_diem_den', '=', 'diem_dens.id')
             ->where('lich_trinhs.id_tour', $request->id)
-            ->select('lich_trinhs.tieu_de_hoat_dong', 'phuong_tiens.loai_phuong_tien', 'diem_dens.ten_diem_den', 'diem_dens.mo_ta','diem_dens.thanh_pho', 'diem_dens.hinh_anh')
+            ->select( 'phuong_tiens.loai_phuong_tien', 'diem_dens.ten_diem_den', 'diem_dens.thoi_gian', 'diem_dens.mo_ta','diem_dens.thanh_pho', 'diem_dens.hinh_anh')
             ->orderBy('lich_trinhs.id', 'asc') // Cần xếp theo ID để hiển thị đúng thứ tự Ngày 1, Ngày 2...
             ->get();
 

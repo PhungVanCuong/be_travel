@@ -172,7 +172,7 @@ class HuongDanVienTourController extends Controller
             $tour->chi_tiet_lich_trinh = DB::table('lich_trinhs')
                 ->leftJoin('diem_dens', 'lich_trinhs.id_diem_den', '=', 'diem_dens.id')
                 ->where('lich_trinhs.id_tour', $tour->id)
-                ->select('lich_trinhs.tieu_de_hoat_dong', 'diem_dens.ten_diem_den', 'diem_dens.hinh_anh as anh_diem_den')
+                ->select( 'diem_dens.ten_diem_den', 'diem_dens.hinh_anh as anh_diem_den')
                 ->get();
         }
 

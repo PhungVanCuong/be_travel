@@ -16,7 +16,6 @@ return new class extends Migration
             $table->integer('id_tour')->nullable();
             $table->integer('id_diem_den')->nullable();
             $table->integer('id_phuong_tien')->nullable();
-            $table->string('tieu_de_hoat_dong')->nullable();
             $table->timestamps();
         });
     }
