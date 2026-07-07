@@ -412,6 +412,7 @@ class HoaDonController extends Controller
             'status' => true,
             'trang_thai' => $hoaDon->trang_thai // Trả về trạng thái hiện tại (0, 1, 2)
         ]);
+
     }
     /**
      * ADMIN: Quét / Tra cứu nhanh mã hóa đơn

@@ -9,6 +9,8 @@ use App\Models\VNPay;
 use Illuminate\Support\Facades\DB;
 use App\Models\PhanQuyen;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class VNPayController extends Controller
 {
@@ -163,8 +165,28 @@ class VNPayController extends Controller
         ]);
 
         return response()->json(['status' => false, 'message' => 'Sai chữ ký']);
-    }
 
+
+    }
+    // --- HÀM GỬI MAIL VÉ ĐIỆN TỬ ---
+    private function guiMailVeDienTu($hoaDon)
+    {
+        $user = $hoaDon->khachHang;
+        $tour = $hoaDon->tour;
+        $ds_ve = Ve::where('id_hoa_don', $hoaDon->id)->get();
+
+        $data_mail = ['khach_hang' => $user, 'hoa_don' => $hoaDon, 'tour' => $tour, 'danh_sach_ve' => $ds_ve];
+
+        // GỬI TRỰC TIẾP (Không dùng dispatch) để test
+        try {
+            Mail::send('mail_InVe', ['data' => $data_mail], function ($message) use ($user) {
+                $message->to($user->email)->subject('Vé điện tử Ixtal Tour');
+            });
+            Log::info('Mail đã gửi trực tiếp thành công!');
+        } catch (\Exception $e) {
+            Log::error('Lỗi gửi mail: ' . $e->getMessage());
+        }
+    }
     /**
      * 3. IPN (Cập nhật ngầm và Lưu Log)
      */
@@ -219,6 +241,9 @@ class VNPayController extends Controller
                 $hoaDon->phuong_thuc_thanh_toan = 'VNPAY';
                 $hoaDon->save();
                 Ve::where('id_hoa_don', $hoaDon->id)->update(['tinh_trang' => Ve::DA_THANH_TOAN]);
+
+                // GỌI HÀM GỬI MAIL
+                $this->guiMailVeDienTu($hoaDon);
 
                 VNPay::create([
                     'id_khach_hang' => $hoaDon->id_khach_hang,
@@ -433,6 +458,9 @@ class VNPayController extends Controller
                 $hoa_don->phuong_thuc_thanh_toan = 'VNPAY'; // Check lần 3 cho chắc chắn
                 $hoa_don->save();
                 $hoa_don->ds_ve()->update(['tinh_trang' => 2]);
+
+                // GỌI HÀM GỬI MAIL
+                $this->guiMailVeDienTu($hoa_don);
 
                 // THÊM MỚI: LƯU VÀO BẢNG v_n_pays LÚC KIỂM TRA THÀNH CÔNG
                 VNPay::create([

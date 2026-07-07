@@ -33,4 +33,8 @@ class HoaDon extends Model
     {
         return $this->belongsTo(Tour::class, 'id_tour', 'id');
     }
+
+    public function khachHang() {
+    return $this->belongsTo(KhachHang::class, 'id_khach_hang');
+    }
 }

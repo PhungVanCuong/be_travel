@@ -7,6 +7,10 @@ use App\Models\Tour;
 use App\Models\PhanQuyen;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
+use App\Models\HoaDon;
 
 class TourController extends Controller
 {

@@ -13,6 +13,7 @@ use App\Models\PhanQuyen;
 use App\Models\Tour;
 use App\Models\HoaDon;
 Use App\Models\KhachHang;
+use Illuminate\Support\Facades\Mail;
 
 class VeController extends Controller
 {
@@ -154,7 +155,7 @@ class VeController extends Controller
                 'ten_khach_hang' => $ve->ten_khach_hang,
                 'ma_hoa_don'     => $ve->ma_hoa_don,
                 'created_at'     => $ve->created_at ? $ve->created_at->format('H:i d/m/Y') : '',
-            ]   
+            ]
         ]);
     }
     public function checkInTicket(Request $request)
@@ -337,6 +338,8 @@ class VeController extends Controller
     public function datTour(Request $request)
     {
         $user = Auth::guard('sanctum')->user();
+
+        // Kiểm tra đăng nhập
         if (!$user || !($user instanceof KhachHang)) {
             return response()->json([
                 'status'    => false,
@@ -353,11 +356,13 @@ class VeController extends Controller
 
         $ghi_chu_danh_sach = $request->ghi_chu_danh_sach_nguoi_di ?? '';
 
-        // Mặc định lúc vừa tạo Hóa Đơn (khách chưa sang trang VNPAY)
-        $phuong_thuc_thanh_toan = $request->phuong_thuc_thanh_toan ?? 'Chuyển khoản';
+        // Thiết lập giá trị mặc định khi khách chưa tới bước thanh toán
+        $phuong_thuc_thanh_toan = $request->phuong_thuc_thanh_toan ?? 'Chưa chọn';
 
+        // BẮT ĐẦU TRANSACTION
         DB::beginTransaction();
         try {
+            // Lấy thông tin Tour và KHÓA dòng dữ liệu này lại
             $tour = Tour::where('id', $id_tour)
                         ->where('tinh_trang', 1)
                         ->lockForUpdate()
@@ -368,6 +373,7 @@ class VeController extends Controller
                 return response()->json(['status' => false, 'message' => "Tour không tồn tại hoặc đã đóng!"]);
             }
 
+            // Kiểm tra số lượng chỗ trống
             if ($so_luong_nguoi > $tour->so_nguoi_toi_da) {
                 DB::rollBack();
                 return response()->json([
@@ -377,19 +383,22 @@ class VeController extends Controller
             }
 
             $tong_tien = $tour->gia * $so_luong_nguoi;
+            $ma_hoa_don = 'HD' . strtoupper(Str::random(10));
 
+            // 1. Tạo Hóa Đơn
             $hoa_don = HoaDon::create([
                 'id_khach_hang'              => $user->id,
                 'id_tour'                    => $tour->id,
-                'ma_hoa_don'                 => 'HD' . strtoupper(Str::random(10)),
+                'ma_hoa_don'                 => $ma_hoa_don,
                 'so_luong_nguoi'             => $so_luong_nguoi,
                 'tong_tien'                  => $tong_tien,
                 'phuong_thuc_thanh_toan'     => $phuong_thuc_thanh_toan,
-                'trang_thai'                 => '1',
+                'trang_thai'                 => '1', // 1: Chờ thanh toán / Chờ xác nhận
                 'ghi_chu_danh_sach_nguoi_di' => $ghi_chu_danh_sach,
                 'ngay_tao'                   => Carbon::now(),
             ]);
 
+            // 2. Tạo danh sách Vé
             $ds_ve_tao_moi = [];
             for ($i = 0; $i < $so_luong_nguoi; $i++) {
                 $ve = Ve::create([
@@ -403,16 +412,48 @@ class VeController extends Controller
                 $ds_ve_tao_moi[] = $ve;
             }
 
+            // 3. Trừ số lượng chỗ trống của Tour
             $tour->decrement('so_nguoi_toi_da', $so_luong_nguoi);
 
+            // XÁC NHẬN LƯU DATABASE THÀNH CÔNG
             DB::commit();
 
+            // 4. Sinh link mã QR thanh toán
             $ma_giao_dich = 'HDTOUR' . $hoa_don->id;
             $link_qr_code = "https://img.vietqr.io/image/MBBank-1018100050181-compact.png?amount={$tong_tien}&addInfo={$ma_giao_dich}";
 
+            // 5. CHUẨN BỊ DỮ LIỆU GỬI MAIL (Đã loại bỏ phuong_thuc_thanh_toan)
+            $data_mail = [
+                'ho_va_ten_khach'        => $user->ho_va_ten,
+                'so_dien_thoai_khach'    => $user->so_dien_thoai,
+                'email_khach'            => $user->email,
+                'ma_hoa_don'             => $hoa_don->ma_hoa_don,
+                'ten_tour'               => $tour->ten_tour,
+                'ngay_bat_dau'           => $tour->ngay_bat_dau,
+                'ngay_ket_thuc'          => $tour->ngay_ket_thuc,
+                'diem_don'               => $tour->diem_don,
+                'so_luong_nguoi'         => $hoa_don->so_luong_nguoi,
+                'ghi_chu_nguoi_di'       => $hoa_don->ghi_chu_danh_sach_nguoi_di,
+                'tong_tien'              => $hoa_don->tong_tien,
+            ];
+
+            // 6. GỌI JOB GỬI MAIL (Đẩy vào hàng đợi)
+            try {
+                \App\Jobs\jobGuiMail::dispatch(
+                    $data_mail['email_khach'],                                // $nguoi_nhan
+                    'Xác nhận yêu cầu đặt tour - Ixtal Tour',                 // $tieu_de
+                    $data_mail,                                               // $data
+                    'mail_DatTour'                                            // $view
+                );
+            } catch (\Exception $e) {
+                // Ghi log nếu Job có lỗi, nhưng không làm gián đoạn việc trả về báo thành công
+                Log::error('Lỗi khi đưa mail vào Queue: ' . $e->getMessage());
+            }
+
+            // 7. Trả về Response cho Frontend
             return response()->json([
                 'status'  => true,
-                'message' => "Đã đặt tour thành công!",
+                'message' => "Đã gửi yêu cầu đặt tour. Vui lòng kiểm tra email của bạn!",
                 'data'    => [
                     'hoa_don'      => $hoa_don,
                     'danh_sach_ve' => $ds_ve_tao_moi,
@@ -424,7 +465,7 @@ class VeController extends Controller
             DB::rollBack();
             return response()->json([
                 'status'  => false,
-                'message' => "Có lỗi xảy ra: " . $e->getMessage()
+                'message' => "Có lỗi xảy ra trong quá trình đặt tour: " . $e->getMessage()
             ]);
         }
     }
