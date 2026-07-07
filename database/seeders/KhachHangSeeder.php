@@ -49,7 +49,13 @@ class KhachHangSeeder extends Seeder
             'https://jbagy.me/wp-content/uploads/2025/03/hinh-anh-cute-avatar-vo-tri-3.jpg',
             'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQE84ZkAzHiXWkFTmCj7wCW2wmoSVweoOG95A&s',
             'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSA5W8mmdqgticBgvZuCKQ30R7Tez2grRh9fA&s',
-            'https://lh3.googleusercontent.com/a/ACg8ocJSirL9mGUSxGZg5N3sLQw-SM9T0RvQpPBiDehCkdMJ9uiRyBqg=s96-c'
+            'https://i.pinimg.com/236x/70/d1/a3/70d1a35a3bb9c0741dc9e542bef33f28.jpg',
+            'https://i.pinimg.com/1200x/6e/a9/0d/6ea90dfc86a4c91062057eea0c19a6c6.jpg',
+            'https://i.pinimg.com/736x/c8/d6/01/c8d6014fbae40ed212141c34d594c271.jpg',
+            'https://i.pinimg.com/1200x/dc/eb/22/dceb22fd13cec2bcd487886f680ee48c.jpg',
+            'https://i.pinimg.com/1200x/cd/be/02/cdbe02713226326a854df7c26f18606e.jpg',
+            'https://i.pinimg.com/1200x/4a/96/e9/4a96e9e797dadfd0da792539ce82c2ba.jpg',
+            'https://i.pinimg.com/736x/12/01/a0/1201a00fa1eb2df88ba1d3786a9212d5.jpg',
         ];
 
         foreach ($khachHang as $index => $kh) {

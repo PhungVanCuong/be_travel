@@ -28,12 +28,12 @@ class VeSeeder extends Seeder
         foreach ($hoaDons as $hoaDon) {
             $soNguoi = $hoaDon->so_luong_nguoi;
             $giaVe = $soNguoi > 0 ? round($hoaDon->tong_tien / $soNguoi) : 0;
-            $tinhTrangVe = $hoaDon->trang_thai;
+            $tinhTrangVe = $hoaDon->trang_thai; // Tình trạng vé đồng bộ với hóa đơn
 
             for ($i = 0; $i < $soNguoi; $i++) {
                 $veCounter++;
 
-                // Cố định logic Check-in: Chỉ vé đã thanh toán (2) và theo modulo mới được check-in
+                // Chỉ vé đã thanh toán (2) mới được check-in (Tỉ lệ 80% được checkin)
                 $isCheckIn = ($tinhTrangVe == '2' && ($veCounter % 5) != 0) ? 1 : 0;
 
                 // Mã vé cố định
@@ -56,6 +56,6 @@ class VeSeeder extends Seeder
             DB::table('ves')->insert($chunk);
         }
 
-        $this->command->info('Đã tự động tạo Vé đồng bộ cố định với Hóa Đơn thành công!');
+        $this->command->info('Đã tự động tạo Vé đồng bộ hoàn toàn với Hóa Đơn thành công!');
     }
 }
