@@ -220,8 +220,9 @@ class HoaDonController extends Controller
             ], 401);
         }
 
+        // Sửa ở đây: Sắp xếp theo 'id' giảm dần để đảm bảo đơn hàng mới tạo luôn nằm trên cùng
         $hoaDons = HoaDon::where('id_khach_hang', $user->id)
-            ->orderBy('created_at', 'desc')
+            ->orderBy('id', 'desc')
             ->get();
 
         $result = $hoaDons->map(function ($hoaDon) {
