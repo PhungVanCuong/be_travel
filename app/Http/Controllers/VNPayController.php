@@ -180,7 +180,7 @@ class VNPayController extends Controller
         // GỬI TRỰC TIẾP (Không dùng dispatch) để test
         try {
             Mail::send('mail_InVe', ['data' => $data_mail], function ($message) use ($user) {
-                $message->to($user->email)->subject('Vé điện tử Ixtal Tour');
+                $message->to($user->email)->subject('🎟️ Vé Điện Tử - Xác nhận đặt tour thành công từ Ixtal Tour');
             });
             Log::info('Mail đã gửi trực tiếp thành công!');
         } catch (\Exception $e) {
