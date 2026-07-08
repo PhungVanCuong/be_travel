@@ -213,6 +213,10 @@
                         <td class="value">{{ $data['diem_don'] }}</td>
                     </tr>
                     <tr>
+                        <td class="label">Điểm trả khách:</td>
+                        <td class="value">{{ $data['diem_tra'] }}</td>
+                    </tr>
+                    <tr>
                         <td class="label">Số lượng vé:</td>
                         <td class="value"><strong>{{ $data['so_luong_nguoi'] }}</strong> hành khách</td>
                     </tr>

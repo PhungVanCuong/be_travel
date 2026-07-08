@@ -432,6 +432,7 @@ class VeController extends Controller
                 'ngay_bat_dau'           => $tour->ngay_bat_dau,
                 'ngay_ket_thuc'          => $tour->ngay_ket_thuc,
                 'diem_don'               => $tour->diem_don,
+                'diem_tra'               => $tour->diem_tra,
                 'so_luong_nguoi'         => $hoa_don->so_luong_nguoi,
                 'ghi_chu_nguoi_di'       => $hoa_don->ghi_chu_danh_sach_nguoi_di,
                 'tong_tien'              => $hoa_don->tong_tien,
