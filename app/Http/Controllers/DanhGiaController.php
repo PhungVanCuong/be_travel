@@ -151,4 +151,30 @@ class DanhGiaController extends Controller
             'data' => $data
         ]);
     }
+
+    /**
+     * Lấy đánh giá của khách hàng hiện tại cho một tour cụ thể
+     */
+    public function getDanhGiaCuaToi($id_tour)
+    {
+        $user = Auth::guard('sanctum')->user();
+
+        if (!$user) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Vui lòng đăng nhập để xem đánh giá!'
+            ]);
+        }
+
+        $data = DanhGia::where('id_tour', $id_tour)
+            ->where('id_khach_hang', $user->id)
+            ->join('khach_hangs', 'danh_gias.id_khach_hang', 'khach_hangs.id')
+            ->select('danh_gias.*', 'khach_hangs.ho_va_ten', 'khach_hangs.avatar')
+            ->first();
+
+        return response()->json([
+            'status' => true,
+            'data' => $data
+        ]);
+    }
 }

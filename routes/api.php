@@ -241,6 +241,7 @@ Route::prefix('')->group(function () {
         //api đánh giá
         Route::post('/danh-gia/gui-danh-gia', [DanhGiaController::class, 'guiDanhGia']);
         Route::get('/danh-gia/get-danh-gia/{id}', [DanhGiaController::class, 'getDataClientBinhLuan']);
+        Route::get('/danh-gia/get-danh-gia-cua-toi/{id}', [DanhGiaController::class, 'getDanhGiaCuaToi']);
 
         // api đặt tour
         Route::post('/dat-tour/thanh-toan', [VeController::class, 'datTour']);
