@@ -59,7 +59,7 @@
                                         <table border="0" cellspacing="0" cellpadding="0">
                                             <tr>
                                                 <td style="padding-right: 12px;">
-                                                    <img src="{{ asset('assets/images/Logo1.png') }}" alt="Logo"  style="height:auto; width:70px; display:block;">
+                                                    <img src="https://ixtaltravel.deloydz.io.vn/assets/Logo-3-KgfldS.png" alt="Logo"  style="height:auto; width:70px; display:block;">
                                                 </td>
                                                 <td>
                                                     <div style="font-size: 20px; font-weight: 800; color: #1e293b; letter-spacing: 1px; margin-bottom: 2px;">IXTAL TOUR</div>
