@@ -18,16 +18,18 @@ class ChatBotController extends Controller
     public function xuLyChat(Request $request)
     {
         $message = trim($request->input('message', ''));
+        // Lấy offset để phân trang (Load more 5 tour tiếp theo)
+        $offset = (int) $request->input('offset', 0);
         $user = Auth::guard('sanctum')->user();
 
         // NẾU CÓ CÀI GEMINI API TRONG FILE .ENV, CHÚNG TA SẼ DÙNG AI
         $apiKey = env('GEMINI_API_KEY');
-        if (!empty($apiKey)) {
+        if (!empty($apiKey) && $offset == 0) {
             return $this->callGeminiAI($message, $user, $apiKey);
         }
 
-        // NẾU KHÔNG CÓ GEMINI (HOẶC API BỊ LỖI), GỌI LOGIC TỰ BUILD
-        return $this->fallbackLogic($message, $user);
+        // NẾU KHÔNG CÓ GEMINI (HOẶC ĐANG BẤM LOAD MORE), GỌI LOGIC TỰ BUILD
+        return $this->fallbackLogic($message, $user, $offset);
     }
 
     /**
@@ -35,7 +37,6 @@ class ChatBotController extends Controller
      */
     private function callGeminiAI($message, $user, $apiKey)
     {
-        // Chuẩn bị dữ liệu mớm cho AI
         $userInfo = $user ? "Tên khách hàng: {$user->ho_va_ten}. Email: {$user->email}." : "Khách hàng chưa đăng nhập.";
 
         $historyInfo = "Không có.";
@@ -109,185 +110,221 @@ class ChatBotController extends Controller
             Log::error("Lỗi gọi Gemini: " . $e->getMessage());
         }
 
-        // Nếu Gemini lỗi, tự rớt xuống Fallback
-        return $this->fallbackLogic($message, $user);
+        return $this->fallbackLogic($message, $user, 0);
     }
 
     /**
-     * 3. HÀM LOGIC CỨNG DỰ PHÒNG (Không cần AI vẫn chạy siêu tốt)
+     * 3. HÀM LOGIC CỨNG DỰ PHÒNG CHÍNH XÁC (Exact Match)
      */
-    private function fallbackLogic($message, $user)
+    private function fallbackLogic($message, $user, $offset = 0)
     {
-        $msgLower = mb_strtolower($message, 'UTF-8');
+        $msgLower = mb_strtolower(trim($message), 'UTF-8');
         $userName = $user ? $user->ho_va_ten : "bạn";
 
         $responseText = "";
-        $tours = [];
+        $toursQuery = null;
         $buttons = [];
+        $hasMore = false;
+        $limit = 5;
+        $isMatched = false;
 
-        // Kịch bản Chào hỏi
+        // DỮ LIỆU ĐỊA LÝ VÀ QUỐC GIA CHUẨN XÁC
+        $quocGias = [
+            'trung quốc' => 2, 'campuchia' => 3, 'thái lan' => 4, 'hàn quốc' => 5,
+            'nhật bản' => 6, 'singapore' => 7, 'malaysia' => 8, 'đài loan' => 9, 'indonesia' => 10
+        ];
+
+        $mienBac = ['Hà Nội', 'Hà Giang', 'Cao Bằng', 'Bắc Kạn', 'Tuyên Quang', 'Lào Cai', 'Sapa', 'Điện Biên', 'Lai Châu', 'Sơn La', 'Yên Bái', 'Hòa Bình', 'Thái Nguyên', 'Lạng Sơn', 'Quảng Ninh', 'Hạ Long', 'Bắc Giang', 'Phú Thọ', 'Vĩnh Phúc', 'Bắc Ninh', 'Hải Dương', 'Hải Phòng', 'Hưng Yên', 'Thái Bình', 'Hà Nam', 'Nam Định', 'Ninh Bình', 'Tà Xùa'];
+        $mienTrung = ['Thanh Hóa', 'Nghệ An', 'Hà Tĩnh', 'Quảng Bình', 'Quảng Trị', 'Thừa Thiên Huế', 'Huế', 'Đà Nẵng', 'Quảng Nam', 'Hội An', 'Quảng Ngãi', 'Bình Định', 'Quy Nhơn', 'Phú Yên', 'Khánh Hòa', 'Nha Trang', 'Ninh Thuận', 'Bình Thuận', 'Kon Tum', 'Gia Lai', 'Đắk Lắk', 'Đắk Nông', 'Lâm Đồng', 'Đà Lạt'];
+        $mienNam = ['Bình Phước', 'Tây Ninh', 'Bình Dương', 'Đồng Nai', 'Bà Rịa', 'Vũng Tàu', 'Hồ Chí Minh', 'Sài Gòn', 'Long An', 'Tiền Giang', 'Bến Tre', 'Trà Vinh', 'Vĩnh Long', 'Đồng Tháp', 'An Giang', 'Kiên Giang', 'Phú Quốc', 'Cần Thơ', 'Hậu Giang', 'Sóc Trăng', 'Bạc Liêu', 'Cà Mau'];
+
+        // ====================================================================
+        // NHÓM 1: GIAO TIẾP, CSKH, HỖ TRỢ, CHÍNH SÁCH
+        // ====================================================================
         if (preg_match('/(chào|hi|hello|ê bot|xin chào|hey)/iu', $msgLower)) {
             $nameStr = $user ? " <b>" . $user->ho_va_ten . "</b>" : "";
-            $responseText = "Hehe xin chào{$nameStr}! 👋 Mình là Trợ lý siêu cấp đáng yêu của Ixtal Tour đây. Bạn đang muốn tìm một chuyến đi xả stress hay cần mình kiểm tra đơn hàng nè? 🍯";
-            $buttons = [
-                ['text' => '🔥 Xem tour hot', 'type' => 'message', 'message' => 'tour bán chạy'],
-                ['text' => '🌊 Đi Biển', 'type' => 'message', 'message' => 'tour biển'],
-            ];
+            $responseText = "Hehe xin chào{$nameStr}! 👋 Mình là Trợ lý AI siêu cấp của Ixtal Tour. Bạn gõ tên Tour, Vùng miền (Miền Bắc, Trung, Nam) hoặc Quốc gia để mình tìm chính xác cho nhé! 🍯";
+            $buttons = [['text' => '🔥 Xem tour hot', 'type' => 'message', 'message' => 'tour bán chạy']];
+            $isMatched = true;
         }
-        // Kịch bản Hướng dẫn viên
+        elseif (preg_match('/(liên hệ|tổng đài|hotline|số điện thoại|cskh|nhân viên)/iu', $msgLower)) {
+            $responseText = "☎️ <b>Hotline Hỗ Trợ 24/7:</b> 0236 365 0403<br>📧 <b>Email:</b> hotro@ixtaltour.com<br>📍 <b>Địa chỉ:</b> 03 Quang Trung, Hải Châu, Đà Nẵng.<br>Bạn có thể gọi trực tiếp để nhân viên tư vấn chi tiết hơn nhé!";
+            $isMatched = true;
+        }
         elseif (preg_match('/(hướng dẫn viên|hdv|guide|dẫn đoàn)/iu', $msgLower)) {
-            $hdvs = HuongDanVien::where('is_active', 1)->inRandomOrder()->limit(10)->get();
-            $responseText = "Trời ơi, nhắc đến Hướng dẫn viên của Ixtal Tour thì chỉ có chữ ĐỈNH! 🤩 Các anh chị ấy cực kỳ rành đường và siêu nhiệt tình nha. Tiêu biểu như:<br><br>";
+            $hdvs = HuongDanVien::where('is_active', 1)->inRandomOrder()->limit(5)->get();
+            $responseText = "Đội ngũ HDV của Ixtal Tour cực kỳ chuyên nghiệp và vui tính! 🤩 Tiêu biểu như:<br><br>";
             foreach($hdvs as $hdv) {
-                $responseText .= "👨‍🏫 <b>{$hdv->ho_va_ten}</b> - Ngoại ngữ: {$hdv->ngon_ngu}<br>";
+                $responseText .= "👨‍🏫 <b>{$hdv->ho_va_ten}</b> - (Ngôn ngữ: {$hdv->ngon_ngu})<br>";
             }
-            $responseText .= "<br>Bạn bấm vào đây để xem profile chi tiết nhé! 👇";
-            $buttons = [['text' => '👨‍🏫 Xem Danh Sách HDV', 'type' => 'route', 'route' => '/client/huong-dan-vien']];
+            $buttons = [['text' => '👨‍🏫 Xem Toàn Bộ HDV', 'type' => 'route', 'route' => '/client/huong-dan-vien']];
+            $isMatched = true;
         }
-        // ====================================================================
-        // Kịch bản: KIỂM TRA LỊCH SỬ / HÓA ĐƠN ĐẶT TOUR
-        // ====================================================================
-        elseif (preg_match('/(lịch sử|hóa đơn|vé|đơn hàng|thanh toán|đã mua|đã đặt)/iu', $msgLower)) {
+        elseif (preg_match('/(thời tiết|mưa|nắng|nhiệt độ|lạnh|nóng)/iu', $msgLower)) {
+            $responseText = "🌦️ Về thời tiết, bạn nên kiểm tra kỹ dự báo trước ngày khởi hành khoảng 3-5 ngày để chuẩn bị đồ đạc phù hợp nhé. Nếu đi biển thì nhớ mang kem chống nắng, đi núi thì mang áo ấm nha!";
+            $isMatched = true;
+        }
+        elseif (preg_match('/(chính sách hủy|hủy tour|đổi lịch|hoàn tiền|hủy vé)/iu', $msgLower)) {
+            $responseText = "<b>Chính sách hủy & thay đổi tour:</b><br>- Trước 90 ngày: Phí 5.000.000đ/khách.<br>- Từ 45-89 ngày: Phí 15.000.000đ/khách.<br>- Từ 30-44 ngày: Phí 50% tổng giá tour.<br>- Dưới 19 ngày: 100% giá tour.<br><i class='text-danger'>Lưu ý: Lễ Tết không hỗ trợ hoàn hủy.</i>";
+            $isMatched = true;
+        }
+        elseif (preg_match('/(trẻ em|em bé|dưới 2 tuổi|10 tuổi|chính sách trẻ)/iu', $msgLower)) {
+            $responseText = "<b>Chính sách trẻ em:</b><br>- <b>Dưới 2 tuổi:</b> Giá ưu đãi, ngủ chung với bố mẹ.<br>- <b>Từ 2 đến dưới 10 tuổi:</b> Có mức giá ưu đãi riêng, hưởng đầy đủ dịch vụ.<br>- <b>Từ 10 tuổi:</b> Tính như giá người lớn nhé bạn! 👨‍👩‍👧‍👦";
+            $isMatched = true;
+        }
+        elseif (preg_match('/(visa|hộ chiếu|xuất cảnh|thủ tục đi)/iu', $msgLower)) {
+            $responseText = "<b>Thông tin Visa (Tour Quốc Tế):</b><br>- Hộ chiếu phải còn hạn trên 6 tháng.<br>- Ảnh thẻ 3.5 x 4.5 nền trắng.<br>- Nộp hồ sơ trước ít nhất 15 ngày.<br>👉 Ixtal Tour sẽ lo trọn gói 100% thủ tục cho bạn nhé! 🛂";
+            $isMatched = true;
+        }
+        elseif (preg_match('/(cách thanh toán|phương thức|trả tiền|vnpay|chuyển khoản)/iu', $msgLower)) {
+            $responseText = "Ixtal Tour hỗ trợ 3 hình thức:<br>1️⃣ <b>Ví VNPay:</b> Thanh toán tự động, an toàn.<br>2️⃣ <b>Chuyển khoản / Quét mã QR:</b> Nhanh chóng qua app ngân hàng.<br>3️⃣ <b>Tiền mặt:</b> Tại văn phòng 03 Quang Trung, Đà Nẵng. 💳";
+            $isMatched = true;
+        }
+        elseif (preg_match('/(lịch sử|hóa đơn|vé|đơn hàng|đã mua|đã đặt)/iu', $msgLower)) {
             if ($user) {
-                // Lấy 5 hóa đơn gần nhất cùng với thông tin vé và tour
-                $hoadons = HoaDon::where('id_khach_hang', $user->id)
-                                 ->with(['ds_ve', 'tour'])
-                                 ->orderBy('created_at', 'desc')
-                                 ->limit(5)
-                                 ->get();
-
+                $hoadons = HoaDon::where('id_khach_hang', $user->id)->with(['ds_ve', 'tour'])->orderBy('created_at', 'desc')->limit(5)->get();
                 if ($hoadons->count() > 0) {
-                    $responseText = "Mình tìm thấy các đơn hàng gần đây của <b>{$userName}</b> nè! 📦<br><br>";
-
+                    $responseText = "Các đơn hàng gần đây của <b>{$userName}</b>: 📦<br><br>";
                     foreach($hoadons as $hd) {
                         $tourName = $hd->tour ? $hd->tour->ten_tour : "Tour đã bị xóa";
                         $status = $hd->trang_thai == 2 ? '<span style="color: #198754;">✅ Đã thanh toán</span>' : ($hd->trang_thai == 1 ? '<span style="color: #ffc107;">⏳ Chờ thanh toán</span>' : '<span style="color: #dc3545;">❌ Đã hủy</span>');
                         $tien = number_format($hd->tong_tien) . ' VNĐ';
-
-                        // Lấy thời gian đặt (sử dụng Carbon để format)
-                        $ngay = \Carbon\Carbon::parse($hd->ngay_tao ?? $hd->created_at)->format('d/m/Y H:i');
-                        $soLuong = $hd->so_luong_nguoi;
-                        $phuongThuc = $hd->phuong_thuc_thanh_toan ?? 'Chưa xác định';
-                        $ghiChu = !empty($hd->ghi_chu_danh_sach_nguoi_di) ? "<i>Ghi chú: {$hd->ghi_chu_danh_sach_nguoi_di}</i>" : "<i style='color: #888;'>Không có ghi chú</i>";
-
-                        // Trang trí layout hiển thị cho từng hóa đơn
-                        $responseText .= "🏷️ <b>Mã đơn: #{$hd->ma_hoa_don}</b><br>";
-                        $responseText .= "🌍 Hành trình: <b>$tourName</b><br>";
-                        $responseText .= "🗓️ Ngày đặt: $ngay<br>";
-                        $responseText .= "👥 Số lượng: $soLuong người<br>";
-                        $responseText .= "💳 Thanh toán: $phuongThuc<br>";
-                        $responseText .= "💰 Tổng tiền: <b style='color:#dc3545; font-size: 15px;'>$tien</b><br>";
-                        $responseText .= "📌 Trạng thái: <b>$status</b><br>";
-                        $responseText .= "📝 $ghiChu<br>";
-                        $responseText .= "<hr style='margin:12px 0; border-top: 1px dashed #ccc;'>";
+                        $responseText .= "🏷️ <b>Mã đơn: #{$hd->ma_hoa_don}</b><br>🌍 Hành trình: <b>$tourName</b><br>💰 Tổng tiền: <b style='color:#dc3545;'>$tien</b><br>📌 Trạng thái: <b>$status</b><br><hr style='border-top: 1px dashed #ccc; margin: 10px 0;'>";
                     }
-
-                    $responseText .= "Bạn có thể vào trang quản lý bên dưới để xem chi tiết hơn hoặc tiến hành thanh toán nhé! 👇";
-                    $buttons = [['text' => '📦 Xem Tất Cả Lịch Sử', 'type' => 'route', 'route' => '/client/lich-su-dat-tour']];
+                    $buttons = [['text' => '📦 Xem Tất Cả', 'type' => 'route', 'route' => '/client/lich-su-dat-tour']];
                 } else {
-                    $responseText = "Hệ thống ghi nhận <b>{$userName}</b> chưa đặt chuyến đi nào cả. Nhanh tay chốt một tour để vi vu cùng Ixtal Tour ngay thôi! ✈️";
+                    $responseText = "Bạn chưa đặt chuyến đi nào cả. Đặt tour ngay thôi! ✈️";
                     $buttons = [['text' => '🔥 Xem tour hot', 'type' => 'message', 'message' => 'tour bán chạy']];
                 }
             } else {
-                $responseText = "Ui cha, <b>{$userName}</b> chưa đăng nhập mất rồi! 😅 Mình không biết bạn là ai để tra cứu lịch sử. Bạn bấm nút Đăng nhập bên dưới giúp mình nha! 🔐";
-                $buttons = [['text' => '🔐 Đăng nhập ngay', 'type' => 'route', 'route' => '/client/dang-nhap']];
+                $responseText = "Bạn chưa đăng nhập! 😅 Hãy đăng nhập để kiểm tra lịch sử hóa đơn nhé. 🔐";
+                $buttons = [['text' => '🔐 Đăng nhập', 'type' => 'route', 'route' => '/client/dang-nhap']];
             }
-        }
-        // Kịch bản Tour Hot / Rẻ
-        elseif (preg_match('/(bán chạy|hot|phổ biến)/iu', $msgLower)) {
-            $responseText = "Các tour siêu HOT, liên tục cháy vé tháng này của Ixtal Tour đây ạ! 🔥 Đặt lẹ kẻo hết nha:";
-            $tours = Tour::where('tinh_trang', 1)->withAvg('danhgias as avg_sao', 'sao_danh_gia')
-                ->orderBy('avg_sao', 'desc')->orderBy('gia', 'desc')->limit(5)->get();
-        }
-        elseif (preg_match('/(rẻ|tiết kiệm|khuyến mãi|dưới 2 triệu|ngon|bình dân)/iu', $msgLower)) {
-            $responseText = "Đi chơi thả ga mà không lo xẹp ví! 💸 Dưới đây là các chuyến đi dưới 2 triệu dành cho bạn:";
-            $tours = Tour::where('tinh_trang', 1)->where('gia', '<=', 2000000)->orderBy('gia', 'asc')->limit(5)->get();
-        }
-        elseif (preg_match('/(dưới|trên|khoảng)\s*([0-9]+)\s*(triệu|tr|củ)?/iu', $msgLower, $matches)) {
-            $dieuKien = mb_strtolower($matches[1], 'UTF-8'); // Bắt chữ "dưới" hoặc "trên"
-            $soTien = (int)$matches[2] * 1000000; // Bắt con số và nhân với 1 triệu
-
-            if ($dieuKien == 'dưới') {
-                $responseText = "Mình đã lọc ra các tour có giá <b>dưới " . $matches[2] . " triệu</b> cho {$userName} rồi đây! 💸 Rất tiết kiệm luôn nha:";
-                $tours = Tour::where('tinh_trang', 1)
-                    ->where('gia', '<=', $soTien)
-                    ->orderBy('gia', 'desc')
-                    ->limit(5)->get();
-            } else {
-                $responseText = "Chơi lớn luôn! 😎 Đây là các tour cao cấp có giá <b>trên " . $matches[2] . " triệu</b>, đảm bảo mang lại trải nghiệm dịch vụ 5 sao xuất sắc cho {$userName}:";
-                $tours = Tour::where('tinh_trang', 1)
-                    ->where('gia', '>=', $soTien)
-                    ->orderBy('gia', 'asc')
-                    ->limit(5)->get();
-            }
-
-            // Xử lý nếu không tìm thấy tour nào trong tầm giá đó
-            if ($tours->count() == 0) {
-                $responseText = "Tiếc quá 😅, hiện tại mình không có tour nào khớp với mức giá <b>$dieuKien {$matches[2]} triệu</b>. {$userName} thử xem các tour đang HOT nhất của bên mình nhé 👇";
-                $tours = Tour::where('tinh_trang', 1)->withAvg('danhgias as avg_sao', 'sao_danh_gia')->orderBy('avg_sao', 'desc')->limit(5)->get();
-            }
+            $isMatched = true;
         }
 
-        // Kịch bản từ khóa chung chung: Rẻ, tiết kiệm
-        elseif (preg_match('/(rẻ|tiết kiệm|khuyến mãi|giá tốt)/iu', $msgLower)) {
-            $responseText = "Đi chơi thả ga mà không lo xẹp ví! 💸 Dưới đây là các chuyến đi siêu tiết kiệm (dưới 3 triệu) dành cho bạn:";
-            $tours = Tour::where('tinh_trang', 1)->where('gia', '<=', 3000000)->orderBy('gia', 'asc')->limit(5)->get();
-        }
-
-        // Kịch bản từ khóa: Sang trọng, VIP, cao cấp
-        elseif (preg_match('/(cao cấp|vip|sang trọng|5 sao)/iu', $msgLower)) {
-            $responseText = "Trải nghiệm kỳ nghỉ dưỡng đẳng cấp 5 sao dành riêng cho {$userName}! ✨ Dưới đây là những tour VIP nghỉ dưỡng cực kỳ sang trọng:";
-            $tours = Tour::where('tinh_trang', 1)->where('gia', '>=', 10000000)->orderBy('gia', 'desc')->limit(5)->get();
-        }
-        // Kịch bản Vùng miền / Nước ngoài
-        elseif (preg_match('/(nước ngoài|quốc tế|ngoài nước|thái lan|trung quốc|đài loan|bali|dubai|singapore|nhật|hàn|malaysia)/iu', $msgLower)) {
-            $responseText = "Xách ba lô lên và bay ra thế giới thôi {$userName} ơi! ✈️ Ixtal Tour lo hết, bạn xem qua nhé! 🌍";
-            $tours = Tour::where('tinh_trang', 1)->where('id_quoc_gia', '!=', 1)->limit(5)->get();
-            $buttons = [['text' => '✈️ Xem tất cả Tour Quốc Tế', 'type' => 'route', 'route' => '/client/tour/tour-ngoai-nuoc']];
-        }
-        elseif (preg_match('/(đà lạt|lâm đồng)/iu', $msgLower)) {
-            $responseText = "Đà Lạt chưa bao giờ làm ta thất vọng! 🌲 Bỏ túi ngay mấy tour đi săn mây cực chill nè. 🌸";
-            $tours = $this->searchTours(['đà lạt', 'lâm đồng']);
-        }
-        elseif (preg_match('/(miền bắc|sapa|hà nội|ninh bình|hạ long|tà xùa)/iu', $msgLower)) {
-            $responseText = "Mê mẩn với sương mù và núi non hùng vĩ Miền Bắc đúng không? 😍 Ixtal Tour có mấy chuyến cực phẩm nè! 📸";
-            $tours = $this->searchTours(['miền bắc', 'sapa', 'hà nội', 'hạ long', 'ninh bình', 'tà xùa']);
-        }
-        elseif (preg_match('/(miền trung|đà nẵng|huế|hội an|quảng bình|nha trang|phú yên)/iu', $msgLower)) {
-            $responseText = "Nắng gió Miền Trung đang vẫy gọi! 🌊 Mình chọn sẵn cho {$userName} mấy tour siêu xịn rồi đây! 🏮";
-            $tours = $this->searchTours(['miền trung', 'đà nẵng', 'huế', 'hội an', 'nha trang', 'quy nhơn', 'phú yên', 'quảng bình']);
-        }
-        elseif (preg_match('/(miền nam|miền tây|cần thơ|chợ nổi|sài gòn|phú quốc|hồ chí minh)/iu', $msgLower)) {
-            $responseText = "Về miền sông nước lênh đênh chợ nổi và thưởng thức trái cây miệt vườn thôi {$userName} ơi! 🛶";
-            $tours = $this->searchTours(['miền nam', 'miền tây', 'phú quốc', 'cần thơ', 'hồ chí minh', 'sài gòn']);
-        }
-        elseif (preg_match('/(biển|đảo|vịnh)/iu', $msgLower)) {
-            $responseText = "Thèm Vitamin Sea rồi đúng không? 🏖️ Cùng lặn ngắm san hô với mấy tour này nha: 🦐🦀";
-            $tours = $this->searchTours(['biển', 'đảo', 'vịnh', 'nha trang', 'phú quốc', 'hạ long']);
-        }
-        // Tìm kiếm tự do theo cụm
-        else {
-            $keywords = array_filter(explode(' ', $msgLower), function($k) { return mb_strlen($k, 'UTF-8') > 2; });
-
-            $toursQuery = Tour::where('tinh_trang', 1);
-            $toursQuery->where(function($q) use ($keywords, $msgLower) {
-                $q->where('ten_tour', 'like', '%' . $msgLower . '%')
-                  ->orWhere('diem_tra', 'like', '%' . $msgLower . '%')
-                  ->orWhere('mo_ta', 'like', '%' . $msgLower . '%');
-
-                foreach ($keywords as $kw) {
-                    $q->orWhere('ten_tour', 'like', '%' . $kw . '%')
-                      ->orWhere('diem_tra', 'like', '%' . $kw . '%')
-                      ->orWhere('mo_ta', 'like', '%' . $kw . '%');
+        // ====================================================================
+        // NHÓM 2: LỌC QUỐC GIA (Ưu tiên số 1 - Khớp chính xác nhất)
+        // ====================================================================
+        if (!$isMatched) {
+            foreach ($quocGias as $qgName => $qgId) {
+                // Kiểm tra nếu người dùng gõ đúng tên quốc gia
+                if (mb_strpos($msgLower, $qgName) !== false) {
+                    $toursQuery = $this->buildBaseQuery()->where('id_quoc_gia', $qgId);
+                    $responseText = "Đây là toàn bộ các tour đi <b>" . ucwords($qgName) . "</b> mà bạn đang tìm kiếm đây! ✈️";
+                    $isMatched = true;
+                    break;
                 }
-            });
+            }
+        }
 
-            $tours = $toursQuery->limit(5)->get();
+        // ====================================================================
+        // NHÓM 3: LỌC VÙNG MIỀN (Chỉ hiện tour trong nước)
+        // ====================================================================
+        if (!$isMatched) {
+            // Đảm bảo chỉ tìm trong id_quoc_gia = 1 (Việt Nam)
+            if (mb_strpos($msgLower, 'miền bắc') !== false) {
+                $toursQuery = $this->buildBaseQuery()->where('id_quoc_gia', 1)->where(function($q) use ($mienBac) {
+                    $this->applyLocationFilter($q, $mienBac);
+                });
+                $responseText = "Du lịch <b>Miền Bắc</b> khám phá sương mù và núi non hùng vĩ nha! 📸 Đây là các tour Miền Bắc:";
+                $isMatched = true;
+            }
+            elseif (mb_strpos($msgLower, 'miền trung') !== false) {
+                $toursQuery = $this->buildBaseQuery()->where('id_quoc_gia', 1)->where(function($q) use ($mienTrung) {
+                    $this->applyLocationFilter($q, $mienTrung);
+                });
+                $responseText = "Nắng gió <b>Miền Trung</b> và biển xanh đang vẫy gọi! 🌊 Trọn bộ tour Miền Trung đây ạ:";
+                $isMatched = true;
+            }
+            elseif (mb_strpos($msgLower, 'miền nam') !== false || mb_strpos($msgLower, 'miền tây') !== false) {
+                $toursQuery = $this->buildBaseQuery()->where('id_quoc_gia', 1)->where(function($q) use ($mienNam) {
+                    $this->applyLocationFilter($q, $mienNam);
+                });
+                $responseText = "Khám phá sông nước miệt vườn <b>Miền Nam</b> thôi! 🛶 Danh sách chính xác cho bạn:";
+                $isMatched = true;
+            }
+            // Thêm logic riêng cho Tour nước ngoài để không bị dính tour trong nước
+            elseif (preg_match('/(nước ngoài|quốc tế|ngoài nước)/iu', $msgLower)) {
+                $responseText = "Xách ba lô lên và bay ra thế giới thôi {$userName} ơi! ✈️ Đây là các tour Quốc tế cực phẩm:";
+                $toursQuery = $this->buildBaseQuery()->where('id_quoc_gia', '!=', 1);
+                $isMatched = true;
+            }
+        }
+
+        // ====================================================================
+        // NHÓM 4: LỌC TÍNH TỪ VÀ NHU CẦU CỤ THỂ
+        // ====================================================================
+        if (!$isMatched) {
+            if (preg_match('/(bán chạy|hot|phổ biến|nhiều người đi)/iu', $msgLower)) {
+                $responseText = "Các tour siêu HOT, liên tục cháy vé tháng này của Ixtal Tour đây ạ! 🔥";
+                $toursQuery = $this->buildBaseQuery()->orderByDesc('avg_sao')->orderByDesc('gia');
+                $isMatched = true;
+            }
+            elseif (preg_match('/(rẻ|tiết kiệm|khuyến mãi|bình dân|giá rẻ)/iu', $msgLower)) {
+                $responseText = "Đi chơi thả ga mà không lo xẹp ví! 💸 Dưới đây là các chuyến đi siêu tiết kiệm:";
+                $toursQuery = $this->buildBaseQuery()->where('gia', '<=', 3000000)->orderBy('gia', 'asc');
+                $isMatched = true;
+            }
+            elseif (preg_match('/(cao cấp|vip|sang trọng|5 sao|nghỉ dưỡng)/iu', $msgLower)) {
+                $responseText = "Trải nghiệm kỳ nghỉ dưỡng đẳng cấp VIP dành riêng cho {$userName}! ✨";
+                $toursQuery = $this->buildBaseQuery()->where('gia', '>=', 10000000)->orderBy('gia', 'desc');
+                $isMatched = true;
+            }
+            elseif (preg_match('/(dưới|trên|khoảng)\s*([0-9]+)\s*(triệu|tr|củ)?/iu', $msgLower, $matches)) {
+                $dieuKien = mb_strtolower($matches[1], 'UTF-8');
+                $soTien = (int)$matches[2] * 1000000;
+                if ($dieuKien == 'dưới') {
+                    $responseText = "Đã lọc ra các tour có giá <b>dưới " . $matches[2] . " triệu</b> cho bạn! 💸";
+                    $toursQuery = $this->buildBaseQuery()->where('gia', '<=', $soTien)->orderBy('gia', 'desc');
+                } else {
+                    $responseText = "Đây là các tour cao cấp có giá <b>trên " . $matches[2] . " triệu</b>! 😎";
+                    $toursQuery = $this->buildBaseQuery()->where('gia', '>=', $soTien)->orderBy('gia', 'asc');
+                }
+                $isMatched = true;
+            }
+        }
+
+        // ====================================================================
+        // NHÓM 5: TÌM KIẾM THEO TÊN EXACT MATCH (Tuyệt đối chính xác)
+        // ====================================================================
+        if (!$isMatched) {
+            // Bước 1: Ưu tiên tìm xem có Tour nào chứa TRỌN VẸN nguyên câu người dùng gõ không
+            $exactQuery = $this->buildBaseQuery()->where('ten_tour', 'like', '%' . $message . '%');
+
+            if ($exactQuery->count() > 0) {
+                // Nếu có, chỉ trả về đúng tour đó
+                $toursQuery = $exactQuery;
+                $responseText = "Bingo! 🎯 Mình tìm thấy chính xác Tour mang tên <b>\"{$message}\"</b> mà bạn yêu cầu:";
+            } else {
+                // Bước 2: Tách từ khóa (chỉ lọc từ > 2 ký tự) để tìm ở Tên Tour hoặc Điểm Đến
+                $keywords = array_filter(explode(' ', $msgLower), function($k) { return mb_strlen($k, 'UTF-8') > 2; });
+
+                if(count($keywords) == 0) {
+                    $responseText = "Xin lỗi, mình chưa hiểu ý bạn lắm 😅. Hãy thử gõ chính xác: <b>Đà Lạt, Thái Lan, Miền Bắc, Tour dưới 5 triệu...</b> để mình hỗ trợ nhé! 🧭";
+                } else {
+                    $toursQuery = $this->buildStrictSearchQuery($keywords);
+                    $responseText = "Mình đã rà soát hệ thống và tìm được các tour có liên quan đến <b>\"{$message}\"</b> nè! 👇";
+                }
+            }
+        }
+
+        // ====================================================================
+        // THỰC THI TRUY VẤN VÀ PHÂN TRANG
+        // ====================================================================
+        if ($toursQuery !== null) {
+            $total = $toursQuery->count();
+            $tours = $toursQuery->offset($offset)->limit($limit)->get();
+            $hasMore = $total > ($offset + $limit);
 
             if (count($tours) > 0) {
-                $responseText = "Tada! 🪄 Mình tìm được " . count($tours) . " tour cực kỳ chuẩn gu của {$userName} nè. Xem nha! 👇";
+                if ($offset > 0) {
+                    $responseText = "Đây là các tour tiếp theo dành cho bạn 👇";
+                }
             } else {
-                $responseText = "Uisss 😅, tìm mỏi mắt nhưng chưa thấy tour nào khớp với yêu cầu của {$userName}. Bạn thử tìm với từ khóa (Sapa, Đà Nẵng, Nước ngoài) xem nhé! 🧭";
+                $responseText = "Uisss 😅, tìm mỏi mắt mà hệ thống hiện không có chuyến đi nào khớp chính xác với <b>\"{$message}\"</b> cả. Bạn tham khảo các Tour đang HOT nhất hiện nay nhé! 🔥";
+                $tours = $this->buildBaseQuery()->orderByDesc('avg_sao')->limit(5)->get();
+                $hasMore = false;
                 $buttons = [
                     ['text' => '🧭 Xem Tour Trong Nước', 'type' => 'route', 'route' => '/client/tour/tour-trong-nuoc'],
                     ['text' => '✈️ Xem Tour Quốc Tế', 'type' => 'route', 'route' => '/client/tour/tour-ngoai-nuoc'],
@@ -298,24 +335,48 @@ class ChatBotController extends Controller
         return response()->json([
             'status' => true,
             'response' => $responseText,
-            'tours' => $tours,
+            'tours' => $tours ?? [],
             'buttons' => $buttons,
-            'ai_powered' => false
+            'hasMore' => $hasMore,
+            'ai_powered' => false,
+            'keyword_used' => $message
         ]);
     }
 
+    private function applyLocationFilter($query, $locationArray)
+    {
+        foreach ($locationArray as $kw) {
+            $query->orWhere('ten_tour', 'like', '%' . $kw . '%')
+                  ->orWhere('diem_don', 'like', '%' . $kw . '%')
+                  ->orWhere('diem_tra', 'like', '%' . $kw . '%');
+        }
+    }
+
     /**
-     * 4. HÀM HỖ TRỢ QUERY NHIỀU TỪ KHÓA MỘT LÚC
+     * 4. HÀM KHỞI TẠO QUERY GỐC LUÔN TỰ ĐỘNG TÍNH SAO TRUNG BÌNH
      */
-    private function searchTours($keywordArray)
+    private function buildBaseQuery()
     {
         return Tour::where('tinh_trang', 1)
-            ->where(function($q) use ($keywordArray) {
-                foreach ($keywordArray as $kw) {
-                    $q->orWhere('ten_tour', 'like', '%' . $kw . '%')
-                      ->orWhere('diem_tra', 'like', '%' . $kw . '%')
-                      ->orWhere('mo_ta', 'like', '%' . $kw . '%');
-                }
-            })->limit(5)->get();
+                   ->withAvg('danhgias as avg_sao', 'sao_danh_gia');
+    }
+
+    /**
+     * 5. HÀM TÌM KIẾM NGHIÊM NGẶT (Chỉ tìm trong Tên Tour, Điểm Đón, Điểm Trả - Bỏ qua Mô Tả)
+     * Việc bỏ qua cột "mo_ta" giúp kết quả chính xác 100%, không bị dính các tour rác.
+     */
+    private function buildStrictSearchQuery($keywordArray)
+    {
+        $query = $this->buildBaseQuery();
+
+        $query->where(function($q) use ($keywordArray) {
+            foreach ($keywordArray as $kw) {
+                $q->orWhere('ten_tour', 'like', '%' . $kw . '%')
+                  ->orWhere('diem_don', 'like', '%' . $kw . '%')
+                  ->orWhere('diem_tra', 'like', '%' . $kw . '%');
+            }
+        });
+
+        return $query;
     }
 }
