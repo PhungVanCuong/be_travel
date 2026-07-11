@@ -3,11 +3,25 @@
 namespace App\Http\Controllers;
 use App\Models\PhanQuyen;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PhanQuyenController extends Controller
 {
     public function addData(Request $request)
     {
+         $user = Auth::guard('sanctum')->user();
+        // Nếu là master admin thì bỏ qua kiểm tra quyền
+        if ($user->is_master != 1) {
+            $id_chuc_nang = 6;
+            $id_chuc_vu   = $user->id_chuc_vu;
+            $check        = PhanQuyen::where('id_chuc_vu', $id_chuc_vu)->where('id_chuc_nang', $id_chuc_nang)->first();
+            if (!$check) {
+                return response()->json([
+                    'status'    =>  0,
+                    'message'   =>  'Bạn không có quyền thực hiện chức năng này!'
+                ]);
+            }
+        }
         try {
             $phanQuyen = PhanQuyen::firstOrCreate([
                 'id_chuc_vu'   => $request->id_chuc_vu,
@@ -28,6 +42,19 @@ class PhanQuyenController extends Controller
     }
     public function destroy(Request $request)
     {
+         $user = Auth::guard('sanctum')->user();
+        // Nếu là master admin thì bỏ qua kiểm tra quyền
+        if ($user->is_master != 1) {
+            $id_chuc_nang = 6;
+            $id_chuc_vu   = $user->id_chuc_vu;
+            $check        = PhanQuyen::where('id_chuc_vu', $id_chuc_vu)->where('id_chuc_nang', $id_chuc_nang)->first();
+            if (!$check) {
+                return response()->json([
+                    'status'    =>  0,
+                    'message'   =>  'Bạn không có quyền thực hiện chức năng này!'
+                ]);
+            }
+        }
         try {
             $deleted = PhanQuyen::where('id_chuc_vu', $request->id_chuc_vu)
                 ->where('id_chuc_nang', $request->id_chuc_nang)
@@ -53,6 +80,19 @@ class PhanQuyenController extends Controller
     }
     public function getChiTietPhanQuyen(Request $request)
     {
+         $user = Auth::guard('sanctum')->user();
+        // Nếu là master admin thì bỏ qua kiểm tra quyền
+        if ($user->is_master != 1) {
+            $id_chuc_nang = 6;
+            $id_chuc_vu   = $user->id_chuc_vu;
+            $check        = PhanQuyen::where('id_chuc_vu', $id_chuc_vu)->where('id_chuc_nang', $id_chuc_nang)->first();
+            if (!$check) {
+                return response()->json([
+                    'status'    =>  0,
+                    'message'   =>  'Bạn không có quyền thực hiện chức năng này!'
+                ]);
+            }
+        }
         try {
             $data = PhanQuyen::where('phan_quyens.id_chuc_vu', $request->id)
                 ->join('chuc_vus', 'chuc_vus.id', 'phan_quyens.id_chuc_vu')

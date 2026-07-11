@@ -82,31 +82,69 @@ class ChucVuController extends Controller
         ]);
         return response()->json([
             'status'    => true,
-             'message'   => 'Cập nhật chức vụ ' . $request->ten_chuc_vu . ' thành công'
+            'message'   => 'Cập nhật chức vụ ' . $request->ten_chuc_vu . ' thành công'
         ]);
     }
 
     public function destroy(Request $request)
     {
         $user = Auth::guard('sanctum')->user();
-        // Nếu là master admin thì bỏ qua kiểm tra quyền
-        if ($user->is_master != 1 && $user->id_chuc_vu != 1) {
-            $id_chuc_nang = 16;
-            $id_chuc_vu   = $user->id_chuc_vu;
-            $check        = PhanQuyen::where('id_chuc_vu', $id_chuc_vu)->where('id_chuc_nang', $id_chuc_nang)->first();
+
+        if (!$user) {
+            return response()->json([
+                'status'  => false,
+                'message' => 'Bạn chưa đăng nhập!'
+            ], 401);
+        }
+
+        // Không cho xóa chức vụ mà tài khoản đang đăng nhập đang sử dụng
+        if ((int) $request->id === (int) $user->id_chuc_vu) {
+            return response()->json([
+                'status'  => false,
+                'message' => 'Bạn không thể xóa chức vụ của tài khoản đang đăng nhập!'
+            ], 403);
+        }
+
+        // Nếu không phải Master Admin thì kiểm tra quyền
+        if ((int) $user->is_master !== 1) {
+            $check = PhanQuyen::where('id_chuc_vu', $user->id_chuc_vu)
+                ->where('id_chuc_nang', 16)
+                ->exists();
+
             if (!$check) {
                 return response()->json([
-                    'status'    =>  0,
-                    'message'   =>  'Bạn không có quyền thực hiện chức năng này!'
-                ]);
+                    'status'  => false,
+                    'message' => 'Bạn không có quyền thực hiện chức năng này!'
+                ], 403);
             }
         }
 
-        ChucVu::where('id', $request->id)->delete();
-        return response()->json([
-            'status' => true,
-            'message' => 'Xóa chức vụ thành công'
-        ]);
+        try {
+            $chucVu = ChucVu::find($request->id);
+
+            if (!$chucVu) {
+                return response()->json([
+                    'status'  => false,
+                    'message' => 'Không tìm thấy chức vụ!'
+                ], 404);
+            }
+
+            // Xóa quyền của chức vụ trước để tránh lỗi khóa ngoại
+            DB::transaction(function () use ($chucVu) {
+                PhanQuyen::where('id_chuc_vu', $chucVu->id)->delete();
+                $chucVu->delete();
+            });
+
+            return response()->json([
+                'status'  => true,
+                'message' => 'Xóa chức vụ thành công!'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status'  => false,
+                'message' => 'Có lỗi xảy ra: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
 

@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Models\NhanVien;
 use App\Models\PhanQuyen;
 use Illuminate\Http\Request;
@@ -112,24 +113,65 @@ class NhanVienController extends Controller
     public function destroy(Request $request)
     {
         $user = Auth::guard('sanctum')->user();
-        // Nếu là master admin thì bỏ qua kiểm tra quyền
-        if ($user->is_master != 1) {
-            $id_chuc_nang = 3;
-            $id_chuc_vu   = $user->id_chuc_vu;
-            $check        = PhanQuyen::where('id_chuc_vu', $id_chuc_vu)->where('id_chuc_nang', $id_chuc_nang)->first();
+
+        // Kiểm tra tài khoản đã đăng nhập
+        if (!$user) {
+            return response()->json([
+                'status'  => false,
+                'message' => 'Bạn chưa đăng nhập!'
+            ], 401);
+        }
+
+        // Không cho tài khoản đang đăng nhập tự xóa chính mình
+        if ((int) $request->id === (int) $user->id) {
+            return response()->json([
+                'status'  => false,
+                'message' => 'Bạn không thể xóa tài khoản đang đăng nhập!'
+            ], 403);
+        }
+
+        // Nếu không phải Master Admin thì kiểm tra quyền quản lý tài khoản
+        if ((int) $user->is_master !== 1) {
+            $check = PhanQuyen::where('id_chuc_vu', $user->id_chuc_vu)
+                ->where('id_chuc_nang', 3)
+                ->exists();
+
             if (!$check) {
                 return response()->json([
-                    'status'    =>  0,
-                    'message'   =>  'Bạn không có quyền thực hiện chức năng này!'
-                ]);
+                    'status'  => false,
+                    'message' => 'Bạn không có quyền thực hiện chức năng này!'
+                ], 403);
             }
         }
 
-        NhanVien::where('id', $request->id)->delete();
-        return response()->json([
-            'status' => true,
-            'message' => 'Xóa nhân viên thành công'
-        ]);
+        try {
+            $nhanVien = NhanVien::find($request->id);
+
+            if (!$nhanVien) {
+                return response()->json([
+                    'status'  => false,
+                    'message' => 'Không tìm thấy tài khoản nhân viên!'
+                ], 404);
+            }
+
+            // Xóa token của tài khoản trước
+            DB::table('personal_access_tokens')
+                ->where('tokenable_type', NhanVien::class)
+                ->where('tokenable_id', $nhanVien->id)
+                ->delete();
+
+            $nhanVien->delete();
+
+            return response()->json([
+                'status'  => true,
+                'message' => 'Xóa nhân viên thành công!'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status'  => false,
+                'message' => 'Có lỗi xảy ra: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     public function changeStatus(Request $request)
@@ -296,5 +338,4 @@ class NhanVienController extends Controller
             ]);
         }
     }
-
 }
