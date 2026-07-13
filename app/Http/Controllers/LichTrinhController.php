@@ -73,11 +73,9 @@ class LichTrinhController extends Controller
 
         $validator = Validator::make($request->all(), [
             'id_tour'           => 'required|exists:tours,id',
-            'tieu_de_hoat_dong' => 'required|string|max:500',
         ], [
             'id_tour.required'           => 'Vui lòng chọn Tour.',
             'id_tour.exists'             => 'Tour đã chọn không tồn tại.',
-            'tieu_de_hoat_dong.required' => 'Vui lòng nhập nội dung hoạt động.',
         ]);
 
         if ($validator->fails()) {
@@ -91,7 +89,6 @@ class LichTrinhController extends Controller
             'id_tour'           => $request->id_tour,
             'id_diem_den'       => $request->id_diem_den,
             'id_phuong_tien'    => $request->id_phuong_tien,
-            'tieu_de_hoat_dong' => $request->tieu_de_hoat_dong,
         ]);
 
         return response()->json([
