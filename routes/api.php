@@ -213,7 +213,8 @@ Route::prefix('')->group(function () {
     Route::get('/client/huong-dan-vien/chi-tiet/{id}', [HuongDanVienTourController::class, 'getChiTietHDVClient']);
 
     // ROUTE CHATBOT TẠI ĐÂY
-    Route::post('/client/chatbot/chat', [ChatBotController::class, 'xuLyChat']);
+    Route::post('/client/chatbot/chat', [ChatBotController::class, 'xuLyChat'])
+        ->middleware('throttle:20,1');
 
     // ROUTE Dùng để tìm kiếm tour cho khách hàng (Tìm kiếm đa chiều: Tên Tour, Quốc Gia, Điểm Đến, Thành Phố)
     Route::post('/client/tour/search', [TourController::class, 'searchTourClient']);
