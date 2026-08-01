@@ -25,6 +25,9 @@ use App\Http\Controllers\LichTrinhController;
 use App\Http\Controllers\QuocGiaController;
 use App\Http\Controllers\DiemDenController;
 use App\Http\Controllers\LienHeController;
+use App\Http\Controllers\PayOSController;
+use App\Http\Controllers\MomoController;
+use App\Http\Controllers\ZaloPayController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -208,6 +211,9 @@ Route::prefix('')->group(function () {
     Route::get('/client/vnpay/check-return', [VNPayController::class, 'vnpayReturn']);
     Route::get('/client/vnpay/ipn', [VNPayController::class, 'vnpayIpn']);
 
+    // payOS webhook phải public để payOS có thể gửi kết quả thanh toán.
+    Route::post('/client/payos/webhook', [PayOSController::class, 'webhook']);
+
     // API Hướng Dẫn Viên (Đưa ra vùng Public để ai cũng xem được)
     Route::get('/client/huong-dan-vien/danh-sach', [HuongDanVienTourController::class, 'getDanhSachHDVClient']);
     Route::get('/client/huong-dan-vien/chi-tiet/{id}', [HuongDanVienTourController::class, 'getChiTietHDVClient']);
@@ -221,6 +227,14 @@ Route::prefix('')->group(function () {
 
     // Ở KHU VỰC CLIENT ROUTES (Public)
     Route::post('/client/lien-he', [LienHeController::class, 'store']);
+
+    // MoMo Webhooks & Return
+    Route::get('/client/momo/check-return', [MomoController::class, 'checkThanhToan']);
+    Route::post('/client/momo/ipn', [MomoController::class, 'momoIpn']);
+
+    // ZaloPay Webhooks & Return (Public)
+    Route::get('/client/zalopay/check-return', [ZaloPayController::class, 'checkThanhToan']);
+    Route::post('/client/zalopay/ipn', [ZaloPayController::class, 'zaloPayIpn']);
 });
 
 // CLIENT ROUTES (Protected - Cần đăng nhập)
@@ -251,6 +265,10 @@ Route::prefix('')->group(function () {
         Route::post('/vnpay/tao-thanh-toan', [VNPayController::class, 'createPayment']);
         Route::get('/vnpay/check-thanh-toan', [VNPayController::class, 'checkThanhToan']);
 
+        // payOS: tạo liên kết và đồng bộ trạng thái thanh toán của khách hàng hiện tại.
+        Route::post('/payos/tao-thanh-toan', [PayOSController::class, 'createPayment']);
+        Route::get('/payos/check-thanh-toan', [PayOSController::class, 'checkPayment']);
+
         // API Lịch sử hóa đơn cá nhân
         Route::get('/hoa-don/danh-sach', [HoaDonController::class, 'getHoaDonCuaKhachHang']);
         Route::get('/hoa-don/chi-tiet-thanh-toan/{ma_hoa_don}', [HoaDonController::class, 'getChiTietThanhToanHoaDon']);
@@ -266,6 +284,13 @@ Route::prefix('')->group(function () {
         // API này vẫn để trong này vì nó liên quan đến đặt tour
         Route::get('/tour/huong-dan-vien/{id_tour}', [HuongDanVienTourController::class, 'getHDVByTour']);
 
+        // API MoMo
+        Route::post('/momo/tao-thanh-toan', [MomoController::class, 'createPayment']);
+        Route::get('/momo/check-thanh-toan', [MomoController::class, 'checkThanhToan']);
+
+        // API ZaloPay
+        Route::post('/zalopay/tao-thanh-toan', [ZaloPayController::class, 'createPayment']);
+        Route::get('/zalopay/check-thanh-toan', [ZaloPayController::class, 'checkThanhToan']);
     });
 });
 

@@ -7,6 +7,8 @@ use App\Models\KhachHang;
 use App\Models\Tour;
 use App\Models\Ve;
 use App\Models\PhanQuyen;
+use App\Models\PayOSTransaction;
+use App\Services\PayOSService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -345,7 +347,7 @@ class HoaDonController extends Controller
     /**
      * CLIENT: Khách hàng yêu cầu hủy hóa đơn
      */
-    public function HuyHoaDon(Request $request)
+    public function HuyHoaDon(Request $request, PayOSService $payOS)
     {
         try {
             $user = Auth::guard('sanctum')->user();
@@ -367,6 +369,36 @@ class HoaDonController extends Controller
                     'status' => false,
                     'message' => 'Hóa đơn đã thanh toán, không thể hủy! Vui lòng liên hệ CSKH.'
                 ]);
+            }
+
+            $pendingPayOS = PayOSTransaction::where('id_hoa_don', $hoaDon->id)
+                ->whereIn('status', ['CREATING', 'PENDING', 'PROCESSING'])
+                ->latest('id')
+                ->first();
+
+            if ($pendingPayOS) {
+                try {
+                    $cancelData = $payOS->cancelPaymentLink(
+                        $pendingPayOS->payment_link_id ?: $pendingPayOS->order_code,
+                        'Khach hang huy hoa don'
+                    );
+
+                    $pendingPayOS->update([
+                        'status' => 'CANCELLED',
+                        'response_payload' => $cancelData,
+                    ]);
+                } catch (\Throwable $exception) {
+                    Log::warning('Không thể hủy liên kết payOS trước khi hủy hóa đơn.', [
+                        'hoa_don_id' => $hoaDon->id,
+                        'order_code' => $pendingPayOS->order_code,
+                        'error' => $exception->getMessage(),
+                    ]);
+
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'Không thể hủy liên kết payOS. Vui lòng kiểm tra trạng thái thanh toán rồi thử lại.'
+                    ], 409);
+                }
             }
 
             DB::beginTransaction();
