@@ -26,7 +26,7 @@ use App\Http\Controllers\QuocGiaController;
 use App\Http\Controllers\DiemDenController;
 use App\Http\Controllers\LienHeController;
 use App\Http\Controllers\PayOSController;
-use App\Http\Controllers\MomoController;
+use App\Http\Controllers\MoMoController;
 use App\Http\Controllers\ZaloPayController;
 use App\Http\Controllers\PayPalController;
 
@@ -230,8 +230,8 @@ Route::prefix('')->group(function () {
     Route::post('/client/lien-he', [LienHeController::class, 'store']);
 
     // MoMo Webhooks & Return
-    Route::get('/client/momo/check-return', [MomoController::class, 'checkThanhToan']);
-    Route::post('/client/momo/ipn', [MomoController::class, 'momoIpn']);
+    Route::get('/client/momo/check-return', [MoMoController::class, 'checkThanhToan']);
+    Route::post('/client/momo/ipn', [MoMoController::class, 'momoIpn']);
 
     // ZaloPay Webhooks & Return (Public)
     Route::get('/client/zalopay/check-return', [ZaloPayController::class, 'checkThanhToan']);
@@ -289,8 +289,8 @@ Route::prefix('')->group(function () {
         Route::get('/tour/huong-dan-vien/{id_tour}', [HuongDanVienTourController::class, 'getHDVByTour']);
 
         // API MoMo
-        Route::post('/momo/tao-thanh-toan', [MomoController::class, 'createPayment']);
-        Route::get('/momo/check-thanh-toan', [MomoController::class, 'checkThanhToan']);
+        Route::post('/momo/tao-thanh-toan', [MoMoController::class, 'createPayment']);
+        Route::get('/momo/check-thanh-toan', [MoMoController::class, 'checkThanhToan']);
 
         // API ZaloPay
         Route::post('/zalopay/tao-thanh-toan', [ZaloPayController::class, 'createPayment']);
