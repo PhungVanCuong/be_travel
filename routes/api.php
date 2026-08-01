@@ -28,6 +28,7 @@ use App\Http\Controllers\LienHeController;
 use App\Http\Controllers\PayOSController;
 use App\Http\Controllers\MomoController;
 use App\Http\Controllers\ZaloPayController;
+use App\Http\Controllers\PayPalController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -235,6 +236,9 @@ Route::prefix('')->group(function () {
     // ZaloPay Webhooks & Return (Public)
     Route::get('/client/zalopay/check-return', [ZaloPayController::class, 'checkThanhToan']);
     Route::post('/client/zalopay/ipn', [ZaloPayController::class, 'zaloPayIpn']);
+
+    // 1. Thêm vào Group CLIENT ROUTES (Public) - Nơi chứa check-return MoMo/ZaloPay
+    Route::get('/client/paypal/check-return', [PayPalController::class, 'checkThanhToan']);
 });
 
 // CLIENT ROUTES (Protected - Cần đăng nhập)
@@ -291,6 +295,10 @@ Route::prefix('')->group(function () {
         // API ZaloPay
         Route::post('/zalopay/tao-thanh-toan', [ZaloPayController::class, 'createPayment']);
         Route::get('/zalopay/check-thanh-toan', [ZaloPayController::class, 'checkThanhToan']);
+
+        // 2. Thêm vào Group CLIENT ROUTES (Protected - Cần đăng nhập)
+        Route::post('/paypal/tao-thanh-toan', [PayPalController::class, 'createPayment']);
+        Route::get('/paypal/check-thanh-toan', [PayPalController::class, 'checkThanhToan']);
     });
 });
 
