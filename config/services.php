@@ -40,9 +40,6 @@ return [
         'model' => env('GEMINI_MODEL', 'gemini-3.1-flash-lite'),
         'ca_bundle' => env('GEMINI_CA_BUNDLE', base_path('resources/certs/cacert.pem')),
     ],
-
-<<<<<<< HEAD
-=======
     'payos' => [
         'client_id' => env('PAYOS_CLIENT_ID'),
         'api_key' => env('PAYOS_API_KEY'),
@@ -55,6 +52,4 @@ return [
         'expire_minutes' => env('PAYOS_EXPIRE_MINUTES', 15),
         'timeout' => env('PAYOS_TIMEOUT', 20),
     ],
-
->>>>>>> 7b7efcd (Thêm các tuyến đường và kiểm thử tích hợp thanh toán PayOS, MoMo và ZaloPay)
 ];
