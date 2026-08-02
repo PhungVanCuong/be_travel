@@ -10,9 +10,9 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Http;
 
-class MomoController extends Controller
+class MoMoController extends Controller
 {
-    // Sử dụng bộ Key Test được cung cấp
+    // Sử dụng bộ Key Test được cung cấp từ tài liệu MoMo
     private $partnerCode = 'MOMOBKUN20180529';
     private $accessKey = 'klm05TvNBzhg7h7j';
     private $secretKey = 'at67qH6mk8w5Y1nAyMoYKMWACiEi2bsa';
@@ -27,7 +27,7 @@ class MomoController extends Controller
     // private $endpoint = 'https://payment.momo.vn/v2/gateway/api/create';
 
     /**
-     * 1. TẠO LINK THANH TOÁN MOMO
+     * 1. TẠO LINK THANH TOÁN MOMO CHUẨN
      */
     public function createPayment(Request $request)
     {
@@ -39,23 +39,22 @@ class MomoController extends Controller
         $hoaDon->phuong_thuc_thanh_toan = 'MOMO';
         $hoaDon->save();
 
-        // Tự động nhận diện Domain của Frontend
         $frontendUrl = $request->header('Origin') ? $request->header('Origin') : 'http://localhost:5173';
 
+        // URL trả về hoàn toàn sạch sẽ, không chứa tham số phụ để tránh làm hỏng chữ ký MoMo
         $returnUrl = rtrim($frontendUrl, '/') . "/Ket-qua-thanh-toan";
         $ipnUrl = url('/api/client/momo/ipn');
 
         $orderId = $hoaDon->id . '_' . time();
-        $requestId = time() . "";
-
-        // Ép kiểu amount về chuỗi (string) để khớp 100% khi tạo chữ ký
+        $requestId = $orderId;
         $amount = (string) round($hoaDon->tong_tien);
-
-        $orderInfo = "Thanh toan hoa don Ixtal Tour ma " . $hoaDon->id;
+        $orderInfo = "Thanh toan don hang Ixtal Tour " . $hoaDon->id;
         $extraData = "";
-        $requestType = "captureWallet";
 
-        // Tạo chuỗi chữ ký (Raw Hash) theo đúng thứ tự Alphabet
+        // Hiện trang chọn phương thức thanh toán
+        $requestType = "payWithMethod";
+
+        // Chuỗi ký (Raw Hash)
         $rawHash = "accessKey=" . $this->accessKey .
                    "&amount=" . $amount .
                    "&extraData=" . $extraData .
@@ -72,44 +71,39 @@ class MomoController extends Controller
         $data = [
             'partnerCode' => $this->partnerCode,
             'partnerName' => "Ixtal Tour",
-            'storeId' => "MomoTestStore",
+            'storeId' => "MoMoTestStore",
             'requestId' => $requestId,
-            'amount' => (int) $amount, // Khi gửi JSON phải là số nguyên
+            'amount' => (int) $amount,
             'orderId' => $orderId,
             'orderInfo' => $orderInfo,
             'redirectUrl' => $returnUrl,
             'ipnUrl' => $ipnUrl,
             'lang' => 'vi',
-            'extraData' => $extraData,
             'requestType' => $requestType,
+            'autoCapture' => true,
+            'extraData' => $extraData,
+            'orderGroupId' => '',
             'signature' => $signature
         ];
 
-        // Gửi request lên hệ thống MoMo
-        $response = Http::post($this->endpoint, $data);
+        // Gửi request tới MoMo
+        $response = Http::withoutVerifying()->post($this->endpoint, $data);
         $result = $response->json();
 
-        // Kiểm tra nếu tạo thành công (resultCode == 0 và có payUrl)
         if (isset($result['payUrl']) && isset($result['resultCode']) && $result['resultCode'] == 0) {
             return response()->json([
                 'status' => true,
-                'message' => $result['message'] ?? 'Tạo link thanh toán thành công',
-                'data' => $result['payUrl'], // Giữ nguyên để Vue.js tự động chuyển trang không bị lỗi
-                'chi_tiet' => $result // Trả về toàn bộ cục dữ liệu gốc của MoMo (orderId, amount, shortLink...)
+                'message' => 'Tạo link thanh toán MoMo thành công',
+                'data' => $result['payUrl'],
+                'chi_tiet' => $result
             ]);
         }
 
-        // Trường hợp bị lỗi (Sai chữ ký, sai số tiền, cấu hình lỗi...)
-        Log::error('Lỗi tạo giao dịch MoMo: ', $result);
-
-        // Ưu tiên lấy localMessage (Tiếng Việt) nếu có, không thì lấy message tiếng Anh
-        $errorMessage = $result['localMessage'] ?? $result['message'] ?? 'Lỗi không xác định';
-
+        Log::error('Lỗi tạo giao dịch MoMo: ', $result ?? []);
         return response()->json([
             'status' => false,
-            'message' => 'Lỗi MoMo: ' . $errorMessage,
-            'resultCode' => $result['resultCode'] ?? null,
-            'chi_tiet' => $result // Trả toàn bộ cục báo lỗi về frontend để dễ dàng debug trên Console (F12)
+            'message' => 'Lỗi MoMo: ' . ($result['localMessage'] ?? 'Lỗi không xác định'),
+            'chi_tiet' => $result
         ]);
     }
 
@@ -126,16 +120,15 @@ class MomoController extends Controller
 
         try {
             Mail::send('mail_InVe', ['data' => $data_mail], function ($message) use ($user) {
-                $message->to($user->email)->subject('🎟️ Vé Điện Tử - Xác nhận thanh toán MoMo thành công từ Ixtal Tour');
+                $message->to($user->email)->subject('🎟️ Vé Điện Tử - Xác nhận thanh toán MoMo thành công');
             });
-            Log::info('Gửi mail vé điện tử MoMo thành công cho hóa đơn: ' . $hoaDon->id);
         } catch (\Exception $e) {
             Log::error('Lỗi gửi mail (MoMo): ' . $e->getMessage());
         }
     }
 
     /**
-     * 2. KIỂM TRA TRẠNG THÁI THANH TOÁN (Lúc khách hàng bị chuyển hướng về web)
+     * 2. KIỂM TRA TRẠNG THÁI THANH TOÁN (Return URL)
      */
     public function checkThanhToan(Request $request)
     {
@@ -174,25 +167,28 @@ class MomoController extends Controller
                 $hoaDonId = explode('_', $orderId)[0];
                 $hoa_don = HoaDon::with('ds_ve')->find($hoaDonId);
 
-                // Cập nhật trạng thái nếu hóa đơn đang chờ thanh toán
                 if ($hoa_don && $hoa_don->trang_thai == 1) {
-                    $hoa_don->trang_thai = 2; // Đã thanh toán
+                    $hoa_don->trang_thai = 2;
                     $hoa_don->phuong_thuc_thanh_toan = 'MOMO';
                     $hoa_don->save();
                     $hoa_don->ds_ve()->update(['tinh_trang' => 2]);
 
                     $this->guiMailVeDienTu($hoa_don);
 
-                    // SỬA TẠI ĐÂY: Bổ sung thêm mảng 'data' để truyền thông tin về cho Frontend
                     return response()->json([
                         'status' => true,
-                        'message' => 'Thanh toán thành công và vé đã được kích hoạt',
+                        'message' => 'Thanh toán MoMo thành công',
                         'data' => [
                             'ma_hoa_don' => $hoa_don->ma_hoa_don ?? $hoa_don->id,
                             'tong_tien' => $hoa_don->tong_tien,
                             'ngay_thanh_toan' => date('d/m/Y H:i:s'),
                             'phuong_thuc' => 'MoMo'
                         ]
+                    ]);
+                } else if ($hoa_don && $hoa_don->trang_thai == 2) {
+                    return response()->json([
+                        'status' => true,
+                        'message' => 'Đơn hàng đã được thanh toán trước đó.'
                     ]);
                 }
             }
@@ -205,7 +201,7 @@ class MomoController extends Controller
     }
 
     /**
-     * 3. IPN (Webhook MoMo gọi ngầm để cập nhật trạng thái chắc chắn 100%)
+     * 3. IPN (Webhook)
      */
     public function momoIpn(Request $request)
     {
@@ -260,7 +256,6 @@ class MomoController extends Controller
                     }
                 }
             }
-            // Bắt buộc trả về HTTP 204 cho MoMo IPN để xác nhận đã nhận tín hiệu
             return response()->json('', 204);
         }
 
